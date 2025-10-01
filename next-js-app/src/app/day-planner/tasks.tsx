@@ -1,7 +1,3 @@
-import { Collapsible, CollapsibleContent } from '@/components/ui/collapsible';
-import { CollapsibleTrigger } from '@radix-ui/react-collapsible';
-import { ChevronRight, Square } from 'lucide-react';
-
 const tasks = [
   {
     id: 1,
@@ -28,7 +24,9 @@ export default function Tasks() {
           <div className="text-gray-700 font-medium mb-2">{task.title}</div>
           <div className="flex gap-2">
             {task.additionalInfo.map(info => (
-              <span className="text-sm text-gray-500 bg-gray-100 px-2 rounded-full">{info}</span>
+              <span key={info} className="text-sm text-gray-500 bg-gray-100 px-2 rounded-full">
+                {info}
+              </span>
             ))}
           </div>
         </li>
