@@ -1,4 +1,4 @@
-namespace OrbitSpace
+namespace OrbitSpace.WebApi
 {
     public class WeatherForecast
     {
