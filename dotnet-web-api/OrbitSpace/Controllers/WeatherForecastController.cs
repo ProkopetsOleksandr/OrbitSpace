@@ -1,14 +1,16 @@
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace OrbitSpace.Controllers
+namespace OrbitSpace.WebApi.Controllers
 {
+    [Route("api/[controller]")]
     [ApiController]
-    [Route("[controller]")]
+    [Authorize]
     public class WeatherForecastController : ControllerBase
     {
         private static readonly string[] Summaries = new[]
         {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+            "Ледяной", "Прохладный", "Теплый", "Жаркий", "Знойный", "Влажный", "Солнечный", "Облачный", "Дождливый", "Штормовой"
         };
 
         private readonly ILogger<WeatherForecastController> _logger;
@@ -21,6 +23,8 @@ namespace OrbitSpace.Controllers
         [HttpGet(Name = "GetWeatherForecast")]
         public IEnumerable<WeatherForecast> Get()
         {
+            _logger.LogInformation("Запрошен прогноз погоды.");
+
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
                 Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
