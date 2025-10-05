@@ -4,8 +4,8 @@
     {
         public const string SectionName = "JwtSettings";
 
-        public required string Key { get; init; }
-        public required string Issuer { get; init; }
-        public required string Audience { get; init; }
+        public string Key { get; set; } = string.Empty;
+        public string Issuer { get; set; } = string.Empty;
+        public string Audience { get; set; } = string.Empty;
     }
 }
