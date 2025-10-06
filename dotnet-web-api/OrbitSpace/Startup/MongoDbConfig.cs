@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 using MongoDB.Driver;
+using OrbitSpace.Infrastructure.Persistence;
 using OrbitSpace.Infrastructure.Settings;
 
 namespace OrbitSpace.WebApi.Startup
@@ -20,6 +21,8 @@ namespace OrbitSpace.WebApi.Startup
                 var client = serviceProvider.GetRequiredService<IMongoClient>();
                 return client.GetDatabase(settings.DatabaseName);
             });
+            
+            services.AddScoped<IMongoDbContext, MongoDbContext>();
         }
     }
 }

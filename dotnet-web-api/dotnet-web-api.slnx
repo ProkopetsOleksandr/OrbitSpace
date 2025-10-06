@@ -1,5 +1,6 @@
 <Solution>
-  <Project Path="OrbitSpace.Domain/OrbitSpace.Domain.csproj" Id="7a452ae1-1645-4f88-bec9-3909fcb1f62d" />
-  <Project Path="OrbitSpace.Infrastructure/OrbitSpace.Infrastructure.csproj" Id="1984da23-dd8e-4140-8a93-28decbb43e67" />
+  <Project Path="OrbitSpace.Application\OrbitSpace.Application.csproj" Type="Classic C#" />
+  <Project Path="OrbitSpace.Domain/OrbitSpace.Domain.csproj" />
+  <Project Path="OrbitSpace.Infrastructure/OrbitSpace.Infrastructure.csproj" />
   <Project Path="OrbitSpace/OrbitSpace.WebApi.csproj" />
 </Solution>

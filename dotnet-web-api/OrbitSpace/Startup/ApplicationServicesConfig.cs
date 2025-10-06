@@ -1,6 +1,7 @@
-﻿using OrbitSpace.Domain.Interfaces.Repositories;
-using OrbitSpace.Domain.Interfaces.Services;
-using OrbitSpace.Infrastructure.Repositories;
+﻿using OrbitSpace.Application.Interfaces.Repositories;
+using OrbitSpace.Application.Interfaces.Services;
+using OrbitSpace.Application.Services;
+using OrbitSpace.Infrastructure.Persistence.Repositories;
 using OrbitSpace.Infrastructure.Services;
 
 namespace OrbitSpace.WebApi.Startup
@@ -11,7 +12,10 @@ namespace OrbitSpace.WebApi.Startup
         {
             services.AddScoped<IUserRepository, UserRepository>();
 
-            services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ITokenService, JwtTokenService>();
+            services.AddScoped<IPasswordHasherService, BCryptPasswordHasherService>();
+            services.AddScoped<IAuthenticationService, AuthenticationService>();
         }
     }
 }

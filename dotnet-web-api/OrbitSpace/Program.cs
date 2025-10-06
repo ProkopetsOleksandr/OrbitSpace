@@ -22,6 +22,8 @@ namespace OrbitSpace.WebApi
 
             app.MapControllers();
 
+            app.MapGet("/", () => "Orbit Space is working");
+
             app.Run();
         }
     }

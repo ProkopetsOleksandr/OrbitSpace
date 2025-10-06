@@ -12,7 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\OrbitSpace.Domain\OrbitSpace.Domain.csproj" />
     <ProjectReference Include="..\OrbitSpace.Infrastructure\OrbitSpace.Infrastructure.csproj" />
   </ItemGroup>
 

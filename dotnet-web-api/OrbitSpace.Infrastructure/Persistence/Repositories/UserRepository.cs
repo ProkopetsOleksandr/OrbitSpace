@@ -1,8 +1,8 @@
 ﻿using MongoDB.Driver;
+using OrbitSpace.Application.Interfaces.Repositories;
 using OrbitSpace.Domain.Entities;
-using OrbitSpace.Domain.Interfaces.Repositories;
 
-namespace OrbitSpace.Infrastructure.Repositories
+namespace OrbitSpace.Infrastructure.Persistence.Repositories
 {
     public class UserRepository : IUserRepository
     {

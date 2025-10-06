@@ -1,69 +1,37 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using OrbitSpace.Domain.Entities;
-using OrbitSpace.Domain.Interfaces.Repositories;
-using OrbitSpace.Domain.Interfaces.Services;
-using OrbitSpace.WebApi.Models;
+using OrbitSpace.Application.Interfaces.Services;
+using OrbitSpace.Application.Models.Requests;
 
 namespace OrbitSpace.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     [AllowAnonymous]
-    public class AuthController : ControllerBase
+    public class AuthController(IAuthenticationService authenticationService) : ControllerBase
     {
-        private readonly IUserRepository _userRepository;
-        private readonly ITokenService _tokenService;
-
-        public AuthController(IUserRepository userRepository, ITokenService tokenService)
-        {
-            _userRepository = userRepository;
-            _tokenService = tokenService;
-        }
-
         [HttpPost("register")]
-        public async Task<IActionResult> Register(RegisterDto registerDto)
+        public async Task<IActionResult> Register(RegisterRequest registerDto)
         {
-            if (await _userRepository.GetByUsernameAsync(registerDto.Username) != null)
+            var result = await authenticationService.RegisterAsync(registerDto);
+            if (!result.IsSuccess)
             {
-                return BadRequest("Username already exists");
+                return BadRequest(result.ErrorMessage);
             }
 
-            var user = new User
-            {
-                Username = registerDto.Username
-            };
-
-            user.PasswordHash = new PasswordHasher<User>().HashPassword(user, registerDto.Password);
-
-            await _userRepository.CreateAsync(user);
-
-            return Ok(new { message = "User registered successfully" });
+            return Ok(result.Data);
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<AuthResponseDto>> Login(LoginDto loginDto)
+        public async Task<IActionResult> Login(LoginRequest request)
         {
-            var user = await _userRepository.GetByUsernameAsync(loginDto.Username);
-            if (user == null)
+            var result = await authenticationService.LoginAsync(request);
+            if (!result.IsSuccess)
             {
-                return Unauthorized("Invalid username or password");
+                return Unauthorized(result.ErrorMessage);
             }
 
-            var passwordhasherResult = new PasswordHasher<User>().VerifyHashedPassword(user, user.PasswordHash, loginDto.Password);
-            if (passwordhasherResult == PasswordVerificationResult.Failed)
-            {
-                return Unauthorized("Invalid username or password");
-            }
-
-            var token = _tokenService.CreateToken(user);
-
-            return Ok(new AuthResponseDto
-            {
-                Username = user.Username,
-                Token = token
-            });
+            return Ok(result.Data);
         }
     }
 }
