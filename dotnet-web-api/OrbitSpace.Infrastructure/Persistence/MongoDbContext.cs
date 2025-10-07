@@ -10,7 +10,6 @@ public class MongoDbContext : IMongoDbContext
     public MongoDbContext(IMongoDatabase database)
     {
         _database = database;
-        MongoMappingsConfig.RegisterAll();
     }
     
     public IMongoCollection<User> Users => _database.GetCollection<User>("users");

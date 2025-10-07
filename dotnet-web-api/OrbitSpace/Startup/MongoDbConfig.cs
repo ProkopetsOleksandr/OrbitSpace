@@ -23,6 +23,8 @@ namespace OrbitSpace.WebApi.Startup
             });
             
             services.AddScoped<IMongoDbContext, MongoDbContext>();
+
+            MongoMappingsConfig.RegisterAll();
         }
     }
 }
