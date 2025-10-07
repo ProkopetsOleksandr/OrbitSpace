@@ -1,5 +1,6 @@
 import { ClipboardList } from 'lucide-react';
 import React from 'react';
+import LogoutBtb from './LogoutBtb';
 import Tasks from './tasks';
 import TasksTable from './tasksTable';
 import TimeSegmentDisplay from './TimeSegment';
@@ -13,7 +14,8 @@ export default function Page() {
             <ClipboardList className="size-5" />
             <h2 className="font-semibold">Tasks</h2>
           </div>
-          <Tasks />
+          {/* <Tasks /> */}
+          <LogoutBtb />
         </div>
         <div className="p-4 bg-gray-50 rounded-lg shadow-sm">
           <TimeSegmentDisplay startTimeHour={6} endTimeHour={22} />
