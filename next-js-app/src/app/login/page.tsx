@@ -1,9 +1,5 @@
-import LoginForm from './loginForm';
+import LoginForm2 from './loginForm2';
 
 export default function Page() {
-  return (
-    <div>
-      <LoginForm />
-    </div>
-  );
+  return <LoginForm2 />;
 }

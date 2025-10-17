@@ -1,73 +1,91 @@
 'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import { signIn } from 'next-auth/react';
-import { useActionState } from 'react';
-import { useFormStatus } from 'react-dom';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-const loginSchema = z.object({
+const LoginSchema = z.object({
   email: z.string().min(4, 'Email must be at least 4 characters'),
   password: z.string().min(6, 'Password must be at least 6 characters')
 });
 
-type FormDataType = z.infer<typeof loginSchema>;
+type LoginData = z.infer<typeof LoginSchema>;
 
-type FormState =
-  | {
-      errors?: string[];
-      properties?: {
-        email?: { errors: string[] };
-        password?: { errors: string[] } | null;
-      };
-    }
-  | undefined;
+const showToast = (message: string, type: 'success' | 'error') => {
+  console.log(`[${type.toUpperCase()}] ${message}`);
+  alert(message);
+};
 
-export default function LoginForm() {
-  const [state, setState, isPending] = useActionState(
-    async (prevState: FormState, formData: FormDataType): Promise<FormState> => {
-      const validationResult = loginSchema.safeParse(formData);
-      if (!validationResult.success) {
-        return z.treeifyError(validationResult.error);
-      }
+export default function LoginForm2() {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
-      const { email, password } = validationResult.data;
-
-      const result = await signIn('credentials', { email, password, redirect: true });
-      if (result?.error) {
-        return {
-          errors: ['Invalid email or password'],
-          properties: {
-            email: { errors: result.error }, // Показываем ошибку от NextAuth
-            password: null
-          }
-        };
-      }
+  const { register, handleSubmit, formState } = useForm<LoginData>({
+    resolver: zodResolver(LoginSchema),
+    defaultValues: {
+      email: 'Alex',
+      password: '1234567'
     },
-    undefined
-  );
+    mode: 'onBlur'
+  });
+
+  async function onSubmit(data: LoginData) {
+    console.log('submit fired');
+
+    setLoading(true);
+
+    try {
+      const result = await signIn('LoginEmailPassword', {
+        redirect: false,
+        email: data.email,
+        password: data.password
+      });
+
+      if (result?.error) {
+        showToast(result.error || 'Ошибка аутентификации. Проверьте данные.', 'error');
+      } else if (result?.ok) {
+        router.push('/');
+      }
+    } catch (e) {
+      showToast('Произошла непредвиденная ошибка.', 'error');
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
-    <form action={setState} className="flex max-w-[300px] flex-col gap-2">
+    <form onSubmit={handleSubmit(onSubmit)} className="flex min-w-[300px] flex-col gap-2">
       <div className="flex flex-col gap-2">
-        <input id="email" name="email" placeholder="Email" defaultValue="Alex" />
+        <input
+          {...register('email')}
+          placeholder="Email"
+          disabled={loading}
+          className={`mt-1 block w-full rounded-md border ${
+            formState.errors.email ? 'border-red-500' : 'border-gray-300'
+          } shadow-sm p-2`}
+        />
       </div>
-      {state?.properties?.email && <p className="text-red-500">{state.properties.email.errors}</p>}
+      {formState.errors.email && <p className="text-red-500">{formState.errors.email.message}</p>}
 
       <div className="flex flex-col gap-2">
-        <input id="password" name="password" type="password" placeholder="Password" defaultValue="1234567" />
+        <input
+          {...register('password')}
+          type="password"
+          disabled={loading}
+          placeholder="Password"
+          className={`mt-1 block w-full rounded-md border ${
+            formState.errors.password ? 'border-red-500' : 'border-gray-300'
+          } shadow-sm p-2`}
+        />
       </div>
-      {state?.properties?.password && <p className="text-red-500">{state.properties.password.errors}</p>}
-      <SubmitButton />
+      {formState.errors.password && <p className="text-red-500">{formState.errors.password.message}</p>}
+      <button disabled={loading} type="submit" className="bg-gray-200 p-2 rounded cursor-pointer">
+        {loading ? 'Logging in...' : 'Login'}
+      </button>
     </form>
-  );
-}
-
-function SubmitButton() {
-  const { pending } = useFormStatus();
-
-  return (
-    <button disabled={pending} type="submit">
-      Login
-    </button>
   );
 }

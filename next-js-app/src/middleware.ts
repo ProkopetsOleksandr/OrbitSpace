@@ -1,57 +1,29 @@
-import { cookies } from 'next/headers';
-import { NextRequest, NextResponse } from 'next/server';
-import { decryptSession } from './lib/session';
+import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 
 export default async function middleware(req: NextRequest) {
-  const { isAuthenticated, tokenExpired, tokenVerificationError } = await useTokenVerification();
+  const token = req.auth;
+  const baseUrl = req.nextUrl.origin;
+
   const isLoginPage = req.nextUrl.pathname.startsWith('/login');
 
-  if (isAuthenticated && isLoginPage) {
-    return NextResponse.redirect(new URL('/', req.nextUrl));
+  if (!token && !isLoginPage) {
+    return NextResponse.redirect(baseUrl + '/login');
   }
 
-  if (tokenExpired || tokenVerificationError) {
-    const response = isLoginPage ? NextResponse.next() : NextResponse.redirect(new URL('/login', req.nextUrl));
-    response.cookies.delete('session');
+  // token expired
+  if (token && Date.now() >= token.validity.refresh_until * 1000) {
+    const response = NextResponse.redirect(baseUrl + 'login');
+    response.cookies.set('next-auth.session-token', '', { maxAge: 0 });
+    response.cookies.set('next-auth.csrf-token', '', { maxAge: 0 });
     return response;
   }
 
-  if (!isAuthenticated && !isLoginPage) {
-    return NextResponse.redirect(new URL('/login', req.nextUrl));
-  }
-
+  // token valid
   return NextResponse.next();
 }
 
-async function useTokenVerification(): Promise<{
-  isAuthenticated?: boolean;
-  tokenExpired?: boolean;
-  tokenVerificationError?: boolean;
-}> {
-  try {
-    const cookie = (await cookies()).get('session')?.value;
-    if (!cookie) {
-      return {
-        isAuthenticated: false
-      };
-    }
-
-    const session = await decryptSession(cookie);
-    if (!session) {
-      return {
-        tokenExpired: true
-      };
-    }
-
-    const isExpired = !session.exp || session.exp <= Math.floor(Date.now() / 1000);
-
-    return {
-      tokenExpired: isExpired,
-      isAuthenticated: !isExpired
-    };
-  } catch (error) {
-    return {
-      tokenVerificationError: true
-    };
-  }
-}
+export const config = {
+  // Исключаем статические файлы, API-маршруты NextAuth и т.д.
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico|assets|.*\\.png$).*)']
+};
