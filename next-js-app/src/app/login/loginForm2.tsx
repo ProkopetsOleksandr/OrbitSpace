@@ -14,14 +14,10 @@ const LoginSchema = z.object({
 
 type LoginData = z.infer<typeof LoginSchema>;
 
-const showToast = (message: string, type: 'success' | 'error') => {
-  console.log(`[${type.toUpperCase()}] ${message}`);
-  alert(message);
-};
-
 export default function LoginForm2() {
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>('');
 
   const { register, handleSubmit, formState } = useForm<LoginData>({
     resolver: zodResolver(LoginSchema),
@@ -33,24 +29,24 @@ export default function LoginForm2() {
   });
 
   async function onSubmit(data: LoginData) {
-    console.log('submit fired');
-
     setLoading(true);
 
     try {
-      const result = await signIn('LoginEmailPassword', {
+      const result = await signIn('credentials', {
         redirect: false,
         email: data.email,
         password: data.password
       });
 
+      console.log(result);
+
       if (result?.error) {
-        showToast(result.error || 'Ошибка аутентификации. Проверьте данные.', 'error');
-      } else if (result?.ok) {
+        setError(result.error);
+      } else if (result.ok) {
         router.push('/');
       }
     } catch (e) {
-      showToast('Произошла непредвиденная ошибка.', 'error');
+      setError('Application error');
       console.error(e);
     } finally {
       setLoading(false);
@@ -83,6 +79,9 @@ export default function LoginForm2() {
         />
       </div>
       {formState.errors.password && <p className="text-red-500">{formState.errors.password.message}</p>}
+
+      {error && <div>{error}</div>}
+
       <button disabled={loading} type="submit" className="bg-gray-200 p-2 rounded cursor-pointer">
         {loading ? 'Logging in...' : 'Login'}
       </button>

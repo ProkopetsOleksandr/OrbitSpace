@@ -1,7 +1,6 @@
 'use client';
 
-import { signOut } from '@/auth';
-import { SessionProvider, useSession } from 'next-auth/react';
+import { SessionProvider, signOut, useSession } from 'next-auth/react';
 
 export default function LogoutBtb() {
   return (
