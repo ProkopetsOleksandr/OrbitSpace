@@ -34,6 +34,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           body: JSON.stringify(payload)
         });
 
+        console.log(res);
+
         if (!res.ok) {
           return null;
         }
@@ -82,7 +84,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }
   },
   pages: {
-    signIn: '/login'
+    signIn: '/auth/login'
   }
 });
 

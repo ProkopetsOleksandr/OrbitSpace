@@ -24,8 +24,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <div className="min-h-screen grid place-content-center">{children}</div>
+        <div className="h-screen bg-gradient-to-br from-gray-100 to-blue-50 grid place-content-center">{children}</div>
       </body>
     </html>
   );

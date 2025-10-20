@@ -7,10 +7,10 @@ export default async function middleware(req: NextRequest) {
   const baseUrl = req.nextUrl.origin;
 
   const isAuthenticated = !!session;
-  const isLoginPage = req.nextUrl.pathname.startsWith('/login');
+  const isLoginPage = req.nextUrl.pathname.startsWith('/auth/login') || req.nextUrl.pathname.startsWith('/auth/register');
 
   if (!isAuthenticated && !isLoginPage) {
-    return NextResponse.redirect(baseUrl + '/login');
+    return NextResponse.redirect(baseUrl + '/auth/login');
   }
 
   return NextResponse.next();
