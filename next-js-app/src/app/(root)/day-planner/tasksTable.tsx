@@ -1,6 +1,8 @@
 'use client';
 
+import { useQuery } from '@tanstack/react-query';
 import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import { useMemo } from 'react';
 
 type TaskItem = {
   id: number;
@@ -145,15 +147,31 @@ const columns = [
   })
 ];
 
+async function getTasks(): Promise<TaskItem[]> {
+  return new Promise(() =>
+    setTimeout(function () {
+      return defaultData;
+    }, 3000)
+  );
+}
+
 export default function TasksTable() {
+  const query = useQuery({
+    queryKey: ['tasks'],
+    queryFn: getTasks
+  });
+
+  const tableData = useMemo(() => (query.data ? query.data : []), [query.data]);
+
   const table = useReactTable({
-    data: defaultData, // 1. Ваши данные
+    data: tableData, // 1. Ваши данные
     columns: columns, // 2. Ваша конфигурация колонок
     getCoreRowModel: getCoreRowModel() // 3. Обязательный плагин для получения базовой модели
   });
 
   return (
     <div>
+      {query.isLoading && <div>Data is loading...</div>}
       <table className="min-w-full divide-y divide-gray-200 border border-gray-300">
         <thead>
           {/* Получаем все группы строк заголовков */}
