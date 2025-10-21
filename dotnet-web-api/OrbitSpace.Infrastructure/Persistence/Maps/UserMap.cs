@@ -16,8 +16,6 @@ public class UserMap
             cm.MapIdMember(m => m.Id)
                 .SetIdGenerator(StringObjectIdGenerator.Instance)
                 .SetSerializer(new StringSerializer(BsonType.ObjectId));
-            cm.MapMember(m => m.Username).SetElementName("username");
-            cm.MapMember(m => m.PasswordHash).SetElementName("passwordHash");
         });
     }
 }

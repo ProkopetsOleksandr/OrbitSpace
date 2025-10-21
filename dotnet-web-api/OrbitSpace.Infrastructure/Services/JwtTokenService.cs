@@ -13,12 +13,13 @@ public class JwtTokenService(IOptions<JwtSettings> jwtSettingsOptions) : ITokenS
 {
     private readonly JwtSettings _jwtSettings = jwtSettingsOptions.Value;
 
-    public string GenerateToken(User user)
+    public string GenerateAccessToken(User user)
     {
         var claims = new List<Claim>
         {
-            new Claim(JwtRegisteredClaimNames.NameId, user.Id!),
-            new Claim(JwtRegisteredClaimNames.UniqueName, user.Username)
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new Claim(JwtRegisteredClaimNames.Sub, user.Id!),
+            new Claim(JwtRegisteredClaimNames.Email, user.Email)
         };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Key));

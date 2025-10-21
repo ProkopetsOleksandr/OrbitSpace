@@ -1,5 +1,6 @@
 ﻿using OrbitSpace.Application.Interfaces.Repositories;
 using OrbitSpace.Application.Interfaces.Services;
+using OrbitSpace.Application.Models.Dtos;
 using OrbitSpace.Application.Models.Requests;
 using OrbitSpace.Application.Models.Responses;
 using OrbitSpace.Domain.Entities;
@@ -12,21 +13,25 @@ namespace OrbitSpace.Application.Services
         
         public async Task<OperationResult<RegisterResult>> RegisterAsync(RegisterRequest request)
         {
-            if (string.IsNullOrWhiteSpace(request.Username)
+            if (string.IsNullOrWhiteSpace(request.Email)
+                || string.IsNullOrWhiteSpace(request.FirstName)
+                || string.IsNullOrWhiteSpace(request.LastName)
                 || string.IsNullOrWhiteSpace(request.Password)
                 || request.Password.Length < 6)
             {
                 return new OperationResult<RegisterResult>("Invalid username or password.");
             }
 
-            if (await userRepository.GetByUsernameAsync(request.Username) != null)
+            if (await userRepository.GetByEmailAsync(request.Email) != null)
             {
-                return new OperationResult<RegisterResult>("User name already exists.");
+                return new OperationResult<RegisterResult>("Email already exists.");
             }
 
             await userRepository.CreateAsync(new User
             {
-                Username = request.Username,
+                Email = request.Email,
+                FirstName = request.FirstName,
+                LastName = request.LastName,
                 PasswordHash = passwordHasherService.HashPassword(request.Password)
             });
 
@@ -38,7 +43,7 @@ namespace OrbitSpace.Application.Services
 
         public async Task<OperationResult<LoginResult>> LoginAsync(LoginRequest request)
         {
-            var user = await userRepository.GetByUsernameAsync(request.Username);
+            var user = await userRepository.GetByEmailAsync(request.Email);
             if (user == null)
             {
                 return new OperationResult<LoginResult>(InvalidUsernameOrPasswordMessage);
@@ -49,10 +54,17 @@ namespace OrbitSpace.Application.Services
             {
                 return new OperationResult<LoginResult>(InvalidUsernameOrPasswordMessage);
             }
-            
+
             return new OperationResult<LoginResult>(new LoginResult
             {
-                Token = tokenService.GenerateToken(user)
+                AccessToken = tokenService.GenerateAccessToken(user),
+                User = new UserDto
+                {
+                    Id = user.Id,
+                    Email = user.Email,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName
+                }
             });
         }
     }   

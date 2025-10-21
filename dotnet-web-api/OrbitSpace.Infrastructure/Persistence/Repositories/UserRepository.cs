@@ -18,9 +18,9 @@ namespace OrbitSpace.Infrastructure.Persistence.Repositories
             await _usersCollection.InsertOneAsync(user);
         }
 
-        public async Task<User?> GetByUsernameAsync(string username)
+        public async Task<User?> GetByEmailAsync(string username)
         {
-            return await _usersCollection.Find(u => u.Username.ToLower() == username.ToLower()).FirstOrDefaultAsync();
+            return await _usersCollection.Find(u => u.Email.ToLower() == username.ToLower()).FirstOrDefaultAsync();
         }
     }
 }
