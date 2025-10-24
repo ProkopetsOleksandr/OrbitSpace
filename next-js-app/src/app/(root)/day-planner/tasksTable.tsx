@@ -148,10 +148,10 @@ const columns = [
 ];
 
 async function getTasks(): Promise<TaskItem[]> {
-  return new Promise(() =>
+  return new Promise(resolve =>
     setTimeout(function () {
-      return defaultData;
-    }, 3000)
+      return resolve(defaultData);
+    }, 1000)
   );
 }
 

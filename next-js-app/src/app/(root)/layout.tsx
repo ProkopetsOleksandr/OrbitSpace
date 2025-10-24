@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { Inter, Poppins } from 'next/font/google';
 import '../globals.css';
 import DashboardLayout from './dashboard-layout';
+import Providers from './providers';
 import './sidebar.css';
 
 const inter = Inter({
@@ -23,8 +24,6 @@ export const metadata: Metadata = {
   title: 'OrbitSpace'
 };
 
-const queryClient = new QueryClient();
-
 export default function RootLayout({
   children
 }: Readonly<{
@@ -33,9 +32,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${poppins.variable} antialiased`}>
       <body className="font-inter">
-        <QueryClientProvider client={queryClient}>
+        <Providers>
           <DashboardLayout>{children}</DashboardLayout>
-        </QueryClientProvider>
+        </Providers>
       </body>
     </html>
   );
