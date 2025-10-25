@@ -2,7 +2,6 @@ import TasksTable from '@/features/day-planner/components/tasksTable';
 import TimeSegmentDisplay from '@/features/day-planner/components/TimeSegment';
 import { ClipboardList } from 'lucide-react';
 import React from 'react';
-import LogoutBtb from '../../features/day-planner/components/LogoutBtb';
 
 export default function Page() {
   return (
@@ -13,7 +12,6 @@ export default function Page() {
             <ClipboardList className="size-5" />
             <h2 className="font-semibold">Tasks</h2>
           </div>
-          <LogoutBtb />
         </div>
         <div className="p-4 bg-gray-50 rounded-lg shadow-sm">
           <TimeSegmentDisplay startTimeHour={6} endTimeHour={22} />
