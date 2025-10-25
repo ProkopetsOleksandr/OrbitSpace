@@ -1,6 +1,6 @@
 'use client';
 
-import { RegisterSchema, type RegisterFormData } from '@/lib/schemas/registerSchema';
+import { RegisterSchema, type RegisterFormData } from '@/schemas/registerSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2, Lock, Mail, User } from 'lucide-react';
 import { signIn } from 'next-auth/react';

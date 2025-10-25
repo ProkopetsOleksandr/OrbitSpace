@@ -1,6 +1,6 @@
 'use client';
 
-import { LoginSchema, type LoginFormData } from '@/lib/schemas/loginSchema';
+import { LoginSchema, type LoginFormData } from '@/schemas/loginSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2, Lock, Mail } from 'lucide-react'; // Иконки для полей и спиннера
 import { signIn } from 'next-auth/react';
