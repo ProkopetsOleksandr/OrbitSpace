@@ -28,12 +28,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${poppins.variable} antialiased`}>
-      <body className="font-inter">
-        <Providers>
+    <Providers>
+      <html lang="en" className={`${inter.variable} ${poppins.variable} antialiased`}>
+        <body className="font-inter">
           <DashboardLayout>{children}</DashboardLayout>
-        </Providers>
-      </body>
-    </html>
+        </body>
+      </html>
+    </Providers>
   );
 }
