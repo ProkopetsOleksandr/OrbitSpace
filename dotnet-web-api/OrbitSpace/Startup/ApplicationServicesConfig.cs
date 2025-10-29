@@ -11,11 +11,14 @@ namespace OrbitSpace.WebApi.Startup
         public static void AddApplicationServices(this IServiceCollection services)
         {
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<ITodoItemRepository, TodoItemRepository>();
 
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ITokenService, JwtTokenService>();
             services.AddScoped<IPasswordHasherService, BCryptPasswordHasherService>();
             services.AddScoped<IAuthenticationService, AuthenticationService>();
+            
+            services.AddScoped<ITodoItemService, TodoItemService>();
         }
     }
 }

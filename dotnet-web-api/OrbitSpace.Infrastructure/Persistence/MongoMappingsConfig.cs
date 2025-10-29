@@ -1,4 +1,5 @@
 ﻿using MongoDB.Bson.Serialization.Conventions;
+using OrbitSpace.Domain.Entities;
 using OrbitSpace.Infrastructure.Persistence.Maps;
 
 namespace OrbitSpace.Infrastructure.Persistence;
@@ -16,5 +17,6 @@ public static class MongoMappingsConfig
 
 
         UserMap.Configure();
+        TodoItemMap.Configure();
     }
 }

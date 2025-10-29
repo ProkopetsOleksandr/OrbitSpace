@@ -5,6 +5,6 @@ namespace OrbitSpace.Application.Interfaces.Services;
 
 public interface IAuthenticationService
 {
-    Task<OperationResult<RegisterResult>> RegisterAsync(RegisterRequest request);
+    Task<OperationResult> RegisterAsync(RegisterRequest request);
     Task<OperationResult<LoginResult>> LoginAsync(LoginRequest request);
 }

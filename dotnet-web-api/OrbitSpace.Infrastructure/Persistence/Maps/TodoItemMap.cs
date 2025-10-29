@@ -6,11 +6,11 @@ using OrbitSpace.Domain.Entities;
 
 namespace OrbitSpace.Infrastructure.Persistence.Maps;
 
-public static class UserMap
+public static class TodoItemMap
 {
     public static void Configure()
     {
-        BsonClassMap.RegisterClassMap<User>(cm =>
+        BsonClassMap.RegisterClassMap<TodoItem>(cm =>
         {
             cm.AutoMap();
             cm.MapIdMember(m => m.Id)

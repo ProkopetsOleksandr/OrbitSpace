@@ -11,7 +11,7 @@ namespace OrbitSpace.Application.Services
     {
         private const string InvalidUsernameOrPasswordMessage = "Invalid username or password.";
         
-        public async Task<OperationResult<RegisterResult>> RegisterAsync(RegisterRequest request)
+        public async Task<OperationResult> RegisterAsync(RegisterRequest request)
         {
             if (string.IsNullOrWhiteSpace(request.Email)
                 || string.IsNullOrWhiteSpace(request.FirstName)
@@ -19,12 +19,12 @@ namespace OrbitSpace.Application.Services
                 || string.IsNullOrWhiteSpace(request.Password)
                 || request.Password.Length < 6)
             {
-                return new OperationResult<RegisterResult>("Invalid username or password.");
+                return OperationResultError.Validation("Invalid username or password");
             }
 
             if (await userRepository.GetByEmailAsync(request.Email) != null)
             {
-                return new OperationResult<RegisterResult>("Email already exists.");
+                return OperationResultError.Validation("Email already exists");
             }
 
             await userRepository.CreateAsync(new User
@@ -35,10 +35,7 @@ namespace OrbitSpace.Application.Services
                 PasswordHash = passwordHasherService.HashPassword(request.Password)
             });
 
-            return new OperationResult<RegisterResult>(new RegisterResult
-            {
-                Message = "User registered successfully"
-            });
+            return OperationResult.Success();
         }
 
         public async Task<OperationResult<LoginResult>> LoginAsync(LoginRequest request)
@@ -46,16 +43,16 @@ namespace OrbitSpace.Application.Services
             var user = await userRepository.GetByEmailAsync(request.Email);
             if (user == null)
             {
-                return new OperationResult<LoginResult>(InvalidUsernameOrPasswordMessage);
+                return OperationResultError.Validation(InvalidUsernameOrPasswordMessage);
             }
             
             var passwordHasherResult = passwordHasherService.VerifyPassword(user.PasswordHash, request.Password);
             if (!passwordHasherResult)
             {
-                return new OperationResult<LoginResult>(InvalidUsernameOrPasswordMessage);
+                return OperationResultError.Validation(InvalidUsernameOrPasswordMessage);
             }
 
-            return new OperationResult<LoginResult>(new LoginResult
+            return new LoginResult
             {
                 AccessToken = tokenService.GenerateAccessToken(user),
                 User = new UserDto
@@ -65,7 +62,7 @@ namespace OrbitSpace.Application.Services
                     FirstName = user.FirstName,
                     LastName = user.LastName
                 }
-            });
+            };
         }
     }   
 }
