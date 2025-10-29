@@ -6,7 +6,7 @@
         {
             builder.Services.AddControllers();
 
-            builder.Services.AddOpenApiServices();
+            builder.Services.AddSwaggerServices();
 
             builder.Services.AddOptionServices(builder.Configuration);
 

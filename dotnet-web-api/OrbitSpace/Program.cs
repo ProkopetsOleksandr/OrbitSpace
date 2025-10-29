@@ -12,7 +12,7 @@ namespace OrbitSpace.WebApi
 
             var app = builder.Build();
 
-            app.UseOpenApi();
+            app.UseSwagger();
 
             app.UseHttpsRedirection();
 
@@ -21,8 +21,6 @@ namespace OrbitSpace.WebApi
             app.UseAuthorization();
 
             app.MapControllers();
-
-            app.MapGet("/", () => "Orbit Space is working");
 
             app.Run();
         }
