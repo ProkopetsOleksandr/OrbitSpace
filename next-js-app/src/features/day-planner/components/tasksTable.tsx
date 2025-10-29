@@ -2,7 +2,7 @@
 
 import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { useTasks } from '../hooks/useTasks';
-import { taskTableColumns } from './TaskTableColumns';
+import { taskTableColumns } from './taskTableColumns';
 
 export default function TasksTable() {
   const { data: tasks = [], isLoading } = useTasks();
