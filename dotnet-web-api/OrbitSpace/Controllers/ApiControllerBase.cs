@@ -13,9 +13,7 @@ public class ApiControllerBase : ControllerBase
             OperationResultErrorType.NotFound => NotFound(error.ErrorMessage),
             OperationResultErrorType.Validation => BadRequest(error.ErrorMessage),
             OperationResultErrorType.Unauthorized => Unauthorized(error.ErrorMessage),
-            OperationResultErrorType.Internal => StatusCode(StatusCodes.Status500InternalServerError,
-                error.ErrorMessage),
-            _ => StatusCode(StatusCodes.Status500InternalServerError)
+            _ => StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred")
         };
     }
 }

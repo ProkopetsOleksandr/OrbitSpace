@@ -5,7 +5,7 @@ namespace OrbitSpace.Application.Models.Responses;
 public class OperationResult
 {
     [MemberNotNullWhen(false,  nameof(Error))]
-    public bool IsSuccess { get; protected set; }
+    public virtual bool IsSuccess { get; protected set; }
     
     public OperationResultError? Error { get; protected set; }
     
@@ -20,6 +20,13 @@ public class OperationResult
 
 public class OperationResult<T> : OperationResult
 {
+    [MemberNotNullWhen(true, nameof(Data))]
+    public override bool IsSuccess
+    {
+        get => base.IsSuccess;
+        protected set => base.IsSuccess = value;
+    }
+
     public T? Data { get; private set; }
     
     private OperationResult() { }
@@ -45,15 +52,11 @@ public class OperationResultError(OperationResultErrorType errorType, string? er
     
     public static OperationResultError Unauthorized(string? errorMessage = null) =>
         new(OperationResultErrorType.Unauthorized, errorMessage);
-    
-    public static OperationResultError Internal(string? errorMessage = null) =>
-        new(OperationResultErrorType.Internal, errorMessage);
 }
 
 public enum OperationResultErrorType
 {
     NotFound = 1,
     Validation = 2,
-    Unauthorized = 3,
-    Internal = 4
+    Unauthorized = 3
 }

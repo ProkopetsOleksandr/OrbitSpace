@@ -34,7 +34,7 @@ public class TodoItemRepository(IMongoDatabase database) : ITodoItemRepository
         var filter = Builders<TodoItem>.Filter.Eq(x => x.Id, todoItem.Id);
         var updateResult = await _todoItemsCollection.ReplaceOneAsync(filter, todoItem);
         
-        return updateResult.IsAcknowledged && updateResult.ModifiedCount > 0;
+        return updateResult.IsAcknowledged;
     }
 
     public async Task<bool> DeleteAsync(string id)
@@ -42,6 +42,6 @@ public class TodoItemRepository(IMongoDatabase database) : ITodoItemRepository
         var filter = Builders<TodoItem>.Filter.Eq(x => x.Id, id);
         var deleteResult = await _todoItemsCollection.DeleteOneAsync(filter);
 
-        return deleteResult.IsAcknowledged && deleteResult.DeletedCount > 0;
+        return deleteResult.DeletedCount > 0;
     }
 }

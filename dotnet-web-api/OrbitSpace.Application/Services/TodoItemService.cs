@@ -59,11 +59,7 @@ public class TodoItemService(ITodoItemRepository todoItemRepository) : ITodoItem
         entityInDb.Status = todoItem.Status;
         entityInDb.UpdatedAt = DateTime.UtcNow;
             
-        var updated = await todoItemRepository.UpdateAsync(entityInDb);
-        if (!updated)
-        {
-            return OperationResultError.Internal("Could not update todo");
-        }
+        await todoItemRepository.UpdateAsync(entityInDb);
         
         return MapToDto(entityInDb);
     }
@@ -72,7 +68,7 @@ public class TodoItemService(ITodoItemRepository todoItemRepository) : ITodoItem
     {
         if (!await todoItemRepository.DeleteAsync(id))
         {
-            return OperationResultError.Internal("Could not delete todo");
+            return OperationResultError.NotFound();
         }
         
         return OperationResult.Success();
