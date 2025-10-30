@@ -1,11 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using OrbitSpace.Application.Interfaces.Services;
 using OrbitSpace.Application.Models.Dtos.Todo;
-using OrbitSpace.Application.Services;
 
 namespace OrbitSpace.WebApi.Controllers;
 
+[Authorize]
 [Route("api/[controller]")]
-public class TodoItemController(TodoItemService todoItemService) : ApiControllerBase
+public class TodoItemController(ITodoItemService todoItemService) : ApiControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> GetAll()

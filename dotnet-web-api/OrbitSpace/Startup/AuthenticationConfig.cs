@@ -15,17 +15,17 @@ namespace OrbitSpace.WebApi.Startup
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
+                    options.Authority = jwtSettings.Issuer;
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key)),
+                        ValidateAudience = false,
                         ValidateIssuer = true,
                         ValidIssuer = jwtSettings.Issuer,
-                        ValidateAudience = true,
-                        ValidAudience = jwtSettings.Audience,
+                        ValidateIssuerSigningKey = true,
                         ValidateLifetime = true
                     };
-                });
+                }
+            );
         }
     }
 }
