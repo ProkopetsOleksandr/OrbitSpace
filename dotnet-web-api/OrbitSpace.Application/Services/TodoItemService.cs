@@ -16,9 +16,9 @@ public class TodoItemService(ITodoItemRepository todoItemRepository) : ITodoItem
         return items.Select(MapToDto).ToList();
     }
 
-    public async Task<OperationResult<TodoItemDto>> GetByIdAsync(string id)
+    public async Task<OperationResult<TodoItemDto>> GetByIdAsync(string id, string userId)
     {
-        var item = await todoItemRepository.GetByIdAsync(id);
+        var item = await GetByIdForUserAsync(id, userId);
         if (item == null)
         {
             return OperationResultError.NotFound();
@@ -27,7 +27,7 @@ public class TodoItemService(ITodoItemRepository todoItemRepository) : ITodoItem
         return MapToDto(item);
     }
 
-    public async Task<OperationResult<TodoItemDto>> CreateAsync(CreateTodoItemDto todoItem)
+    public async Task<OperationResult<TodoItemDto>> CreateAsync(CreateTodoItemDto todoItem, string userId)
     {
         if (string.IsNullOrWhiteSpace(todoItem.Title))
         {
@@ -37,7 +37,7 @@ public class TodoItemService(ITodoItemRepository todoItemRepository) : ITodoItem
         var currentDateTime = DateTime.UtcNow;
         var created = await todoItemRepository.CreateAsync(new TodoItem
         {
-            UserId = todoItem.UserId,
+            UserId = userId,
             Title = todoItem.Title,
             CreatedAt = currentDateTime,
             UpdatedAt = currentDateTime,
@@ -47,9 +47,9 @@ public class TodoItemService(ITodoItemRepository todoItemRepository) : ITodoItem
         return MapToDto(created);
     }
 
-    public async Task<OperationResult<TodoItemDto>> UpdateAsync(TodoItemDto todoItem)
+    public async Task<OperationResult<TodoItemDto>> UpdateAsync(TodoItemDto todoItem, string userId)
     {
-        var entityInDb = await todoItemRepository.GetByIdAsync(todoItem.Id);
+        var entityInDb = await GetByIdForUserAsync(todoItem.Id, userId);
         if (entityInDb == null)
         {
             return OperationResultError.NotFound();
@@ -64,9 +64,9 @@ public class TodoItemService(ITodoItemRepository todoItemRepository) : ITodoItem
         return MapToDto(entityInDb);
     }
 
-    public async Task<OperationResult> DeleteAsync(string id)
+    public async Task<OperationResult> DeleteAsync(string id, string userId)
     {
-        if (!await todoItemRepository.DeleteAsync(id))
+        if (!await todoItemRepository.DeleteAsync(id, userId))
         {
             return OperationResultError.NotFound();
         }
@@ -80,11 +80,21 @@ public class TodoItemService(ITodoItemRepository todoItemRepository) : ITodoItem
         {
             Id = item.Id!,
             Title = item.Title,
-            UserId = item.UserId,
             CreatedAt = item.CreatedAt,
             UpdatedAt = item.UpdatedAt,
             Status = item.Status,
             StatusDescription = item.Status.ToString()
         };
+    }
+
+    private async Task<TodoItem?> GetByIdForUserAsync(string id, string userId)
+    {
+        var entityInDb = await todoItemRepository.GetByIdAsync(id);
+        if (entityInDb == null || entityInDb.UserId != userId)
+        {
+            return null;
+        }
+
+        return entityInDb;
     }
 }

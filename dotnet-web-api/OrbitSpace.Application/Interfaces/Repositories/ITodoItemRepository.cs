@@ -8,5 +8,5 @@ public interface ITodoItemRepository
     Task<TodoItem?> GetByIdAsync(string id);
     Task<TodoItem> CreateAsync(TodoItem todoItem);
     Task<bool> UpdateAsync(TodoItem todoItem);
-    Task<bool> DeleteAsync(string id);
+    Task<bool> DeleteAsync(string id, string userId);
 }

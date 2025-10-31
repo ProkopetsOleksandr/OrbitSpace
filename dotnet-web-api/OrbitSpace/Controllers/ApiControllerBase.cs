@@ -1,19 +1,46 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using OrbitSpace.Application.Models.Responses;
+using OrbitSpace.WebApi.Identity;
+using OrbitSpace.WebApi.Models;
 
 namespace OrbitSpace.WebApi.Controllers;
 
 [ApiController]
 public class ApiControllerBase : ControllerBase
 {
-    protected IActionResult HandleFailure(OperationResultError error)
+    protected readonly ApplicationUser ApplicationUser;
+
+    public ApiControllerBase()
     {
-        return error.ErrorType switch
-        {
-            OperationResultErrorType.NotFound => NotFound(error.ErrorMessage),
-            OperationResultErrorType.Validation => BadRequest(error.ErrorMessage),
-            OperationResultErrorType.Unauthorized => Unauthorized(error.ErrorMessage),
-            _ => StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred")
-        };
+        var applicationUserProvider = HttpContext.RequestServices.GetRequiredService<IApplicationUserProvider>();
+        ApplicationUser = new ApplicationUser(applicationUserProvider);
     }
+    
+    protected ApiResponse<IEnumerable<T>> GetApiResponse<T>(T data)
+    {
+        if (data == null)
+        {
+            return ApiResponse<IEnumerable<T>>.Success(Array.Empty<T>());
+        }
+
+        var enumerable = data as IEnumerable<T>;
+        if (enumerable != null)
+        {
+            return ApiResponse<IEnumerable<T>>.Success(enumerable);
+        }
+
+        return ApiResponse<IEnumerable<T>>.Success(new[] { data });
+    }
+    
+     protected ObjectResult HandleFailure(OperationResultError error)
+     {
+         var data = ApiResponse.Failure(error.ErrorMessage);
+         
+         return error.ErrorType switch
+         {
+             OperationResultErrorType.NotFound => NotFound(data),
+             OperationResultErrorType.Unauthorized => Unauthorized(data),
+             _ => BadRequest(data)
+         };
+     }
 }

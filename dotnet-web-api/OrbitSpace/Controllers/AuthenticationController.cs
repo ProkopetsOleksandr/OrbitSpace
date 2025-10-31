@@ -7,7 +7,8 @@ namespace OrbitSpace.WebApi.Controllers
 {
     
     [AllowAnonymous]
-    public class AuthController(IAuthenticationService authenticationService) : ApiControllerBase
+    [Route("api/[controller]")]
+    public class AuthenticationController(IAuthenticationService authenticationService) : ApiControllerBase
     {
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterRequest registerDto)

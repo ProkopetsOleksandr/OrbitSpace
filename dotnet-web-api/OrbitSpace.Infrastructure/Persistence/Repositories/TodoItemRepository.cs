@@ -35,9 +35,12 @@ public class TodoItemRepository(IMongoDbContext dbContext) : ITodoItemRepository
         return updateResult.IsAcknowledged;
     }
 
-    public async Task<bool> DeleteAsync(string id)
+    public async Task<bool> DeleteAsync(string id, string userId)
     {
-        var filter = Builders<TodoItem>.Filter.Eq(x => x.Id, id);
+        var filter = Builders<TodoItem>.Filter.And(
+        Builders<TodoItem>.Filter.Eq(x => x.Id, id),
+            Builders<TodoItem>.Filter.Eq(x => x.UserId, userId));
+        
         var deleteResult = await dbContext.TodoItems.DeleteOneAsync(filter);
 
         return deleteResult.DeletedCount > 0;
