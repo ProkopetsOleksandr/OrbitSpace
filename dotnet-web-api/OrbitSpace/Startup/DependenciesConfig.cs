@@ -5,6 +5,11 @@
         public static void AddDependencies(this WebApplicationBuilder builder)
         {
             builder.Services.AddControllers();
+            builder.Services.Configure<RouteOptions>(options =>
+            {
+                options.LowercaseUrls = true;
+                options.LowercaseQueryStrings = true;
+            });
 
             builder.Services.AddSwaggerServices();
 

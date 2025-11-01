@@ -15,7 +15,7 @@ namespace OrbitSpace.WebApi.Controllers
         {
             var result = await authenticationService.RegisterAsync(registerDto);
             
-            return !result.IsSuccess ? HandleFailure(result.Error) : Ok();
+            return !result.IsSuccess ? ApiErrorResponse(result.Error) : Ok();
         }
 
         [HttpPost("login")]
@@ -23,7 +23,7 @@ namespace OrbitSpace.WebApi.Controllers
         {
             var result = await authenticationService.LoginAsync(request);
             
-            return !result.IsSuccess ? HandleFailure(result.Error) : Ok(result.Data);
+            return !result.IsSuccess ? ApiErrorResponse(result.Error) : Ok(result.Data);
         }
     }
 }

@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Net;
+using Microsoft.AspNetCore.Mvc;
 using OrbitSpace.Application.Models.Responses;
 using OrbitSpace.WebApi.Identity;
-using OrbitSpace.WebApi.Models;
+using OrbitSpace.WebApi.Models.Responses.Base;
 
 namespace OrbitSpace.WebApi.Controllers;
 
@@ -15,32 +16,19 @@ public class ApiControllerBase : ControllerBase
         var applicationUserProvider = HttpContext.RequestServices.GetRequiredService<IApplicationUserProvider>();
         ApplicationUser = new ApplicationUser(applicationUserProvider);
     }
-    
-    protected ApiResponse<IEnumerable<T>> GetApiResponse<T>(T data)
+
+    protected IActionResult ApiErrorResponse(OperationResultError error)
     {
-        if (data == null)
+        if (error.ErrorType == OperationResultErrorType.NotFound)
         {
-            return ApiResponse<IEnumerable<T>>.Success(Array.Empty<T>());
+            return new NotFoundObjectResult(new ApiErrorResponse(new ApiError((int)HttpStatusCode.NotFound, error.ErrorMessage)));
         }
 
-        var enumerable = data as IEnumerable<T>;
-        if (enumerable != null)
+        if (error.ErrorType == OperationResultErrorType.Unauthorized)
         {
-            return ApiResponse<IEnumerable<T>>.Success(enumerable);
+            return new UnauthorizedObjectResult(new ApiErrorResponse(new ApiError((int)HttpStatusCode.NotFound, error.ErrorMessage)));
         }
 
-        return ApiResponse<IEnumerable<T>>.Success(new[] { data });
+        return new BadRequestObjectResult(new ApiErrorResponse(new ApiError((int)HttpStatusCode.BadRequest, error.ErrorMessage)));
     }
-    
-     protected ObjectResult HandleFailure(OperationResultError error)
-     {
-         var data = ApiResponse.Failure(error.ErrorMessage);
-         
-         return error.ErrorType switch
-         {
-             OperationResultErrorType.NotFound => NotFound(data),
-             OperationResultErrorType.Unauthorized => Unauthorized(data),
-             _ => BadRequest(data)
-         };
-     }
 }

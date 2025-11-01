@@ -14,15 +14,18 @@ namespace OrbitSpace.WebApi.Startup
                         && !string.IsNullOrWhiteSpace(settings.Issuer)
                         && !string.IsNullOrWhiteSpace(settings.Audience);
                 },
-                "Jwt token settings are missing.");
+                "Jwt token settings are missing.")
+                .ValidateOnStart();
 
             services.AddOptions<MongoDbSettings>()
                 .Bind(configuration.GetSection(MongoDbSettings.SectionName))
                 .Validate(settings =>
                 {
-                    return !string.IsNullOrWhiteSpace(settings.ConnectionString) && !string.IsNullOrWhiteSpace(settings.DatabaseName);
+                    return !string.IsNullOrWhiteSpace(settings.ConnectionString)
+                        && !string.IsNullOrWhiteSpace(settings.DatabaseName);
                 },
-                "ConnectionString or DatabaseName is missing in MongoDbSettings.");
+                "ConnectionString or DatabaseName is missing in MongoDbSettings.")
+                .ValidateOnStart();
         }
     }
 }

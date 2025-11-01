@@ -2,7 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using OrbitSpace.Application.Interfaces.Services;
 using OrbitSpace.Application.Models.Dtos.Todo;
-using OrbitSpace.WebApi.Models;
+using OrbitSpace.WebApi.Models.Responses;
+using OrbitSpace.WebApi.Models.Responses.Base;
 
 namespace OrbitSpace.WebApi.Controllers;
 
@@ -17,59 +18,54 @@ public class TodoItemsController : ApiControllerBase
     {
         _todoItemService = todoItemService;
     }
-    
+
     [HttpGet]
-    [ProducesResponseType(typeof(ApiResponse<IEnumerable<TodoItemDto>>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(TodoItemsResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll()
     {
         var data = await _todoItemService.GetAllAsync(ApplicationUser.Id);
 
-        return Ok(GetApiResponse(data));
+        return new OkObjectResult(new TodoItemsResponse(data));
     }
 
     [HttpGet("{id}")]
-    [ProducesResponseType(typeof(ApiResponse<IEnumerable<TodoItemDto>>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(TodoItemResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(string id)
     {
         var result = await _todoItemService.GetByIdAsync(id, ApplicationUser.Id);
         if (!result.IsSuccess)
         {
-            return HandleFailure(result.Error);
+            return ApiErrorResponse(result.Error);
         }
 
-        return Ok(GetApiResponse(new List<TodoItemDto> { result.Data }));
+        return new OkObjectResult(new TodoItemResponse(result.Data));
     }
 
     [HttpPost]
-    [ProducesResponseType(typeof(ApiResponse<IEnumerable<TodoItemDto>>), StatusCodes.Status201Created)]
-    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(TodoItemResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create([FromBody] CreateTodoItemDto model)
     {
         var result = await _todoItemService.CreateAsync(model, ApplicationUser.Id);
         if (!result.IsSuccess)
         {
-            return HandleFailure(result.Error);
+            return ApiErrorResponse(result.Error);
         }
 
-        return CreatedAtAction(nameof(GetById), new { id = result.Data.Id }, GetApiResponse(result.Data));
+        return CreatedAtAction(nameof(GetById), new { result.Data.Id }, new TodoItemResponse(result.Data));
     }
 
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update(string id, [FromBody] TodoItemDto model)
     {
-        if (id != model.Id)
-        {
-            return BadRequest();
-        }
-
         var result = await _todoItemService.UpdateAsync(model, ApplicationUser.Id);
         if (!result.IsSuccess)
         {
-            return HandleFailure(result.Error);
+            return ApiErrorResponse(result.Error);
         }
 
         return NoContent();
@@ -77,13 +73,13 @@ public class TodoItemsController : ApiControllerBase
 
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(string id)
     {
         var result = await _todoItemService.DeleteAsync(id, ApplicationUser.Id);
         if (!result.IsSuccess)
         {
-            return HandleFailure(result.Error);
+            return ApiErrorResponse(result.Error);
         }
 
         return NoContent();
