@@ -1,9 +1,3 @@
-export interface TaskItem {
-  id: number;
-  title: string;
-  createdAt: Date;
-  status: 'New' | 'In Progress' | 'Completed';
-  timeSpentInMin: number;
-  tag: string;
-  taskType: 'Pomodoro' | 'Fixed time' | 'Regular';
-}
+import type { paths } from '@/types/api-types';
+
+export type TaskItem = paths['/api/todo-items']['get']['responses']['200']['content']['application/json']['data'][number];

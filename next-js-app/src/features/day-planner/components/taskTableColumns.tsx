@@ -9,11 +9,6 @@ export const taskTableColumns = [
     cell: info => info.getValue()
   }),
 
-  columnHelper.accessor('taskType', {
-    header: 'Task Type',
-    cell: info => info.getValue()
-  }),
-
   columnHelper.accessor('createdAt', {
     header: 'Created At',
     cell: info => info.getValue().toLocaleDateString()
@@ -37,6 +32,6 @@ export const taskTableColumns = [
   columnHelper.display({
     id: 'actions',
     header: 'Action',
-    cell: () => <button>Редактировать</button>
+    cell: () => <button>Edit</button>
   })
 ];
