@@ -2,70 +2,80 @@
 using Microsoft.AspNetCore.Mvc;
 using OrbitSpace.Application.Interfaces.Services;
 using OrbitSpace.Application.Models.Dtos.Todo;
-using OrbitSpace.WebApi.Models.Responses;
-using OrbitSpace.WebApi.Models.Responses.Base;
+using OrbitSpace.WebApi.Models.Responses.TodoItems;
 
 namespace OrbitSpace.WebApi.Controllers;
 
 [Authorize]
 [Route("api/todo-items")]
 [Tags("Todo Items")]
-public class TodoItemsController : ApiControllerBase
+public class TodoItemsController(ITodoItemService todoItemService) : ApiControllerBase
 {
-    private readonly ITodoItemService _todoItemService;
-
-    public TodoItemsController(ITodoItemService todoItemService)
-    {
-        _todoItemService = todoItemService;
-    }
-
     [HttpGet]
-    [ProducesResponseType(typeof(TodoItemsResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType<GetTodoItemsResponse>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll()
     {
-        var data = await _todoItemService.GetAllAsync(ApplicationUser.Id);
+        var data = await todoItemService.GetAllAsync(ApplicationUser.Id);
 
-        return new OkObjectResult(new TodoItemsResponse(data));
+        var responseData = data.Select(m =>
+            new TodoItemResource(m.Id, m.Title, m.CreatedAt, m.UpdatedAt, m.Status, m.StatusDescription));
+
+        return Ok(new GetTodoItemsResponse(responseData));
     }
 
     [HttpGet("{id}")]
-    [ProducesResponseType(typeof(TodoItemResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType<TodoItemResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(string id)
     {
-        var result = await _todoItemService.GetByIdAsync(id, ApplicationUser.Id);
+        var result = await todoItemService.GetByIdAsync(id, ApplicationUser.Id);
         if (!result.IsSuccess)
         {
-            return ApiErrorResponse(result.Error);
+            return Problem();
         }
 
-        return new OkObjectResult(new TodoItemResponse(result.Data));
+        var data = result.Data;
+        var responseData = new TodoItemResource(data.Id, data.Title, data.CreatedAt, data.UpdatedAt, data.Status, data.StatusDescription);
+
+        return Ok(new TodoItemResponse(responseData));
     }
 
     [HttpPost]
-    [ProducesResponseType(typeof(TodoItemResponse), StatusCodes.Status201Created)]
-    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Create([FromBody] CreateTodoItemDto model)
+    [ProducesResponseType<TodoItemResponse>(StatusCodes.Status201Created)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Create([FromBody] CreateTodoItemRequest request)
     {
-        var result = await _todoItemService.CreateAsync(model, ApplicationUser.Id);
+        var createTodoItemRequestDto = new CreateTodoItemDto(request.Title);
+
+        var result = await todoItemService.CreateAsync(createTodoItemRequestDto, ApplicationUser.Id);
         if (!result.IsSuccess)
         {
-            return ApiErrorResponse(result.Error);
+            return Problem();
         }
 
-        return CreatedAtAction(nameof(GetById), new { result.Data.Id }, new TodoItemResponse(result.Data));
+        var data = result.Data;
+        var responseData = new TodoItemResource(data.Id, data.Title, data.CreatedAt, data.UpdatedAt, data.Status, data.StatusDescription);
+
+        return CreatedAtAction(nameof(GetById), new { data.Id }, new TodoItemResponse(responseData));
     }
 
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Update(string id, [FromBody] TodoItemDto model)
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Update(string id, [FromBody] TodoItemResource model)
     {
-        var result = await _todoItemService.UpdateAsync(model, ApplicationUser.Id);
+        if (model.Id != id)
+        {
+           return Problem();
+        }
+
+        var todoItemDto = new TodoItemDto(model.Id, model.Title, model.CreatedAt, model.UpdatedAt, model.Status, model.StatusDescription);
+
+        var result = await todoItemService.UpdateAsync(todoItemDto, ApplicationUser.Id);
         if (!result.IsSuccess)
         {
-            return ApiErrorResponse(result.Error);
+            return Problem();
         }
 
         return NoContent();
@@ -73,13 +83,13 @@ public class TodoItemsController : ApiControllerBase
 
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(string id)
     {
-        var result = await _todoItemService.DeleteAsync(id, ApplicationUser.Id);
+        var result = await todoItemService.DeleteAsync(id, ApplicationUser.Id);
         if (!result.IsSuccess)
         {
-            return ApiErrorResponse(result.Error);
+            return Problem();
         }
 
         return NoContent();
