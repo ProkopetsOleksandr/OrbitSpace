@@ -1,4 +1,4 @@
-﻿namespace OrbitSpace.Application.Models.Dtos;
+﻿namespace OrbitSpace.Application.Dtos;
 
 public class UserDto
 {

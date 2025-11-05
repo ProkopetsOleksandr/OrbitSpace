@@ -1,6 +1,6 @@
 ﻿using OrbitSpace.Domain.Enums;
 
-namespace OrbitSpace.Application.Models.Dtos.Todo
+namespace OrbitSpace.Application.Dtos.TodoItem
 {
     public record TodoItemDto(
     string Id,

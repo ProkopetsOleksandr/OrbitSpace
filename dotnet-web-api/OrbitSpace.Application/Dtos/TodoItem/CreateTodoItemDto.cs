@@ -1,4 +1,4 @@
-﻿namespace OrbitSpace.Application.Models.Dtos.Todo
+﻿namespace OrbitSpace.Application.Dtos.TodoItem
 {
     public record CreateTodoItemDto(string Title);
 }

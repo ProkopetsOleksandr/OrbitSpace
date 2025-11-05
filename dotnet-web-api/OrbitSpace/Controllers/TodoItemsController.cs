@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using OrbitSpace.Application.Interfaces.Services;
-using OrbitSpace.Application.Models.Dtos.Todo;
+using OrbitSpace.Application.Dtos.TodoItem;
+using OrbitSpace.Application.Services.Interfaces;
 using OrbitSpace.WebApi.Models.Responses.TodoItems;
 
 namespace OrbitSpace.WebApi.Controllers;

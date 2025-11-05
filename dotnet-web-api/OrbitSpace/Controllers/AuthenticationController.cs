@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using OrbitSpace.Application.Interfaces.Services;
-using OrbitSpace.Application.Models.Requests;
+using OrbitSpace.Application.Dtos.Authentication;
+using OrbitSpace.Application.Services.Interfaces;
 
 namespace OrbitSpace.WebApi.Controllers
 {
@@ -11,7 +11,7 @@ namespace OrbitSpace.WebApi.Controllers
     public class AuthenticationController(IAuthenticationService authenticationService) : ApiControllerBase
     {
         [HttpPost("register")]
-        public async Task<IActionResult> Register(RegisterRequest registerDto)
+        public async Task<IActionResult> Register(RegisterRequestDto registerDto)
         {
             var result = await authenticationService.RegisterAsync(registerDto);
             
@@ -19,9 +19,9 @@ namespace OrbitSpace.WebApi.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login(LoginRequest request)
+        public async Task<IActionResult> Login(string email, string password)
         {
-            var result = await authenticationService.LoginAsync(request);
+            var result = await authenticationService.LoginAsync(email, password);
             
             return !result.IsSuccess ? Problem() : Ok(result.Data);
         }

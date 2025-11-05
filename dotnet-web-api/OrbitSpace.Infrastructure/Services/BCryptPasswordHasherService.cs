@@ -1,17 +1,16 @@
-﻿using OrbitSpace.Application.Interfaces.Services;
+﻿using OrbitSpace.Application.Common.Interfaces;
 
-namespace OrbitSpace.Infrastructure.Services
+namespace OrbitSpace.Infrastructure.Services;
+
+public class BCryptPasswordHasherService : IPasswordHasherService
 {
-    public class BCryptPasswordHasherService : IPasswordHasherService
+    public string HashPassword(string password)
     {
-        public string HashPassword(string password)
-        {
-            return BCrypt.Net.BCrypt.HashPassword(password);
-        }
+        return BCrypt.Net.BCrypt.HashPassword(password);
+    }
 
-        public bool VerifyPassword(string hashedPassword, string providedPassword)
-        {
-            return BCrypt.Net.BCrypt.Verify(providedPassword, hashedPassword);
-        }
-    }   
+    public bool VerifyPassword(string hashedPassword, string providedPassword)
+    {
+        return BCrypt.Net.BCrypt.Verify(providedPassword, hashedPassword);
+    }
 }

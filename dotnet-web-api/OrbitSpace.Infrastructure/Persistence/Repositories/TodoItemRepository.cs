@@ -1,5 +1,5 @@
 ﻿using MongoDB.Driver;
-using OrbitSpace.Application.Interfaces.Repositories;
+using OrbitSpace.Application.Common.Interfaces;
 using OrbitSpace.Domain.Entities;
 
 namespace OrbitSpace.Infrastructure.Persistence.Repositories;

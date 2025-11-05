@@ -1,4 +1,8 @@
-﻿namespace OrbitSpace.WebApi.Startup
+﻿using OrbitSpace.Application;
+using OrbitSpace.Infrastructure;
+using OrbitSpace.WebApi.Identity;
+
+namespace OrbitSpace.WebApi.Startup
 {
     public static class DependenciesConfig
     {
@@ -19,7 +23,12 @@
 
             builder.Services.AddMongoDbServices(builder.Configuration);
 
-            builder.Services.AddApplicationServices();
+            builder.Services.AddApplication();
+            
+            builder.Services.AddInfrastructure();
+            
+            builder.Services.AddHttpContextAccessor();
+            builder.Services.AddScoped<IApplicationUserProvider, ApplicationUserProvider>();
         }
     }
 }

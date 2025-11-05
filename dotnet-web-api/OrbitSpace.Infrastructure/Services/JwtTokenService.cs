@@ -3,7 +3,7 @@ using System.Text;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
-using OrbitSpace.Application.Interfaces.Services;
+using OrbitSpace.Application.Common.Interfaces;
 using OrbitSpace.Domain.Entities;
 using OrbitSpace.Infrastructure.Settings;
 

@@ -1,7 +1,7 @@
-﻿using OrbitSpace.Application.Models.Dtos.Todo;
-using OrbitSpace.Application.Models.Responses;
+﻿using OrbitSpace.Application.Common.Models;
+using OrbitSpace.Application.Dtos.TodoItem;
 
-namespace OrbitSpace.Application.Interfaces.Services;
+namespace OrbitSpace.Application.Services.Interfaces;
 
 public interface ITodoItemService
 {
@@ -10,4 +10,4 @@ public interface ITodoItemService
     Task<OperationResult<TodoItemDto>> CreateAsync(CreateTodoItemDto todoItem, string userId);
     Task<OperationResult<TodoItemDto>> UpdateAsync(TodoItemDto todoItem, string userId);
     Task<OperationResult> DeleteAsync(string id, string userId);
-}
+}  
