@@ -76,15 +76,7 @@ public class TodoItemService(ITodoItemRepository todoItemRepository) : ITodoItem
     
     private static TodoItemDto MapToDto(TodoItem item)
     {
-        return new TodoItemDto
-        {
-            Id = item.Id!,
-            Title = item.Title,
-            CreatedAt = item.CreatedAt,
-            UpdatedAt = item.UpdatedAt,
-            Status = item.Status,
-            StatusDescription = item.Status.ToString()
-        };
+        return new TodoItemDto(item.Id!, item.Title, item.CreatedAt, item.UpdatedAt, item.Status, item.Status.ToString());
     }
 
     private async Task<TodoItem?> GetByIdForUserAsync(string id, string userId)
