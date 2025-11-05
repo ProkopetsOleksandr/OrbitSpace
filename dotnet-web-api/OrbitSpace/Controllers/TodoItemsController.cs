@@ -9,13 +9,14 @@ namespace OrbitSpace.WebApi.Controllers;
 [Authorize]
 [Route("api/todo-items")]
 [Tags("Todo Items")]
+[ProducesResponseType(StatusCodes.Status401Unauthorized)]
 public class TodoItemsController(ITodoItemService todoItemService) : ApiControllerBase
 {
     [HttpGet]
     [ProducesResponseType<GetTodoItemsResponse>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll()
     {
-        var data = await todoItemService.GetAllAsync(ApplicationUser.Id);
+        var data = await todoItemService.GetAllAsync(CurrentUser.Id);
 
         var responseData = data.Select(m =>
             new TodoItemResource(m.Id, m.Title, m.CreatedAt, m.UpdatedAt, m.Status, m.StatusDescription));
@@ -28,10 +29,10 @@ public class TodoItemsController(ITodoItemService todoItemService) : ApiControll
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(string id)
     {
-        var result = await todoItemService.GetByIdAsync(id, ApplicationUser.Id);
+        var result = await todoItemService.GetByIdAsync(id, CurrentUser.Id);
         if (!result.IsSuccess)
         {
-            return Problem();
+            return HandleError(result.Error);
         }
 
         var data = result.Data;
@@ -47,10 +48,10 @@ public class TodoItemsController(ITodoItemService todoItemService) : ApiControll
     {
         var createTodoItemRequestDto = new CreateTodoItemDto(request.Title);
 
-        var result = await todoItemService.CreateAsync(createTodoItemRequestDto, ApplicationUser.Id);
+        var result = await todoItemService.CreateAsync(createTodoItemRequestDto, CurrentUser.Id);
         if (!result.IsSuccess)
         {
-            return Problem();
+            return HandleError(result.Error);
         }
 
         var data = result.Data;
@@ -67,15 +68,20 @@ public class TodoItemsController(ITodoItemService todoItemService) : ApiControll
     {
         if (model.Id != id)
         {
-           return Problem();
+            return Problem(
+                statusCode: StatusCodes.Status400BadRequest,
+                type: "",
+                title: "",
+                detail: "",
+                instance: HttpContext.Request.Path);
         }
 
         var todoItemDto = new TodoItemDto(model.Id, model.Title, model.CreatedAt, model.UpdatedAt, model.Status, model.StatusDescription);
 
-        var result = await todoItemService.UpdateAsync(todoItemDto, ApplicationUser.Id);
+        var result = await todoItemService.UpdateAsync(todoItemDto, CurrentUser.Id);
         if (!result.IsSuccess)
         {
-            return Problem();
+            return HandleError(result.Error);
         }
 
         return NoContent();
@@ -86,10 +92,10 @@ public class TodoItemsController(ITodoItemService todoItemService) : ApiControll
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(string id)
     {
-        var result = await todoItemService.DeleteAsync(id, ApplicationUser.Id);
+        var result = await todoItemService.DeleteAsync(id, CurrentUser.Id);
         if (!result.IsSuccess)
         {
-            return Problem();
+            return HandleError(result.Error);
         }
 
         return NoContent();

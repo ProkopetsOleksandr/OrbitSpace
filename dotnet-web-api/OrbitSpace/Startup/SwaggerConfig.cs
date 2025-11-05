@@ -5,9 +5,6 @@
         public static void AddSwaggerServices(this IServiceCollection services)
         {
             services.AddOpenApi();
-            services.AddSwaggerGen(c =>
-            {
-            });
         }
 
         public static void UseSwagger(this WebApplication app)

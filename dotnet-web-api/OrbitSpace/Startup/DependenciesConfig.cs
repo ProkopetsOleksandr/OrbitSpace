@@ -1,5 +1,7 @@
-﻿using OrbitSpace.Application;
+﻿using System.Net;
+using OrbitSpace.Application;
 using OrbitSpace.Infrastructure;
+using OrbitSpace.WebApi.Exceptions;
 using OrbitSpace.WebApi.Identity;
 
 namespace OrbitSpace.WebApi.Startup
@@ -14,6 +16,9 @@ namespace OrbitSpace.WebApi.Startup
                 options.LowercaseUrls = true;
                 options.LowercaseQueryStrings = true;
             });
+
+            builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+            builder.Services.AddProblemDetails();
 
             builder.Services.AddSwaggerServices();
 
