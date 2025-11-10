@@ -9,7 +9,7 @@ namespace OrbitSpace.WebApi.Controllers;
 [Authorize]
 [Route("api/todo-items")]
 [Tags("Todo Items")]
-[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+[ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
 public class TodoItemsController(ITodoItemService todoItemService) : ApiControllerBase
 {
     [HttpGet]
