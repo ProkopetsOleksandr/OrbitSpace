@@ -5,6 +5,8 @@ using OrbitSpace.WebApi.Identity;
 namespace OrbitSpace.WebApi.Controllers;
 
 [ApiController]
+[Consumes("application/json")]
+[Produces("application/json")]
 public class ApiControllerBase : ControllerBase
 {
     private ApplicationUser? _currentUser;
