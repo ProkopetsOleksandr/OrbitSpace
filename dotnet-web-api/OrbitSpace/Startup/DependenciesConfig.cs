@@ -19,7 +19,7 @@ namespace OrbitSpace.WebApi.Startup
             builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
             builder.Services.AddProblemDetails();
 
-            builder.Services.AddSwaggerServices();
+            builder.Services.AddOpenApiServices();
 
             builder.Services.AddOptionServices(builder.Configuration);
 

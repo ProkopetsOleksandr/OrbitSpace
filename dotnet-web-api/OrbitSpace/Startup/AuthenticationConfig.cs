@@ -30,9 +30,13 @@ namespace OrbitSpace.WebApi.Startup
                     {
                         OnChallenge = context =>
                         {
+                            context.HandleResponse();
+                            
                             context.Response.ContentType = "application/problem+json";
                             context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-
+                            context.Response.Headers["WWW-Authenticate"] = 
+                                $"Bearer error=\"invalid_token\", error_description=\"Invalid or missing token.\"";
+                            
                             var problem = new ProblemDetails
                             {
                                 Type = "https://tools.ietf.org/html/rfc6750#section-3.1",
