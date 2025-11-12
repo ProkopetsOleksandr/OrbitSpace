@@ -9,6 +9,7 @@ namespace OrbitSpace.WebApi.Startup
         {
             services.AddOpenApi(options =>
             {
+                options.AddDocumentTransformer<InfoSchemeTransformer>();
                 options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
             });
         }
