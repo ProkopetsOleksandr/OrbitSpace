@@ -6,6 +6,7 @@ using OrbitSpace.Application.Services.Interfaces;
 namespace OrbitSpace.WebApi.Controllers
 {
     
+    [ApiExplorerSettings(IgnoreApi = true)]
     [AllowAnonymous]
     [Route("api/[controller]")]
     public class AuthenticationController(IAuthenticationService authenticationService) : ApiControllerBase

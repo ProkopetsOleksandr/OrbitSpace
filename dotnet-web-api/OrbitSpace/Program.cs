@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
 using OrbitSpace.WebApi.Startup;
 
 namespace OrbitSpace.WebApi
@@ -11,17 +10,25 @@ namespace OrbitSpace.WebApi
             builder.AddDependencies();
 
             var app = builder.Build();
-            
-            app.UseExceptionHandler();
-
             app.UseHttpsRedirection();
             
-            app.UseOpenApi();
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+                app.UseExceptionHandler();
+            }
+            
+            app.UseStatusCodePages();
 
             app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllers();
+            
+            app.UseOpenApi();
             
             app.Run();
         }

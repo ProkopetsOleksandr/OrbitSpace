@@ -16,15 +16,11 @@ namespace OrbitSpace.Application.Services
             return items.Select(MapToDto).ToList();
         }
 
-        public async Task<OperationResult<TodoItemDto>> GetByIdAsync(string id, string userId)
+        public async Task<TodoItemDto?> GetByIdAsync(string id, string userId)
         {
             var item = await GetByIdForUserAsync(id, userId);
-            if (item == null)
-            {
-                return OperationResultError.NotFound();
-            }
-
-            return MapToDto(item);
+            
+            return item == null ? null : MapToDto(item);
         }
 
         public async Task<OperationResult<TodoItemDto>> CreateAsync(CreateTodoItemDto todoItem, string userId)
@@ -64,14 +60,9 @@ namespace OrbitSpace.Application.Services
             return MapToDto(entityInDb);
         }
 
-        public async Task<OperationResult> DeleteAsync(string id, string userId)
+        public async Task<bool> DeleteAsync(string id, string userId)
         {
-            if (!await todoItemRepository.DeleteAsync(id, userId))
-            {
-                return OperationResultError.NotFound();
-            }
-
-            return OperationResult.Success();
+            return await todoItemRepository.DeleteAsync(id, userId);
         }
 
         private static TodoItemDto MapToDto(TodoItem item)

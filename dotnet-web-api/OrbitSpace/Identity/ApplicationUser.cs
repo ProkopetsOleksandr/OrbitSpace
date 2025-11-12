@@ -1,17 +1,10 @@
 ﻿namespace OrbitSpace.WebApi.Identity;
 
-public class ApplicationUser
+public class ApplicationUser(IApplicationUserProvider provider)
 {
-    private readonly IApplicationUserProvider _provider;
-
-    public ApplicationUser(IApplicationUserProvider provider)
-    {
-        _provider = provider;
-    }
-    
     private string? _id { get; set; }
-    public string Id => _id ??= _provider.UserId;
+    public string Id => _id ??= provider.UserId;
     
     private string? _email { get; set; }
-    public string Email => _email ??= _provider.UserEmail;
+    public string Email => _email ??= provider.UserEmail;
 }

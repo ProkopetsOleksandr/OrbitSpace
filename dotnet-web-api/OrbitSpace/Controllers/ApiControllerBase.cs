@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Net;
+using Microsoft.AspNetCore.Mvc;
 using OrbitSpace.Application.Common.Models;
 using OrbitSpace.WebApi.Identity;
 
@@ -26,24 +27,28 @@ public class ApiControllerBase : ControllerBase
 
     protected IActionResult HandleError(OperationResultError error)
     {
-        var (statusCode, title) = MapErrorStatusCodeAndTitle(error.ErrorType);
-        
-        return Problem(
-            detail: error.ErrorMessage,
-            instance:HttpContext.Request.Path,
-            statusCode: statusCode,
-            title: title,
-            type: error.ErrorType.ToString());
+        return error.ErrorType switch
+        {
+            OperationResultErrorType.NotFound => NotFoundProblem(error.ErrorMessage),
+            _ => BadRequestProblem(error.ErrorMessage)
+        };
     }
 
-    private static (int, string) MapErrorStatusCodeAndTitle(OperationResultErrorType errorType)
+    protected IActionResult NotFoundProblem(string? errorMessage)
     {
-        switch (errorType)
-        {
-            case OperationResultErrorType.NotFound: return (StatusCodes.Status404NotFound, "Resource not found");
-            case OperationResultErrorType.Unauthorized: return (StatusCodes.Status401Unauthorized, "Unauthorized");
-            case OperationResultErrorType.Validation:
-            default: return (StatusCodes.Status400BadRequest, "Bad request");
-        };
+        return Problem(
+            title: "Not found",
+            detail: errorMessage,
+            statusCode: StatusCodes.Status404NotFound,
+            type: "https://tools.ietf.org/html/rfc9110#section-15.5.5");
+    }
+    
+    protected IActionResult BadRequestProblem(string? errorMessage)
+    {
+        return Problem(
+            title: "Bad request",
+            detail: errorMessage,
+            statusCode: StatusCodes.Status400BadRequest,
+            type: "https://tools.ietf.org/html/rfc9110#section-15.5.1");
     }
 }

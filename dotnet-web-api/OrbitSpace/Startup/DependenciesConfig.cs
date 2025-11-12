@@ -15,9 +15,18 @@ namespace OrbitSpace.WebApi.Startup
                 options.LowercaseUrls = true;
                 options.LowercaseQueryStrings = true;
             });
+            
+            builder.Services.AddProblemDetails(options =>
+            {
+                options.CustomizeProblemDetails = (context) =>
+                {
+                    var problemDetails = context.ProblemDetails;
+                    var request = context.HttpContext.Request;
+                    problemDetails.Instance ??= $"{request.Method} {request.Path}";
+                };
+            });
 
             builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
-            builder.Services.AddProblemDetails();
 
             builder.Services.AddOpenApiServices();
 

@@ -12,6 +12,8 @@ namespace OrbitSpace.WebApi.Controllers;
 [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
 public class TodoItemsController(ITodoItemService todoItemService) : ApiControllerBase
 {
+    private const string TodoItemNotFoundMessageTemplate = "Todo-item with id:{0} not found";
+    
     [HttpGet]
     [ProducesResponseType<GetTodoItemsResponse>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll()
@@ -29,14 +31,13 @@ public class TodoItemsController(ITodoItemService todoItemService) : ApiControll
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(string id)
     {
-        var result = await todoItemService.GetByIdAsync(id, CurrentUser.Id);
-        if (!result.IsSuccess)
+        var todoItem = await todoItemService.GetByIdAsync(id, CurrentUser.Id);
+        if (todoItem == null)
         {
-            return HandleError(result.Error);
+            return NotFoundProblem(string.Format(TodoItemNotFoundMessageTemplate, id));
         }
-
-        var data = result.Data;
-        var responseData = new TodoItemResource(data.Id, data.Title, data.CreatedAt, data.UpdatedAt, data.Status, data.StatusDescription);
+        
+        var responseData = new TodoItemResource(todoItem.Id, todoItem.Title, todoItem.CreatedAt, todoItem.UpdatedAt, todoItem.Status, todoItem.StatusDescription);
 
         return Ok(new TodoItemResponse(responseData));
     }
@@ -68,12 +69,7 @@ public class TodoItemsController(ITodoItemService todoItemService) : ApiControll
     {
         if (model.Id != id)
         {
-            return Problem(
-                statusCode: StatusCodes.Status400BadRequest,
-                type: "",
-                title: "",
-                detail: "",
-                instance: HttpContext.Request.Path);
+            return BadRequestProblem("Invalid id");
         }
 
         var todoItemDto = new TodoItemDto(model.Id, model.Title, model.CreatedAt, model.UpdatedAt, model.Status, model.StatusDescription);
@@ -92,10 +88,9 @@ public class TodoItemsController(ITodoItemService todoItemService) : ApiControll
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(string id)
     {
-        var result = await todoItemService.DeleteAsync(id, CurrentUser.Id);
-        if (!result.IsSuccess)
+        if (!await todoItemService.DeleteAsync(id, CurrentUser.Id))
         {
-            return HandleError(result.Error);
+            return NotFoundProblem(string.Format(TodoItemNotFoundMessageTemplate, id));
         }
 
         return NoContent();
