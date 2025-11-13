@@ -43,7 +43,7 @@ namespace OrbitSpace.Application.Services
             return MapToDto(created);
         }
 
-        public async Task<OperationResult<TodoItemDto>> UpdateAsync(TodoItemDto todoItem, string userId)
+        public async Task<OperationResult<TodoItemDto>> UpdateAsync(UpdateTodoItemDto todoItem, string userId)
         {
             var entityInDb = await GetByIdForUserAsync(todoItem.Id, userId);
             if (entityInDb == null)

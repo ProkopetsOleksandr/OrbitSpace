@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.ComponentModel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrbitSpace.Application.Dtos.TodoItem;
 using OrbitSpace.Application.Services.Interfaces;
@@ -13,20 +14,21 @@ namespace OrbitSpace.WebApi.Controllers;
 public class TodoItemsController(ITodoItemService todoItemService) : ApiControllerBase
 {
     private const string TodoItemNotFoundMessageTemplate = "Todo-item with id:{0} not found";
-    
+
     [HttpGet]
+    [EndpointSummary("Get all todo items")]
+    [EndpointDescription("Returns a list of todo items associated with the currently authenticated user.")]
     [ProducesResponseType<GetTodoItemsResponse>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll()
     {
         var data = await todoItemService.GetAllAsync(CurrentUser.Id);
 
-        var responseData = data.Select(m =>
-            new TodoItemResource(m.Id, m.Title, m.CreatedAt, m.UpdatedAt, m.Status, m.StatusDescription));
-
-        return Ok(new GetTodoItemsResponse(responseData));
+        return Ok(new GetTodoItemsResponse(data));
     }
 
     [HttpGet("{id}")]
+    [EndpointSummary("Get todo item")]
+    [EndpointDescription("Returns todo item with specified Id associated with the currently authenticated user.")]
     [ProducesResponseType<TodoItemResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(string id)
@@ -36,45 +38,40 @@ public class TodoItemsController(ITodoItemService todoItemService) : ApiControll
         {
             return NotFoundProblem(string.Format(TodoItemNotFoundMessageTemplate, id));
         }
-        
-        var responseData = new TodoItemResource(todoItem.Id, todoItem.Title, todoItem.CreatedAt, todoItem.UpdatedAt, todoItem.Status, todoItem.StatusDescription);
 
-        return Ok(new TodoItemResponse(responseData));
+        return Ok(new TodoItemResponse(todoItem));
     }
 
     [HttpPost]
+    [EndpointSummary("Create todo item")]
     [ProducesResponseType<TodoItemResponse>(StatusCodes.Status201Created)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Create([FromBody] CreateTodoItemRequest request)
+    public async Task<IActionResult> Create(
+        [Description("Create todo item payload")]
+        [FromBody] CreateTodoItemDto request)
     {
-        var createTodoItemRequestDto = new CreateTodoItemDto(request.Title);
-
-        var result = await todoItemService.CreateAsync(createTodoItemRequestDto, CurrentUser.Id);
+        var result = await todoItemService.CreateAsync(request, CurrentUser.Id);
         if (!result.IsSuccess)
         {
             return HandleError(result.Error);
         }
 
-        var data = result.Data;
-        var responseData = new TodoItemResource(data.Id, data.Title, data.CreatedAt, data.UpdatedAt, data.Status, data.StatusDescription);
-
-        return CreatedAtAction(nameof(GetById), new { data.Id }, new TodoItemResponse(responseData));
+        return CreatedAtAction(nameof(GetById), new { result.Data.Id }, new TodoItemResponse(result.Data));
     }
 
     [HttpPut("{id}")]
+    [EndpointSummary("Update todo item")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Update(string id, [FromBody] TodoItemResource model)
+    public async Task<IActionResult> Update(string id, [FromBody] UpdateTodoItemDto request)
     {
-        if (model.Id != id)
+        if (request.Id != id)
         {
             return BadRequestProblem("Invalid id");
         }
 
-        var todoItemDto = new TodoItemDto(model.Id, model.Title, model.CreatedAt, model.UpdatedAt, model.Status, model.StatusDescription);
-
-        var result = await todoItemService.UpdateAsync(todoItemDto, CurrentUser.Id);
+        var result = await todoItemService.UpdateAsync(request, CurrentUser.Id);
         if (!result.IsSuccess)
         {
             return HandleError(result.Error);
@@ -84,6 +81,7 @@ public class TodoItemsController(ITodoItemService todoItemService) : ApiControll
     }
 
     [HttpDelete("{id}")]
+    [EndpointSummary("Delete todo item")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(string id)

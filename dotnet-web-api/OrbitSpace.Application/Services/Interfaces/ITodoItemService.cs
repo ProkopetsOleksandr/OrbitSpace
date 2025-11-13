@@ -8,6 +8,6 @@ public interface ITodoItemService
     Task<List<TodoItemDto>> GetAllAsync(string userId);
     Task<TodoItemDto?> GetByIdAsync(string id, string userId);
     Task<OperationResult<TodoItemDto>> CreateAsync(CreateTodoItemDto todoItem, string userId);
-    Task<OperationResult<TodoItemDto>> UpdateAsync(TodoItemDto todoItem, string userId);
+    Task<OperationResult<TodoItemDto>> UpdateAsync(UpdateTodoItemDto todoItem, string userId);
     Task<bool> DeleteAsync(string id, string userId);
 }  

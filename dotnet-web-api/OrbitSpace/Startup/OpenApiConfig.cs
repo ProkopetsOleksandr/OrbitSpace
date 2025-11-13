@@ -26,6 +26,7 @@ namespace OrbitSpace.WebApi.Startup
                     options.Theme = ScalarTheme.BluePlanet;
                     options.ShowSidebar = true;
                     options.AddPreferredSecuritySchemes("Bearer");
+                    options.SortOperationsByMethod();
                 });
             }
         }
