@@ -7,6 +7,7 @@ public class TestsController : ApiControllerBase
 {
     [HttpGet]
     [Route("exception")]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
     public IActionResult GetException()
     {
         throw new Exception("Something went wrong");
@@ -14,6 +15,7 @@ public class TestsController : ApiControllerBase
     
     [HttpGet]
     [Route("bad-request")]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     public IActionResult GetBadRequest()
     {
         return BadRequest();

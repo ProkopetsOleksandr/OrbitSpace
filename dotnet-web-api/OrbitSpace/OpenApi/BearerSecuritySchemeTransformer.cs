@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.OpenApi;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 
 namespace OrbitSpace.WebApi.OpenApi;
 
@@ -9,30 +9,39 @@ internal sealed class BearerSecuritySchemeTransformer(IAuthenticationSchemeProvi
     public async Task TransformAsync(OpenApiDocument document, OpenApiDocumentTransformerContext context,
         CancellationToken cancellationToken)
     {
-        var authenticationSchemes = await authenticationSchemeProvider.GetAllSchemesAsync();
-        if (authenticationSchemes.Any(authScheme => authScheme.Name == "Bearer"))
+        var schemes = await authenticationSchemeProvider.GetAllSchemesAsync();
+        if (!schemes.Any(s => s.Name == "Bearer"))
         {
-            // Add the security scheme at the document level
-            var requirements = new Dictionary<string, OpenApiSecurityScheme>
+            return;
+        }
+
+        document.Components ??= new OpenApiComponents();
+        document.Components.SecuritySchemes ??= new Dictionary<string, IOpenApiSecurityScheme>();
+
+        document.Components.SecuritySchemes["Bearer"] = new OpenApiSecurityScheme
+        {
+            Type = SecuritySchemeType.Http,
+            Scheme = "bearer",
+            BearerFormat = "JWT",
+            In = ParameterLocation.Header,
+            Description = "Supply a valid JWT Bearer token.",
+        };
+
+
+        var bearerRequirement = new OpenApiSecurityRequirement
+        {
+            [new OpenApiSecuritySchemeReference("Bearer")] = new List<string>()
+        };
+
+        foreach (var pathItem in document.Paths.Values)
+        {
+            if (pathItem.Operations?.Count > 0)
             {
-                ["Bearer"] = new OpenApiSecurityScheme
+                foreach (var operation in pathItem.Operations.Values)
                 {
-                    Type = SecuritySchemeType.Http,
-                    Scheme = "bearer",
-                    In = ParameterLocation.Header,
-                    BearerFormat = "Json Web Token"
+                    operation.Security ??= new List<OpenApiSecurityRequirement>();
+                    operation.Security.Add(bearerRequirement);
                 }
-            };
-            document.Components ??= new OpenApiComponents();
-            document.Components.SecuritySchemes = requirements;
-            
-            foreach (var operation in document.Paths.Values.SelectMany(path => path.Operations))
-            {
-                operation.Value.Security.Add(new OpenApiSecurityRequirement
-                {
-                    [new OpenApiSecurityScheme { Reference = new OpenApiReference { Id = "Bearer", Type = ReferenceType.SecurityScheme } }] =
-                        Array.Empty<string>()
-                });
             }
         }
     }
