@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrbitSpace.Application.Dtos.TodoItem;
 using OrbitSpace.Application.Services.Interfaces;
@@ -18,6 +17,7 @@ public class TodoItemsController(ITodoItemService todoItemService) : ApiControll
     [HttpGet]
     [EndpointSummary("Get all todo items")]
     [EndpointDescription("Returns a list of todo items associated with the currently authenticated user.")]
+    [EndpointName("getAllTodoItems")]
     [ProducesResponseType<GetTodoItemsResponse>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll()
     {
@@ -29,6 +29,7 @@ public class TodoItemsController(ITodoItemService todoItemService) : ApiControll
     [HttpGet("{id}")]
     [EndpointSummary("Get todo item")]
     [EndpointDescription("Returns todo item with specified Id associated with the currently authenticated user.")]
+    [EndpointName("getTodoItemById")]
     [ProducesResponseType<TodoItemResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(string id)
@@ -44,11 +45,10 @@ public class TodoItemsController(ITodoItemService todoItemService) : ApiControll
 
     [HttpPost]
     [EndpointSummary("Create todo item")]
+    [EndpointName("createTodoItem")]
     [ProducesResponseType<TodoItemResponse>(StatusCodes.Status201Created)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Create(
-        [Description("Create todo item payload")]
-        [FromBody] CreateTodoItemDto request)
+    public async Task<IActionResult> Create([FromBody] CreateTodoItemDto request)
     {
         var result = await todoItemService.CreateAsync(request, CurrentUser.Id);
         if (!result.IsSuccess)
@@ -61,6 +61,7 @@ public class TodoItemsController(ITodoItemService todoItemService) : ApiControll
 
     [HttpPut("{id}")]
     [EndpointSummary("Update todo item")]
+    [EndpointName("updateTodoItem")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
@@ -82,6 +83,7 @@ public class TodoItemsController(ITodoItemService todoItemService) : ApiControll
 
     [HttpDelete("{id}")]
     [EndpointSummary("Delete todo item")]
+    [EndpointName("deleteTodoItem")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(string id)

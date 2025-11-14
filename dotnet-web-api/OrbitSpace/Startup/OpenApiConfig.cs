@@ -1,6 +1,7 @@
 ﻿using Microsoft.OpenApi;
 using OrbitSpace.WebApi.OpenApi;
 using OrbitSpace.WebApi.OpenApi.DocumentTransformers;
+using OrbitSpace.WebApi.OpenApi.OperationTransformers;
 using OrbitSpace.WebApi.OpenApi.SchemaTransformers;
 using Scalar.AspNetCore;
 
@@ -28,8 +29,9 @@ namespace OrbitSpace.WebApi.Startup
                     return Task.CompletedTask;
                 });
 
-                options.AddDocumentTransformer<SecuritySchemeDocumentTransformer>();
+                options.AddDocumentTransformer<BearerSecuritySchemeDocumentTransformer>();
                 options.AddSchemaTransformer(new OpenApiMetadataSchemaTransformer(schemaMetadataConfig));
+                options.AddOperationTransformer<BearerSecurityRequirementOperationTransformer>();
             });
         }
 
