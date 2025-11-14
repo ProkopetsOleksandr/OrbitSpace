@@ -7,6 +7,8 @@ namespace OrbitSpace.Application.Dtos.TodoItem
     string Title,
     DateTime CreatedAt,
     DateTime UpdatedAt,
-    TodoItemStatus Status,
-    string StatusDescription);
+    TodoItemStatus Status)
+    {
+        public string StatusDescription => Status.ToString();
+    };
 }

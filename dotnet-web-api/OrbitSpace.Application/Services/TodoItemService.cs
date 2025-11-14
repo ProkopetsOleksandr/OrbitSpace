@@ -67,8 +67,7 @@ namespace OrbitSpace.Application.Services
 
         private static TodoItemDto MapToDto(TodoItem item)
         {
-            return new TodoItemDto(item.Id!, item.Title, item.CreatedAt, item.UpdatedAt, item.Status,
-                item.Status.ToString());
+            return new TodoItemDto(item.Id, item.Title, item.CreatedAt, item.UpdatedAt, item.Status);
         }
 
         private async Task<TodoItem?> GetByIdForUserAsync(string id, string userId)

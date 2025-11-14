@@ -4,7 +4,7 @@ namespace OrbitSpace.Domain.Entities;
 
 public class TodoItem
 {
-    public string? Id { get; set; }
+    public string Id { get; set; } = string.Empty;
     public string UserId { get; set; } = string.Empty;
     public string Title { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }

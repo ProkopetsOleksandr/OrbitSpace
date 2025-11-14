@@ -2,12 +2,11 @@
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.OpenApi;
 
-namespace OrbitSpace.WebApi.OpenApi;
+namespace OrbitSpace.WebApi.OpenApi.DocumentTransformers;
 
-internal sealed class BearerSecuritySchemeTransformer(IAuthenticationSchemeProvider authenticationSchemeProvider) : IOpenApiDocumentTransformer
+public sealed class SecuritySchemeDocumentTransformer(IAuthenticationSchemeProvider authenticationSchemeProvider) : IOpenApiDocumentTransformer
 {
-    public async Task TransformAsync(OpenApiDocument document, OpenApiDocumentTransformerContext context,
-        CancellationToken cancellationToken)
+    public async Task TransformAsync(OpenApiDocument document, OpenApiDocumentTransformerContext context, CancellationToken cancellationToken)
     {
         var schemes = await authenticationSchemeProvider.GetAllSchemesAsync();
         if (!schemes.Any(s => s.Name == "Bearer"))
