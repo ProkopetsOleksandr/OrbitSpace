@@ -1,4 +1,5 @@
-﻿using OrbitSpace.Application;
+﻿using System.Text.Json.Serialization;
+using OrbitSpace.Application;
 using OrbitSpace.Infrastructure;
 using OrbitSpace.WebApi.Exceptions;
 using OrbitSpace.WebApi.Identity;
@@ -27,6 +28,11 @@ namespace OrbitSpace.WebApi.Startup
             });
 
             builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+
+            builder.Services.ConfigureHttpJsonOptions(options =>
+            {
+                options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            });
 
             builder.Services.AddOpenApiServices();
 
