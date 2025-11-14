@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using OrbitSpace.Application.Dtos.TodoItem;
 using OrbitSpace.Application.Services.Interfaces;
-using OrbitSpace.WebApi.Models.Responses.TodoItems;
+using OrbitSpace.WebApi.Models.Responses;
 
 namespace OrbitSpace.WebApi.Controllers;
 
@@ -18,19 +18,19 @@ public class TodoItemsController(ITodoItemService todoItemService) : ApiControll
     [EndpointSummary("Get all todo items")]
     [EndpointDescription("Returns a list of todo items associated with the currently authenticated user.")]
     [EndpointName("getAllTodoItems")]
-    [ProducesResponseType<GetTodoItemsResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ApiResponse<IEnumerable<TodoItemDto>>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll()
     {
         var data = await todoItemService.GetAllAsync(CurrentUser.Id);
 
-        return Ok(new GetTodoItemsResponse(data));
+        return Ok(new ApiResponse<IEnumerable<TodoItemDto>>(data));
     }
 
     [HttpGet("{id}")]
     [EndpointSummary("Get todo item")]
     [EndpointDescription("Returns todo item with specified Id associated with the currently authenticated user.")]
     [EndpointName("getTodoItemById")]
-    [ProducesResponseType<TodoItemResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ApiResponse<TodoItemDto>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(string id)
     {
@@ -40,13 +40,13 @@ public class TodoItemsController(ITodoItemService todoItemService) : ApiControll
             return NotFoundProblem(string.Format(TodoItemNotFoundMessageTemplate, id));
         }
 
-        return Ok(new TodoItemResponse(todoItem));
+        return Ok(new ApiResponse<TodoItemDto>(todoItem));
     }
 
     [HttpPost]
     [EndpointSummary("Create todo item")]
     [EndpointName("createTodoItem")]
-    [ProducesResponseType<TodoItemResponse>(StatusCodes.Status201Created)]
+    [ProducesResponseType<ApiResponse<TodoItemDto>>(StatusCodes.Status201Created)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create([FromBody] CreateTodoItemDto request)
     {
@@ -56,7 +56,7 @@ public class TodoItemsController(ITodoItemService todoItemService) : ApiControll
             return HandleError(result.Error);
         }
 
-        return CreatedAtAction(nameof(GetById), new { result.Data.Id }, new TodoItemResponse(result.Data));
+        return CreatedAtAction(nameof(GetById), new { result.Data.Id }, new ApiResponse<TodoItemDto>(result.Data));
     }
 
     [HttpPut("{id}")]

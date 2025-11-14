@@ -1,4 +1,9 @@
-﻿using Microsoft.OpenApi;
+﻿using System;
+using System.Collections;
+using System.Text.Json.Serialization.Metadata;
+using Microsoft.AspNetCore.OpenApi;
+using Microsoft.OpenApi;
+using OrbitSpace.WebApi.Models.Responses;
 using OrbitSpace.WebApi.OpenApi;
 using OrbitSpace.WebApi.OpenApi.DocumentTransformers;
 using OrbitSpace.WebApi.OpenApi.OperationTransformers;
@@ -28,6 +33,40 @@ namespace OrbitSpace.WebApi.Startup
 
                     return Task.CompletedTask;
                 });
+
+                options.CreateSchemaReferenceId = typeInfo =>
+                {
+                    var type = typeInfo.Type;
+                    if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(ApiResponse<>))
+                    {
+                        var dataType = type.GetGenericArguments()[0];
+                        var isCollection = typeof(IEnumerable).IsAssignableFrom(dataType);
+
+                        Type innerDataType;
+
+                        if (isCollection)
+                        {
+                            var collectionDataType = dataType
+                                .GetInterfaces()
+                                .Concat([dataType])
+                                .FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IEnumerable<>));
+
+                            innerDataType = collectionDataType?.GetGenericArguments()[0] ?? dataType;
+                        }
+                        else
+                        {
+                            innerDataType = dataType;
+                        }
+
+                        var innerTitle = schemaMetadataConfig.ContainsKey(innerDataType)
+                            ? schemaMetadataConfig[innerDataType].Title
+                            : innerDataType.Name;
+
+                        return innerTitle + (isCollection ? "sResponse" : "Response");
+                    }
+
+                    return OpenApiOptions.CreateDefaultSchemaReferenceId(typeInfo);
+                };
 
                 options.AddDocumentTransformer<BearerSecuritySchemeDocumentTransformer>();
                 options.AddSchemaTransformer(new OpenApiMetadataSchemaTransformer(schemaMetadataConfig));
