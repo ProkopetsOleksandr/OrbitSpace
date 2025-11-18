@@ -9,6 +9,12 @@
             _mapping = mapping;
         }
 
+        public OpenApiSchemaBuilder<T> WithSchemaName(string schemaName)
+        {
+            _mapping.SchemaName = schemaName;
+            return this;
+        }
+
         public OpenApiSchemaBuilder<T> WithTitle(string title)
         {
             _mapping.Title = title;

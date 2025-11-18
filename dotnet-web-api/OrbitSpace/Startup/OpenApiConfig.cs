@@ -36,36 +36,7 @@ namespace OrbitSpace.WebApi.Startup
 
                 options.CreateSchemaReferenceId = typeInfo =>
                 {
-                    var type = typeInfo.Type;
-                    if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(ApiResponse<>))
-                    {
-                        var dataType = type.GetGenericArguments()[0];
-                        var isCollection = typeof(IEnumerable).IsAssignableFrom(dataType);
-
-                        Type innerDataType;
-
-                        if (isCollection)
-                        {
-                            var collectionDataType = dataType
-                                .GetInterfaces()
-                                .Concat([dataType])
-                                .FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IEnumerable<>));
-
-                            innerDataType = collectionDataType?.GetGenericArguments()[0] ?? dataType;
-                        }
-                        else
-                        {
-                            innerDataType = dataType;
-                        }
-
-                        var innerTitle = schemaMetadataConfig.ContainsKey(innerDataType)
-                            ? schemaMetadataConfig[innerDataType].Title
-                            : innerDataType.Name;
-
-                        return innerTitle + (isCollection ? "sResponse" : "Response");
-                    }
-
-                    return OpenApiOptions.CreateDefaultSchemaReferenceId(typeInfo);
+                    return OpenApiSchemaReferenceIdGenerator.GetSchemaName(typeInfo, schemaMetadataConfig);
                 };
 
                 options.AddDocumentTransformer<BearerSecuritySchemeDocumentTransformer>();
