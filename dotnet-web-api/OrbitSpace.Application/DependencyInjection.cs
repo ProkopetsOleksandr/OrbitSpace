@@ -6,10 +6,12 @@ namespace OrbitSpace.Application;
 
 public static class DependencyInjection
 {
-    public static void AddApplication(this IServiceCollection services)
+    public static IServiceCollection AddApplication(this IServiceCollection services)
     {
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<ITodoItemService, TodoItemService>();
+
+        return services;
     }
 }
