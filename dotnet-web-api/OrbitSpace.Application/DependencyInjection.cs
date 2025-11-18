@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.Reflection;
+using Mapster;
+using MapsterMapper;
+using Microsoft.Extensions.DependencyInjection;
 using OrbitSpace.Application.Services;
 using OrbitSpace.Application.Services.Interfaces;
 
@@ -8,9 +11,23 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
+        services.AddMapsterServices();
+
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<ITodoItemService, TodoItemService>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddMapsterServices(this IServiceCollection services)
+    {
+        var config = TypeAdapterConfig.GlobalSettings;
+        config.Scan(Assembly.GetExecutingAssembly());
+        config.Compile();
+
+        services.AddSingleton(config);
+        services.AddScoped<IMapper, ServiceMapper>();
 
         return services;
     }

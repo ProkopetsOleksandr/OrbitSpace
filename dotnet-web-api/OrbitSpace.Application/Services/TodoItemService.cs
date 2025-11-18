@@ -1,4 +1,5 @@
-﻿using OrbitSpace.Application.Common.Interfaces;
+﻿using MapsterMapper;
+using OrbitSpace.Application.Common.Interfaces;
 using OrbitSpace.Application.Common.Models;
 using OrbitSpace.Application.Dtos.TodoItem;
 using OrbitSpace.Application.Services.Interfaces;
@@ -7,20 +8,20 @@ using OrbitSpace.Domain.Enums;
 
 namespace OrbitSpace.Application.Services
 {
-    public class TodoItemService(ITodoItemRepository todoItemRepository) : ITodoItemService
+    public class TodoItemService(ITodoItemRepository todoItemRepository, IMapper mapper) : ITodoItemService
     {
         public async Task<List<TodoItemDto>> GetAllAsync(string userId)
         {
             var items = await todoItemRepository.GetAllAsync(userId);
 
-            return items.Select(MapToDto).ToList();
+            return mapper.Map<List<TodoItemDto>>(items);
         }
 
         public async Task<TodoItemDto?> GetByIdAsync(string id, string userId)
         {
             var item = await GetByIdForUserAsync(id, userId);
             
-            return item == null ? null : MapToDto(item);
+            return item == null ? null : mapper.Map<TodoItemDto>(item);
         }
 
         public async Task<OperationResult<TodoItemDto>> CreateAsync(CreateTodoItemDto todoItem, string userId)
@@ -31,7 +32,7 @@ namespace OrbitSpace.Application.Services
             }
 
             var currentDateTime = DateTime.UtcNow;
-            var created = await todoItemRepository.CreateAsync(new TodoItem
+            var createdItem = await todoItemRepository.CreateAsync(new TodoItem
             {
                 UserId = userId,
                 Title = todoItem.Title,
@@ -40,7 +41,7 @@ namespace OrbitSpace.Application.Services
                 Status = TodoItemStatus.New
             });
 
-            return MapToDto(created);
+            return mapper.Map<TodoItemDto>(createdItem);
         }
 
         public async Task<OperationResult<TodoItemDto>> UpdateAsync(UpdateTodoItemDto todoItem, string userId)
@@ -57,17 +58,12 @@ namespace OrbitSpace.Application.Services
 
             await todoItemRepository.UpdateAsync(entityInDb);
 
-            return MapToDto(entityInDb);
+            return mapper.Map<TodoItemDto>(entityInDb);
         }
 
         public async Task<bool> DeleteAsync(string id, string userId)
         {
             return await todoItemRepository.DeleteAsync(id, userId);
-        }
-
-        private static TodoItemDto MapToDto(TodoItem item)
-        {
-            return new TodoItemDto(item.Id, item.Title, item.CreatedAt, item.UpdatedAt, item.Status);
         }
 
         private async Task<TodoItem?> GetByIdForUserAsync(string id, string userId)
