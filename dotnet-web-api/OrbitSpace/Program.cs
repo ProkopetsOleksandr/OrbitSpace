@@ -15,6 +15,8 @@ namespace OrbitSpace.WebApi
                 .AddInfrastructure();
 
             var app = builder.Build();
+            app.UseCors("AllowAllPolicy");
+            
             app.UseHttpsRedirection();
             
             if (app.Environment.IsDevelopment())

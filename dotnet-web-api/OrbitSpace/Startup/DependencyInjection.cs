@@ -23,6 +23,17 @@ namespace OrbitSpace.WebApi.Startup
             });
 
             services.AddExceptionHandler<GlobalExceptionHandler>();
+            
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: "AllowAllPolicy", // Новое, более понятное имя политики
+                    policy =>
+                    {
+                        policy.AllowAnyOrigin()      // 👈 Разрешает любой источник (Origin: http://localhost:3000, https://example.com и т.д.)
+                            .AllowAnyHeader()      // Разрешает любые заголовки
+                            .AllowAnyMethod();     // Разрешает любые HTTP-методы (GET, POST, PUT, DELETE)
+                    });
+            });
 
             services.AddControllers();
             services.Configure<RouteOptions>(options =>

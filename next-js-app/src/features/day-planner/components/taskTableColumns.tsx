@@ -1,7 +1,7 @@
-import { TaskItem } from '@/entities/task/model/types';
+import { TodoItem } from '@/entities/task/model/types';
 import { createColumnHelper } from '@tanstack/react-table';
 
-const columnHelper = createColumnHelper<TaskItem>();
+const columnHelper = createColumnHelper<TodoItem>();
 
 export const taskTableColumns = [
   columnHelper.accessor('title', {
@@ -11,23 +11,28 @@ export const taskTableColumns = [
 
   columnHelper.accessor('createdAt', {
     header: 'Created At',
-    cell: info => info.getValue().toLocaleDateString()
+    cell: info => info.getValue()
   }),
 
-  columnHelper.accessor('status', {
+columnHelper.accessor('updatedAt', {
+    header: 'Updated At',
+    cell: info => info.getValue()
+}),
+
+  columnHelper.accessor('statusDescription', {
     header: 'Status',
     cell: info => info.getValue()
   }),
 
-  columnHelper.accessor('timeSpentInMin', {
-    header: 'Time Spent',
-    cell: info => info.getValue()
-  }),
+  // columnHelper.accessor('timeSpentInMin', {
+  //   header: 'Time Spent',
+  //   cell: info => info.getValue()
+  // }),
 
-  columnHelper.accessor('tag', {
-    header: 'Tag',
-    cell: info => info.getValue()
-  }),
+  // columnHelper.accessor('tag', {
+  //   header: 'Tag',
+  //   cell: info => info.getValue()
+  // }),
 
   columnHelper.display({
     id: 'actions',

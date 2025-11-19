@@ -1,10 +1,16 @@
 // import { taskApi } from '@/entities/task/api/taskApi';
-import { apiClient } from '@/lib/api/client';
+import {apiClient, useApiClient} from '@/lib/api/client';
 import { useQuery } from '@tanstack/react-query';
+import {createTaskApi} from "@/entities/task/api/taskApi";
 
 export const useTasks = () => {
-  return useQuery({
-    queryKey: ['tasks'],
-    queryFn: ({ signal }) => apiClient.GET('/api/todo-items', { signal }).then(r => r.data)
-  });
+    const client = useApiClient();
+    const api = createTaskApi(client);
+
+    return useQuery({
+        queryKey: ["tasks"],
+        queryFn: () => api.getAll(),
+    });
 };
+
+
