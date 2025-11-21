@@ -8,6 +8,8 @@ namespace OrbitSpace.WebApi.Startup
     {
         public static IServiceCollection AddPresentation(this IServiceCollection services, ConfigurationManager configuration)
         {
+            services.AddAppCors(configuration);
+
             services.AddOptionServices(configuration);
 
             services.AddAuthenticationServices(configuration);

@@ -1,6 +1,7 @@
-using OrbitSpace.WebApi.Startup;
 using OrbitSpace.Application;
 using OrbitSpace.Infrastructure;
+using OrbitSpace.WebApi.Constants;
+using OrbitSpace.WebApi.Startup;
 
 namespace OrbitSpace.WebApi
 {
@@ -15,6 +16,8 @@ namespace OrbitSpace.WebApi
                 .AddInfrastructure();
 
             var app = builder.Build();
+            app.UseCors(CorsPolicyConstants.PolicyName.AllowSpecificOrigins);
+
             app.UseHttpsRedirection();
             
             if (app.Environment.IsDevelopment())
