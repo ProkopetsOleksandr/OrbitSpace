@@ -2,6 +2,7 @@
 
 namespace OrbitSpace.WebApi.Controllers;
 
+[ApiExplorerSettings(IgnoreApi = true)]
 [Route("api/[controller]")]
 public class TestsController : ApiControllerBase
 {
