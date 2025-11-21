@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using OrbitSpace.Application.Common.Interfaces;
 using OrbitSpace.Infrastructure.Persistence;
@@ -26,13 +27,13 @@ public static class DependencyInjection
     {
         services.AddSingleton<IMongoClient>(serviceProvider =>
         {
-            var settings = serviceProvider.GetRequiredService<MongoDbSettings>();
+            var settings = serviceProvider.GetRequiredService<IOptions<MongoDbSettings>>().Value;
             return new MongoClient(settings.ConnectionString);
         });
 
         services.AddScoped<IMongoDatabase>(serviceProvider =>
         {
-            var settings = serviceProvider.GetRequiredService<MongoDbSettings>();
+            var settings = serviceProvider.GetRequiredService<IOptions<MongoDbSettings>>().Value;
             var client = serviceProvider.GetRequiredService<IMongoClient>();
             return client.GetDatabase(settings.DatabaseName);
         });
