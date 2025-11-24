@@ -1,7 +1,7 @@
-import { TaskItem } from '@/entities/task/model/types';
+import { TodoItem } from '@/entities/todoItem/model/types';
 import { createColumnHelper } from '@tanstack/react-table';
 
-const columnHelper = createColumnHelper<TaskItem>();
+const columnHelper = createColumnHelper<TodoItem>();
 
 export const taskTableColumns = [
   columnHelper.accessor('title', {

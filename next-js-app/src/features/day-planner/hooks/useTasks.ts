@@ -1,5 +1,5 @@
-// import { taskApi } from '@/entities/task/api/taskApi';
-import { apiClient } from '@/lib/api/client';
+// import { taskApi } from '@/entities/todoItem/api/taskApi';
+import { apiClient } from '@/lib/api/apiClient';
 import { useQuery } from '@tanstack/react-query';
 
 export const useTasks = () => {
