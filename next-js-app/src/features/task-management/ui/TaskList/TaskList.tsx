@@ -1,6 +1,11 @@
+'use client';
+
+import { useTodoItems } from '../../api/todoItemQueries';
 import { TaskTable } from './TaskTable';
 
 export const TaskList = () => {
+  const { data: todoItems, isLoading, error } = useTodoItems();
+
   return (
     <div>
       <div className="flex items-center justify-between space-y-2 mb-4">
@@ -9,17 +14,7 @@ export const TaskList = () => {
           <p className="text-muted-foreground">Manage your tasks and view their status.</p>
         </div>
       </div>
-      <TaskTable
-        data={[
-          {
-            id: '1',
-            title: 'Sample Task',
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-            status: 'New'
-          }
-        ]}
-      />
+      <TaskTable data={todoItems || []} isLoading={isLoading} error={error} />
     </div>
   );
 };

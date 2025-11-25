@@ -1,14 +1,81 @@
 'use client';
 
 import { TodoItem } from '@/entities/todoItem/model/types';
-import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import { flexRender, getCoreRowModel, Table, useReactTable } from '@tanstack/react-table';
+import { Loader2 } from 'lucide-react';
 import { taskTableColumns } from './TaskTableColumns';
 
 interface TaskTableProps {
+  isLoading: boolean;
   data: TodoItem[];
+  error: Error | null;
 }
 
-export function TaskTable({ data }: TaskTableProps) {
+interface TaskTableBodyProps {
+  table: Table<TodoItem>;
+  isLoading: boolean;
+  error: Error | null;
+}
+
+const TaskTableBody = ({ table, isLoading, error }: TaskTableBodyProps) => {
+  if (isLoading) {
+    return (
+      <tbody>
+        <tr>
+          <td colSpan={taskTableColumns.length} className="h-24 text-center">
+            <div className="flex items-center justify-center gap-4">
+              <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+              Loading...
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    );
+  }
+
+  if (error) {
+    return (
+      <tbody>
+        <tr>
+          <td colSpan={taskTableColumns.length} className="h-24 text-center">
+            Something went wrong. Details: {error.message}
+          </td>
+        </tr>
+      </tbody>
+    );
+  }
+
+  if (!table.getRowModel().rows?.length) {
+    return (
+      <tbody>
+        <tr>
+          <td colSpan={taskTableColumns.length} className="h-24 text-center">
+            No tasks yet. Create one to get started!
+          </td>
+        </tr>
+      </tbody>
+    );
+  }
+
+  return (
+    <tbody className="[&_tr:last-child]:border-0">
+      {table.getRowModel().rows.map(row => (
+        <tr
+          key={row.id}
+          data-state={row.getIsSelected() && 'selected'}
+          className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+          {row.getVisibleCells().map(cell => (
+            <td key={cell.id} className="p-4 align-middle [&:has([role=checkbox])]:pr-0">
+              {flexRender(cell.column.columnDef.cell, cell.getContext())}
+            </td>
+          ))}
+        </tr>
+      ))}
+    </tbody>
+  );
+};
+
+export const TaskTable = ({ isLoading, data, error }: TaskTableProps) => {
   const table = useReactTable({
     data,
     columns: taskTableColumns,
@@ -34,30 +101,9 @@ export function TaskTable({ data }: TaskTableProps) {
               </tr>
             ))}
           </thead>
-          <tbody className="[&_tr:last-child]:border-0">
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map(row => (
-                <tr
-                  key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
-                  className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
-                  {row.getVisibleCells().map(cell => (
-                    <td key={cell.id} className="p-4 align-middle [&:has([role=checkbox])]:pr-0">
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </td>
-                  ))}
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan={taskTableColumns.length} className="h-24 text-center">
-                  No tasks yet. Create one to get started!
-                </td>
-              </tr>
-            )}
-          </tbody>
+          <TaskTableBody table={table} isLoading={isLoading} error={error} />
         </table>
       </div>
     </div>
   );
-}
+};

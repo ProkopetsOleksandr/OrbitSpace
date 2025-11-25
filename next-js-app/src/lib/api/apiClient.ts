@@ -1,31 +1,32 @@
 import type { paths } from '@/types/api-types';
-import createClient from 'openapi-fetch';
-import { useMemo } from "react";
 import { useAuth } from '@clerk/nextjs';
+import createClient from 'openapi-fetch';
+import { useMemo } from 'react';
 
 export const useApiClient = () => {
-    const { getToken } = useAuth();
+  const { getToken } = useAuth();
 
-    return useMemo(() => {
-        const client = createClient<paths>({
-            baseUrl: process.env.NEXT_PUBLIC_API_URL,
-        });
+  return useMemo(() => {
+    const client = createClient<paths>({
+      baseUrl: process.env.NEXT_PUBLIC_BACKEND_BASE_URL
+    });
 
-        client.use({
-            onRequest: async ({ request }) => {
-                const token = await getToken();
-                if (token) {
-                    request.headers.set('Authorization', `Bearer ${token}`);
-                }
+    client.use({
+      onRequest: async ({ request }) => {
+        const token = await getToken();
+        if (token) {
+          console.log(token);
+          request.headers.set('Authorization', `Bearer ${token}`);
+        }
 
-                if (!request.headers.has("Content-Type")) {
-                    request.headers.set("Content-Type", "application/json");
-                }
+        if (!request.headers.has('Content-Type')) {
+          request.headers.set('Content-Type', 'application/json');
+        }
 
-                return request;
-            },
-        });
+        return request;
+      }
+    });
 
-        return client;
-    }, [getToken]);
+    return client;
+  }, [getToken]);
 };
