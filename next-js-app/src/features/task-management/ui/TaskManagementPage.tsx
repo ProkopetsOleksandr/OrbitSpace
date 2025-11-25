@@ -1,14 +1,18 @@
-import React from 'react';
+import { Fragment } from 'react';
+import { Card } from './Card';
+import { DayProgressBar } from './DayProgressBar';
 
-export default function TaskManagementPage() {
+export const TaskManagementPage = () => {
   return (
-    <React.Fragment>
+    <Fragment>
       <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-        <div className="p-4 bg-gray-50 rounded-lg shadow-sm"></div>
-        <div className="p-4 bg-gray-50 rounded-lg shadow-sm"></div>
-        <div className="p-4 bg-gray-50 rounded-lg shadow-sm"></div>
+        <Card>Card1</Card>
+        <Card>Card2</Card>
+        <Card>
+          <DayProgressBar startTimeHour={6} endTimeHour={22} />
+        </Card>
       </div>
-      <div className="p-4 bg-gray-50 rounded-lg shadow-sm"></div>
-    </React.Fragment>
+      <Card>Card4</Card>
+    </Fragment>
   );
-}
+};
