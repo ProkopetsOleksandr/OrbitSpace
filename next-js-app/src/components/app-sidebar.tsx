@@ -1,6 +1,6 @@
 'use client';
 
-import { BookOpen, Bot, Clock, Frame, Home, Map, Orbit, PieChart, Settings2, SquareTerminal } from 'lucide-react';
+import { BookOpen, Bot, Clock, Frame, Home, ListTodo, Map, Orbit, PieChart, Settings2, SquareTerminal } from 'lucide-react';
 import * as React from 'react';
 
 import { NavUser } from '@/components/nav-user';
@@ -161,11 +161,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <Link href="/day-planner">
-                    <Clock />
-                    <span>Day planner</span>
+                  <Link href="/task-management">
+                    <ListTodo />
+                    <span>Tasks</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
