@@ -1,8 +1,5 @@
 'use client';
 
-import { BookOpen, Bot, Clock, Frame, Home, ListTodo, Map, Orbit, PieChart, Settings2, SquareTerminal } from 'lucide-react';
-import * as React from 'react';
-
 import { NavUser } from '@/components/nav-user';
 import {
   Sidebar,
@@ -17,7 +14,10 @@ import {
   SidebarMenuItem,
   SidebarRail
 } from '@/components/ui/sidebar';
+import { Activity, Book, Brain, Calendar, CheckCircle, Home, ListTodo, Orbit, PieChart, Target } from 'lucide-react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import * as React from 'react';
 
 // This is sample data.
 const data = {
@@ -25,113 +25,63 @@ const data = {
     name: 'shadcn',
     email: 'm@example.com',
     avatar: '/avatars/shadcn.jpg'
-  },
-  navMain: [
-    {
-      title: 'Playground',
-      url: '#',
-      icon: SquareTerminal,
-      items: [
-        {
-          title: 'History',
-          url: '#'
-        },
-        {
-          title: 'Starred',
-          url: '#'
-        },
-        {
-          title: 'Settings',
-          url: '#'
-        }
-      ]
-    },
-    {
-      title: 'Models',
-      url: '#',
-      icon: Bot,
-      items: [
-        {
-          title: 'Genesis',
-          url: '#'
-        },
-        {
-          title: 'Explorer',
-          url: '#'
-        },
-        {
-          title: 'Quantum',
-          url: '#'
-        }
-      ]
-    },
-    {
-      title: 'Documentation',
-      url: '#',
-      icon: BookOpen,
-      items: [
-        {
-          title: 'Introduction',
-          url: '#'
-        },
-        {
-          title: 'Get Started',
-          url: '#'
-        },
-        {
-          title: 'Tutorials',
-          url: '#'
-        },
-        {
-          title: 'Changelog',
-          url: '#'
-        }
-      ]
-    },
-    {
-      title: 'Settings',
-      url: '#',
-      icon: Settings2,
-      items: [
-        {
-          title: 'General',
-          url: '#'
-        },
-        {
-          title: 'Team',
-          url: '#'
-        },
-        {
-          title: 'Billing',
-          url: '#'
-        },
-        {
-          title: 'Limits',
-          url: '#'
-        }
-      ]
-    }
-  ],
-  projects: [
-    {
-      name: 'Design Engineering',
-      url: '#',
-      icon: Frame
-    },
-    {
-      name: 'Sales & Marketing',
-      url: '#',
-      icon: PieChart
-    },
-    {
-      name: 'Travel',
-      url: '#',
-      icon: Map
-    }
-  ]
+  }
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const pathname = usePathname();
+
+  const applicationItems = [
+    {
+      title: 'Dashboard',
+      url: '/',
+      icon: Home
+    },
+    {
+      title: 'Tasks',
+      url: '/task-management',
+      icon: ListTodo
+    }
+  ];
+
+  const tobeDevelopedItems = [
+    {
+      title: 'Goals',
+      url: '/goals',
+      icon: Target
+    },
+    {
+      title: 'Activities',
+      url: '/activities',
+      icon: Activity
+    },
+    {
+      title: 'Calendar',
+      url: '/calendar',
+      icon: Calendar
+    },
+    {
+      title: 'Habits',
+      url: '/habits',
+      icon: CheckCircle
+    },
+    {
+      title: 'Books',
+      url: '/books',
+      icon: Book
+    },
+    {
+      title: 'Statistics',
+      url: '/statistics',
+      icon: PieChart
+    },
+    {
+      title: 'Reflection',
+      url: '/reflection',
+      icon: Brain
+    }
+  ];
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -153,29 +103,37 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarGroupLabel>Application</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <Link href="/">
-                    <Home />
-                    <span>Dashboard</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <Link href="/task-management">
-                    <ListTodo />
-                    <span>Tasks</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
+              {applicationItems.map(item => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild isActive={pathname === item.url} tooltip={item.title}>
+                    <Link href={item.url}>
+                      <item.icon />
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {/* <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} /> */}
+        <SidebarGroup>
+          <SidebarGroupLabel>To-be developed</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {tobeDevelopedItems.map(item => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild isActive={pathname === item.url} tooltip={item.title}>
+                    <Link href={item.url}>
+                      <item.icon />
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />
