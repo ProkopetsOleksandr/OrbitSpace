@@ -7,7 +7,7 @@
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint",
-    "genapi": "set NODE_TLS_REJECT_UNAUTHORIZED=0&& npx openapi-typescript https://localhost:7284/openapi/v1.json -o ./src/types/api-types.d.ts"
+    "genapi": "set NODE_TLS_REJECT_UNAUTHORIZED=0&& npx openapi-typescript https://localhost:7284/openapi/v1.json -o ./src/types/api-types.ts --enum"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.34.0",

@@ -73,10 +73,9 @@ export interface components {
          * @example {
          *       "Id": "1",
          *       "Title": "Example Title",
-         *       "CreatedAt": "2025-11-21T15:42:28.1323833Z",
-         *       "UpdatedAt": "2025-11-21T15:47:28.1324102Z",
-         *       "Status": 1,
-         *       "StatusDescription": "New"
+         *       "CreatedAt": "2025-11-26T11:12:05.6886389Z",
+         *       "UpdatedAt": "2025-11-26T11:17:05.6888447Z",
+         *       "Status": 1
          *     }
          */
         TodoItem: {
@@ -87,7 +86,6 @@ export interface components {
             /** Format: date-time */
             updatedAt: string;
             status: components["schemas"]["TodoItemStatus"];
-            statusDescription?: null | string;
         };
         TodoItemResponse: {
             data: components["schemas"]["TodoItem"];
@@ -95,8 +93,8 @@ export interface components {
         TodoItemsResponse: {
             data: components["schemas"]["TodoItem"][];
         };
-        /** @enum {unknown} */
-        TodoItemStatus: "New" | "InProgress" | "Complete";
+        /** @enum {string} */
+        TodoItemStatus: TodoItemStatus;
         /**
          * @example {
          *       "Id": "1",
@@ -324,4 +322,9 @@ export interface operations {
             };
         };
     };
+}
+export enum TodoItemStatus {
+    New = "New",
+    InProgress = "InProgress",
+    Complete = "Complete"
 }
