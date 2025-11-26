@@ -6,7 +6,7 @@ import { TaskList } from './TaskList/TaskList';
 export const TaskManagementPage = () => {
   return (
     <Fragment>
-      <div className="grid auto-rows-min gap-4 md:grid-cols-3">
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 mb-4">
         <WidgetCard>Card1</WidgetCard>
         <WidgetCard>Card2</WidgetCard>
         <WidgetCard>
