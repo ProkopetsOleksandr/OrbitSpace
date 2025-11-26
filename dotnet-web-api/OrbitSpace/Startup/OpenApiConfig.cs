@@ -41,6 +41,7 @@ namespace OrbitSpace.WebApi.Startup
 
                 options.AddDocumentTransformer<BearerSecuritySchemeDocumentTransformer>();
                 options.AddSchemaTransformer(new OpenApiMetadataSchemaTransformer(schemaMetadataConfig));
+                options.AddSchemaTransformer<EnumSchemaTransformer>();
                 options.AddOperationTransformer<BearerSecurityRequirementOperationTransformer>();
             });
         }
