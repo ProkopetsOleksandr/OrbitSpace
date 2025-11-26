@@ -2,6 +2,7 @@
 
 import { TodoItem } from '@/entities/todoItem/model/types';
 import { createColumnHelper } from '@tanstack/react-table';
+import { TaskTableActions } from './TaskTableActions';
 
 const columnHelper = createColumnHelper<TodoItem>();
 
@@ -38,5 +39,12 @@ export const taskTableColumns = [
   columnHelper.accessor('updatedAt', {
     header: 'Updated At',
     cell: info => info.getValue()
+  }),
+
+  columnHelper.display({
+    id: 'actions',
+    cell: ({ row }) => {
+      return <TaskTableActions todoItem={row.original} />;
+    }
   })
 ];
