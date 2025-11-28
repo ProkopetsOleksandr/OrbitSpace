@@ -121,6 +121,13 @@
     @apply bg-background text-foreground;
     overflow-x: hidden;
   }
+
+  body[data-scroll-locked][data-scroll-locked] {
+    overflow: auto !important;
+  }
+  body[data-scroll-locked] {
+    margin-right: 0 !important;
+  }
 }
 
 @layer utilities {
