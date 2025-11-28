@@ -31,17 +31,17 @@ export const navItems: {
       icon: Home
     },
     {
+      title: 'Goals',
+      url: '/goals',
+      icon: Target
+    },
+    {
       title: 'Tasks',
       url: '/task-management',
       icon: ListTodo
     }
   ],
   navSecondaryItems: [
-    {
-      title: 'Goals',
-      url: '/goals',
-      icon: Target
-    },
     {
       title: 'Activities',
       url: '/activities',
