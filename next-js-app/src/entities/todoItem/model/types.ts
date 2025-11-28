@@ -1,4 +1,4 @@
-import { components, TodoItemStatus } from '@/types/api-types';
+import { components, TodoItemStatus } from '@/shared/types/api-types';
 
 export type TodoItem = components['schemas']['TodoItem'];
 export type CreateTodoItemPayload = components['schemas']['CreateTodoItemPayload'];

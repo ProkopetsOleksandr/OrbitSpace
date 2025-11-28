@@ -1,4 +1,4 @@
-import type { paths } from '@/types/api-types';
+import type { paths } from '@/shared/types/api-types';
 import { useAuth } from '@clerk/nextjs';
 import createClient from 'openapi-fetch';
 import { useMemo } from 'react';

@@ -1,4 +1,4 @@
-import { AppSidebar } from '@/components/app-sidebar';
+import { AppSidebar } from '@/shared/components/sidebar/app-sidebar';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -6,9 +6,9 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator
-} from '@/components/ui/breadcrumb';
-import { Separator } from '@/components/ui/separator';
-import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+} from '@/shared/components/ui/breadcrumb';
+import { Separator } from '@/shared/components/ui/separator';
+import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/shared/components/ui/sidebar';
 
 export default function DashboardLayout({
   children
@@ -19,7 +19,7 @@ export default function DashboardLayout({
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+        <header className="flex h-16 shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
           <div className="flex items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1 cursor-pointer" />
             <Separator orientation="vertical" className="mr-2 data-[orientation=vertical]:h-4" />
@@ -36,7 +36,7 @@ export default function DashboardLayout({
             </Breadcrumb>
           </div>
         </header>
-        <div className="p-4 pt-0">{children}</div>
+        <div className="p-4">{children}</div>
       </SidebarInset>
     </SidebarProvider>
   );
