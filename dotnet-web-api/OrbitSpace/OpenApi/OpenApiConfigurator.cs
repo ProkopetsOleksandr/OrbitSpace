@@ -7,7 +7,8 @@ namespace OrbitSpace.WebApi.OpenApi
         public static IReadOnlyDictionary<Type, OpenApiSchemaMetadata> GetSchemaMetadataConfig()
         {
             OpenApiSchemaProfile[] profiles = [
-                new TodoItemProfile()
+                new TodoItemProfile(),
+                new GoalProfile()
             ];
 
             var config = new Dictionary<Type, OpenApiSchemaMetadata>();

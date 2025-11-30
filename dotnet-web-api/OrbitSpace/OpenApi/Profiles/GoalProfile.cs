@@ -10,7 +10,7 @@ namespace OrbitSpace.WebApi.OpenApi.Profiles
             CreateSchema<GoalDto>()
                 .WithSchemaName("Goal")
                 .WithDescription("Represents a Goal")
-                .WithExample(new GoalDto(new Guid().ToString(), "Learn Aspire", LifeArea.Career, GoalStatus.NotStarted, DateTime.UtcNow, null, DateTime.UtcNow.AddMonths(3)));
+                .WithExample(new GoalDto(new Guid().ToString(), "Learn Aspire", LifeArea.Career, GoalStatus.NotStarted, new DateTime(2025, 11, 30, 17, 55, 0, DateTimeKind.Utc), null, new DateTime(2026, 3, 3, 17, 55, 0, DateTimeKind.Utc)));
         }
     }
 }
