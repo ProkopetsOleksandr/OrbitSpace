@@ -10,7 +10,7 @@ namespace OrbitSpace.WebApi.OpenApi.Profiles
             CreateSchema<TodoItemDto>()
                 .WithSchemaName("TodoItem")
                 .WithDescription("Represents a Todo item")
-                .WithExample(new TodoItemDto("1", "Example Title", DateTime.UtcNow.AddMinutes(-5), DateTime.UtcNow, TodoItemStatus.New));
+                .WithExample(new TodoItemDto("1", "Example Title", new DateTime(2025, 30, 11, 17, 55, 0, DateTimeKind.Utc), new DateTime(2025, 30, 11, 17, 55, 0, DateTimeKind.Utc), TodoItemStatus.New));
 
             CreateSchema<CreateTodoItemDto>()
                 .WithSchemaName("CreateTodoItemPayload")
