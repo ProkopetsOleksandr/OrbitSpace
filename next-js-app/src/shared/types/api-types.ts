@@ -4,6 +4,26 @@
  */
 
 export interface paths {
+    "/api/goals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get all goals
+         * @description Returns a list of goals associated with the currently authenticated user.
+         */
+        get: operations["getAllGoals"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/todo-items": {
         parameters: {
             query?: never;
@@ -60,6 +80,37 @@ export interface components {
         CreateTodoItemPayload: {
             title: string;
         };
+        /**
+         * @description Represents a Goal
+         * @example {
+         *       "Id": "00000000-0000-0000-0000-000000000000",
+         *       "Title": "Learn Aspire",
+         *       "LifeArea": 1,
+         *       "Status": 1,
+         *       "CreatedAt": "2025-11-30T17:55:00Z",
+         *       "CompletedDate": null,
+         *       "DueDate": "2026-03-03T17:55:00Z"
+         *     }
+         */
+        Goal: {
+            id: string;
+            title: string;
+            lifeArea: components["schemas"]["LifeArea"];
+            status: components["schemas"]["GoalStatus"];
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            completedDate: null | string;
+            /** Format: date-time */
+            dueDate: null | string;
+        };
+        GoalsResponse: {
+            data: components["schemas"]["Goal"][];
+        };
+        /** @enum {string} */
+        GoalStatus: GoalStatus;
+        /** @enum {string} */
+        LifeArea: LifeArea;
         ProblemDetails: {
             type?: null | string;
             title?: null | string;
@@ -73,8 +124,8 @@ export interface components {
          * @example {
          *       "Id": "1",
          *       "Title": "Example Title",
-         *       "CreatedAt": "2025-11-26T11:12:05.6886389Z",
-         *       "UpdatedAt": "2025-11-26T11:17:05.6888447Z",
+         *       "CreatedAt": "2025-11-30T17:55:00Z",
+         *       "UpdatedAt": "2025-11-30T17:55:00Z",
          *       "Status": 1
          *     }
          */
@@ -116,6 +167,35 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    getAllGoals: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GoalsResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
     getAllTodoItems: {
         parameters: {
             query?: never;
@@ -322,6 +402,23 @@ export interface operations {
             };
         };
     };
+}
+export enum GoalStatus {
+    NotStarted = "NotStarted",
+    Active = "Active",
+    OnHold = "OnHold",
+    Completed = "Completed",
+    Cancelled = "Cancelled"
+}
+export enum LifeArea {
+    Career = "Career",
+    Finance = "Finance",
+    Health = "Health",
+    FamilyAndFriends = "FamilyAndFriends",
+    Relationships = "Relationships",
+    PersonalGrowth = "PersonalGrowth",
+    FunAndRecreation = "FunAndRecreation",
+    PhysicalEnvironment = "PhysicalEnvironment"
 }
 export enum TodoItemStatus {
     New = "New",
