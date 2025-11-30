@@ -13,5 +13,6 @@ public class MongoDbContext : IMongoDbContext
     }
     
     public IMongoCollection<User> Users => _database.GetCollection<User>("users");
+    public IMongoCollection<Goal> Goals => _database.GetCollection<Goal>("goals");
     public IMongoCollection<TodoItem> TodoItems => _database.GetCollection<TodoItem>("todoItems");
 }
