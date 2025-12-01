@@ -1,3 +1,5 @@
+'use client';
+
 import type { paths } from '@/shared/types/api-types';
 import { useAuth } from '@clerk/nextjs';
 import createClient from 'openapi-fetch';

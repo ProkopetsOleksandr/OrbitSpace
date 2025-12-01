@@ -17,8 +17,31 @@ export interface paths {
          */
         get: operations["getAllGoals"];
         put?: never;
-        post?: never;
+        /** Create goal */
+        post: operations["createGoal"];
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/goals/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get goal details
+         * @description Returns goal details with specified Id associated with the currently authenticated user.
+         */
+        get: operations["getGoalDetailsById"];
+        /** Update goal */
+        put: operations["updateGoal"];
+        post?: never;
+        /** Delete goal */
+        delete: operations["deleteGoal"];
         options?: never;
         head?: never;
         patch?: never;
@@ -72,6 +95,32 @@ export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         /**
+         * @description Model used to create a goal
+         * @example {
+         *       "Title": "Build and publish a full-stack side project",
+         *       "LifeArea": 1,
+         *       "IsActive": false,
+         *       "IsSmartGoal": true,
+         *       "Description": "Create a complete full-stack web application to strengthen my portfolio and improve my .NET + React skills.",
+         *       "Metrics": "MVP completed; at least 3 core features implemented; deployed to production; project documented on GitHub.",
+         *       "AchievabilityRationale": "I already have experience with .NET and modern frontend frameworks, and I can dedicate 5–7 hours per week.",
+         *       "Motivation": "Grow as a developer, increase confidence in shipping real products, and potentially showcase it to future employers.",
+         *       "DueDate": "2026-03-03T17:55:00Z"
+         *     }
+         */
+        CreateGoalPayload: {
+            title: string;
+            lifeArea: components["schemas"]["LifeArea"];
+            isActive: boolean;
+            isSmartGoal: boolean;
+            description: null | string;
+            metrics: null | string;
+            achievabilityRationale: null | string;
+            motivation: null | string;
+            /** Format: date-time */
+            dueDate: null | string;
+        };
+        /**
          * @description Model used to create todo items
          * @example {
          *       "Title": "Example Title for Creation"
@@ -83,7 +132,7 @@ export interface components {
         /**
          * @description Represents a Goal
          * @example {
-         *       "Id": "00000000-0000-0000-0000-000000000000",
+         *       "Id": "678a4f92c1a3b05f447e12f9",
          *       "Title": "Learn Aspire",
          *       "LifeArea": 1,
          *       "Status": 1,
@@ -104,6 +153,9 @@ export interface components {
             /** Format: date-time */
             dueDate: null | string;
         };
+        GoalResponse: {
+            data: components["schemas"]["Goal"];
+        };
         GoalsResponse: {
             data: components["schemas"]["Goal"][];
         };
@@ -122,7 +174,7 @@ export interface components {
         /**
          * @description Represents a Todo item
          * @example {
-         *       "Id": "1",
+         *       "Id": "679c2e4fa7b19f34d2c8f91b",
          *       "Title": "Example Title",
          *       "CreatedAt": "2025-11-30T17:55:00Z",
          *       "UpdatedAt": "2025-11-30T17:55:00Z",
@@ -147,8 +199,36 @@ export interface components {
         /** @enum {string} */
         TodoItemStatus: TodoItemStatus;
         /**
+         * @description Model used to update a goal
          * @example {
-         *       "Id": "1",
+         *       "Id": "678a4f92c1a3b05f447e12f9",
+         *       "Title": "Build and publish a full-stack side project",
+         *       "LifeArea": 1,
+         *       "Status": 2,
+         *       "IsSmartGoal": true,
+         *       "Description": "Create a complete full-stack web application to strengthen my portfolio and improve my .NET + React skills.",
+         *       "Metrics": "MVP completed; 3–5 core features implemented; deployed to production; full documentation on GitHub.",
+         *       "AchievabilityRationale": "I have experience with .NET and React, plus enough weekly time to work on the project.",
+         *       "Motivation": "Improve my practical engineering skills and build a strong portfolio project.",
+         *       "DueDate": "2026-03-03T17:55:00Z"
+         *     }
+         */
+        UpdateGoalPayload: {
+            id: string;
+            title: string;
+            lifeArea: components["schemas"]["LifeArea"];
+            status: components["schemas"]["GoalStatus"];
+            isSmartGoal: boolean;
+            description: null | string;
+            metrics: null | string;
+            achievabilityRationale: null | string;
+            motivation: null | string;
+            /** Format: date-time */
+            dueDate: null | string;
+        };
+        /**
+         * @example {
+         *       "Id": "679c2e4fa7b19f34d2c8f91b",
          *       "Title": "New title",
          *       "Status": 2
          *     }
@@ -187,6 +267,183 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    createGoal: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateGoalPayload"];
+                "application/*+json": components["schemas"]["CreateGoalPayload"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GoalResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    getGoalDetailsById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GoalResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    updateGoal: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateGoalPayload"];
+                "application/*+json": components["schemas"]["UpdateGoalPayload"];
+            };
+        };
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    deleteGoal: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };
