@@ -4,6 +4,7 @@ import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
 import { ArrowDown, ArrowRight, ArrowUp, CheckCircle2, Circle, icons, PauseCircle, Plus, Timer, XCircle } from 'lucide-react';
 import { useState } from 'react';
+import { CreateGoalDialog } from '../Dialogs/CreateGoalDialog';
 import { DataTableFacetedFilter } from './FacetedFilter';
 
 const PriorityOptions = [
@@ -13,35 +14,15 @@ const PriorityOptions = [
 ];
 
 const GoalStatusOptions = [
-  {
-    label: 'New',
-    value: 'New',
-    icon: Circle
-  },
-  {
-    label: 'Active',
-    value: 'Active',
-    icon: Timer
-  },
-  {
-    label: 'On Hold',
-    value: 'OnHold',
-    icon: PauseCircle
-  },
-  {
-    label: 'Completed',
-    value: 'Completed',
-    icon: CheckCircle2
-  },
-  {
-    label: 'Cancelled',
-    value: 'Cancelled',
-    icon: XCircle
-  }
+  { label: 'New', value: 'New', icon: Circle },
+  { label: 'Active', value: 'Active', icon: Timer },
+  { label: 'On Hold', value: 'OnHold', icon: PauseCircle },
+  { label: 'Completed', value: 'Completed', icon: CheckCircle2 },
+  { label: 'Cancelled', value: 'Cancelled', icon: XCircle }
 ];
 
 export const Toolbar = () => {
-  var [titleFilter, settTitleFilter] = useState<string>();
+  var [titleFilter, setTitleFilter] = useState<string>();
 
   return (
     <div className="flex items-center justify-between">
@@ -50,7 +31,7 @@ export const Toolbar = () => {
           <Input
             placeholder="Filter goals..."
             value={titleFilter}
-            onChange={event => settTitleFilter(event.target.value)}
+            onChange={event => setTitleFilter(event.target.value)}
             className="h-8 w-[150px] lg:w-[250px]"
           />
         </div>
@@ -60,10 +41,12 @@ export const Toolbar = () => {
         </div>
       </div>
       <div>
-        <Button className="cursor-pointer">
-          <Plus className="mr-2 h-4 w-4" />
-          Add Goal
-        </Button>
+        <CreateGoalDialog>
+          <Button className="cursor-pointer">
+            <Plus className="mr-2 h-4 w-4" />
+            Add Goal
+          </Button>
+        </CreateGoalDialog>
       </div>
     </div>
   );
