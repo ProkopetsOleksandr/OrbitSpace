@@ -4,7 +4,7 @@ import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
 import { ArrowDown, ArrowRight, ArrowUp, CheckCircle2, Circle, icons, PauseCircle, Plus, Timer, XCircle } from 'lucide-react';
 import { useState } from 'react';
-import { CreateGoalDialog } from '../Dialogs/CreateGoalDialog';
+import { CreateGoalDialog } from '../dialogs/CreateGoalDialog';
 import { DataTableFacetedFilter } from './FacetedFilter';
 
 const PriorityOptions = [

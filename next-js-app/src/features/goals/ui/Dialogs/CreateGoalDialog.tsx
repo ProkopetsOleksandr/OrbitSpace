@@ -10,12 +10,11 @@ import {
   DialogTitle,
   DialogTrigger
 } from '@/shared/components/ui/dialog';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/shared/components/ui/form';
-import { Input } from '@/shared/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { DefaultValues, useForm } from 'react-hook-form';
-import { useCreateGoal } from '../../api/goalQueries';
+import { useCreateGoal } from '../../api/goal-queries';
+import { CreateGoalForm } from '../forms/CreateGoalForm';
 
 const defaultValues: DefaultValues<goalCreateSchemaType> = {
   title: '',
@@ -52,7 +51,7 @@ export const CreateGoalDialog = ({ children }: { children: React.ReactNode }) =>
 
     createGoal(payload, {
       onSuccess: () => {
-        form.reset(defaultValues);
+        form.reset();
         setOpen(false);
       }
     });
@@ -61,6 +60,7 @@ export const CreateGoalDialog = ({ children }: { children: React.ReactNode }) =>
   const handleOpenChange = (newOpenState: boolean) => {
     if (newOpenState) {
       setOpen(true);
+      form.reset();
       return;
     }
 
@@ -69,8 +69,6 @@ export const CreateGoalDialog = ({ children }: { children: React.ReactNode }) =>
       if (!confirmClose) {
         return;
       }
-
-      form.reset(defaultValues);
     }
 
     setOpen(false);
@@ -84,23 +82,7 @@ export const CreateGoalDialog = ({ children }: { children: React.ReactNode }) =>
           <DialogTitle>Set a New Goal</DialogTitle>
           <DialogDescription>Clarity is power. Define exactly what success looks like for you.</DialogDescription>
         </DialogHeader>
-        <Form {...form}>
-          <form id="create-goal-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Title</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Eg. Learn React" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </form>
-        </Form>
+        <CreateGoalForm id="create-goal-form" form={form} onSubmit={onSubmit} />
         <DialogFooter>
           <Button type="submit" form="create-goal-form" disabled={isPending}>
             {isPending ? 'Saving...' : 'Save'}
