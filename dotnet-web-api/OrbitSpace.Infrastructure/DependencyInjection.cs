@@ -15,10 +15,12 @@ public static class DependencyInjection
     {
         services.AddMongoDbServices();
 
+        services.AddScoped<ITokenService, JwtTokenService>()
+            .AddScoped<IPasswordHasherService, BCryptPasswordHasherService>();
+
         services.AddScoped<IUserRepository, UserRepository>()
             .AddScoped<ITodoItemRepository, TodoItemRepository>()
-            .AddScoped<ITokenService, JwtTokenService>()
-            .AddScoped<IPasswordHasherService, BCryptPasswordHasherService>();
+            .AddScoped<IGoalRepository, GoalRepository>();
 
         return services;
     }
