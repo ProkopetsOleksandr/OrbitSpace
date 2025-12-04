@@ -77,13 +77,15 @@ export const CreateGoalDialog = ({ children }: { children: React.ReactNode }) =>
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
+      <DialogContent className="max-h-[85vh] flex flex-col p-0 gap-0 sm:max-w-lg">
+        <DialogHeader className="px-6 py-4 border-b">
           <DialogTitle>Set a New Goal</DialogTitle>
           <DialogDescription>Clarity is power. Define exactly what success looks like for you.</DialogDescription>
         </DialogHeader>
-        <CreateGoalForm id="create-goal-form" form={form} onSubmit={onSubmit} />
-        <DialogFooter>
+        <div className="flex-1 overflow-y-auto px-6 py-4">
+          <CreateGoalForm id="create-goal-form" form={form} onSubmit={onSubmit} />
+        </div>
+        <DialogFooter className="px-6 py-4 border-t">
           <Button type="submit" form="create-goal-form" disabled={isPending}>
             {isPending ? 'Saving...' : 'Save'}
           </Button>
