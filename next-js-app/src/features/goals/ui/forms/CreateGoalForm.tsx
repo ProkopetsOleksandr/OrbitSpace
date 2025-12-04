@@ -1,15 +1,26 @@
+import { format } from 'date-fns';
+import { CalendarIcon } from 'lucide-react';
+
 import { goalCreateSchemaType } from '@/entities/goal/model/schemas';
+import { Button } from '@/shared/components/ui/button';
+import { Calendar } from '@/shared/components/ui/calendar';
 import { Checkbox } from '@/shared/components/ui/checkbox';
 import { Collapsible, CollapsibleContent } from '@/shared/components/ui/collapsible';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
+import { Popover, PopoverContent, PopoverTrigger } from '@/shared/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
 import { Textarea } from '@/shared/components/ui/textarea';
+import { cn } from '@/shared/lib/utils';
 import { LifeArea } from '@/shared/types/api-types';
 import { GenericFormProps } from '@/shared/types/form';
 
 export const CreateGoalForm = ({ form, onSubmit, id }: GenericFormProps<goalCreateSchemaType>) => {
   const isSmartGoal = form.watch('isSmartGoal');
+
+  const today = new Date();
+  const maxDate = new Date(today);
+  maxDate.setFullYear(today.getFullYear() + 10);
 
   return (
     <Form {...form}>
@@ -81,7 +92,7 @@ export const CreateGoalForm = ({ form, onSubmit, id }: GenericFormProps<goalCrea
 
         <Collapsible open={isSmartGoal}>
           <CollapsibleContent className="space-y-4 animate-collapsible-down">
-            <h4 className="text-sm font-medium text-muted-foreground mb-4">SMART Criteria</h4>
+            <h2 className="text-sm font-medium text-muted-foreground mb-4">SMART Criteria</h2>
 
             <FormField
               control={form.control}
@@ -154,6 +165,41 @@ export const CreateGoalForm = ({ form, onSubmit, id }: GenericFormProps<goalCrea
                       value={field.value || ''}
                     />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="dueDate" // Убедись, что это имя совпадает со схемой zod
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Time-bound</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant={'outline'}
+                          className={cn('w-full pl-3 text-left font-normal', !field.value && 'text-muted-foreground')}>
+                          {field.value ? format(field.value, 'PPP') : <span>Pick a deadline</span>}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        disabled={date => date < today}
+                        today={today}
+                        captionLayout="dropdown-years"
+                        startMonth={today}
+                        endMonth={maxDate}
+                      />
+                    </PopoverContent>
+                  </Popover>
                   <FormMessage />
                 </FormItem>
               )}
