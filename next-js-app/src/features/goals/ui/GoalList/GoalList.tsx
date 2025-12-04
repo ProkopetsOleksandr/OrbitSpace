@@ -1,12 +1,14 @@
 'use client';
 
-import { goalsTestData } from '../GoalsPage';
+import { useGoals } from '../../api/goal-queries';
 import { GoalsTable } from './GoalsTable/GoalsTable';
 
 export const GoalList = () => {
+  const { data: goals, isLoading, error } = useGoals();
+
   return (
     <div>
-      <GoalsTable data={goalsTestData} />
+      <GoalsTable data={goals} />
     </div>
   );
 };

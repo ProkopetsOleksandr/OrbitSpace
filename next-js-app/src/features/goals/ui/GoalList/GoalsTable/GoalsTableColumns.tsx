@@ -1,7 +1,9 @@
 'use client';
 
 import { createColumnHelper } from '@tanstack/react-table';
-import { Goal } from '../../GoalsPage';
+
+import { Goal, GoalStatus } from '@/entities/goal/model/types';
+import { formatDate } from 'date-fns';
 import { GoalsTableRowActions } from './GoalsTableRowActions';
 
 const columnHelper = createColumnHelper<Goal>();
@@ -18,13 +20,13 @@ export const columns = [
       const status = row.original.status;
 
       const statusClasses =
-        status === 'New'
+        status === GoalStatus.NotStarted
           ? 'bg-blue-100 text-blue-800'
-          : status === 'Active'
+          : status === GoalStatus.Active
           ? 'bg-yellow-100 text-yellow-800'
-          : status === 'Completed'
+          : status === GoalStatus.Completed
           ? 'bg-green-100 text-green-800'
-          : status === 'OnHold'
+          : status === GoalStatus.OnHold
           ? 'bg-gray-200 text-gray-700'
           : '';
 
@@ -40,21 +42,21 @@ export const columns = [
     }
   }),
 
-  columnHelper.accessor('category', {
+  columnHelper.accessor('lifeArea', {
     header: () => 'Category',
     cell: info => info.getValue()
   }),
 
   columnHelper.accessor('createdAt', {
     header: () => 'Created At',
-    cell: info => info.getValue().toLocaleDateString()
+    cell: info => formatDate(info.getValue(), 'MM/dd/yyyy')
   }),
 
-  columnHelper.accessor('deadline', {
+  columnHelper.accessor('dueDate', {
     header: () => 'Deadline',
     cell: info => {
       const value = info.getValue();
-      return value ? value.toLocaleDateString() : 'N/A';
+      return value ? formatDate(value, 'MM/dd/yyyy') : 'N/A';
     }
   }),
 
@@ -62,7 +64,7 @@ export const columns = [
     header: () => 'Completed Date',
     cell: info => {
       const value = info.getValue();
-      return value ? value.toLocaleDateString() : 'N/A';
+      return value ? formatDate(value, 'MM/dd/yyyy') : 'N/A';
     }
   }),
 

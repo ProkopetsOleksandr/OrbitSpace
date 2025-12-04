@@ -1,6 +1,7 @@
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+
 import { useGoalApi } from '@/entities/goal/api/goalApi';
 import { CreateGoalPayload } from '@/entities/goal/model/types';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 const goalQueryKeys = {
   all: ['goals'] as const,

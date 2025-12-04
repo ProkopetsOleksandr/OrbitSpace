@@ -72,7 +72,7 @@ export const CreateGoalForm = ({ form, onSubmit, id }: GenericFormProps<goalCrea
               <FormControl>
                 <Checkbox checked={field.value} onCheckedChange={field.onChange} />
               </FormControl>
-              <FormLabel>Set as Active Goal</FormLabel>
+              <FormLabel>Activate on creation</FormLabel>
             </FormItem>
           )}
         />
@@ -85,7 +85,7 @@ export const CreateGoalForm = ({ form, onSubmit, id }: GenericFormProps<goalCrea
               <FormControl>
                 <Checkbox checked={field.value} onCheckedChange={field.onChange} />
               </FormControl>
-              <FormLabel>Make this a SMART Goal</FormLabel>
+              <FormLabel>SMART Goal</FormLabel>
             </FormItem>
           )}
         />

@@ -1,3 +1,6 @@
+import { MoreHorizontal } from 'lucide-react';
+
+import { Goal } from '@/entities/goal/model/types';
 import { Button } from '@/shared/components/ui/button';
 import {
   DropdownMenu,
@@ -7,8 +10,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/shared/components/ui/dropdown-menu';
-import { MoreHorizontal } from 'lucide-react';
-import { Goal } from '../../GoalsPage';
 
 export const GoalsTableRowActions = ({ row }: { row: Goal }) => {
   return (
