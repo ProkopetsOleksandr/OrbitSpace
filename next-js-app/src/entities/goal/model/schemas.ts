@@ -8,6 +8,18 @@ export const goalCreateSchema = z
     lifeArea: z.enum(LifeArea, { error: 'Field is required' }),
     isActive: z.boolean(),
     isSmartGoal: z.boolean(),
+    imageUrl: z
+      .string()
+      .optional()
+      .refine(val => {
+        if (!val) return true;
+        try {
+          new URL(val);
+          return true;
+        } catch {
+          return false;
+        }
+      }, 'Incorrect URL format'),
 
     // SMART Goal Details
     description: z.string().optional(),
