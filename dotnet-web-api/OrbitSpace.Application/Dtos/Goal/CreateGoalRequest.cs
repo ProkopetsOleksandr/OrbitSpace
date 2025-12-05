@@ -11,4 +11,4 @@ public record CreateGoalRequest(
     string? Metrics,
     string? AchievabilityRationale,
     string? Motivation,
-    DateTime? DueDate);
+    DateTime? DueAtUtc);

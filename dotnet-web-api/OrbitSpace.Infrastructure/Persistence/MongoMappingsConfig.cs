@@ -1,5 +1,5 @@
 ﻿using MongoDB.Bson.Serialization.Conventions;
-using OrbitSpace.Domain.Entities;
+
 using OrbitSpace.Infrastructure.Persistence.Maps;
 
 namespace OrbitSpace.Infrastructure.Persistence;
@@ -13,10 +13,11 @@ public static class MongoMappingsConfig
             new CamelCaseElementNameConvention()
         };
 
-        ConventionRegistry.Register("camelCase", conventionPack, t => true); // Apply to all classes
+        ConventionRegistry.Register("AppConventions", conventionPack, t => true); // Apply to all classes
 
 
         UserMap.Configure();
         TodoItemMap.Configure();
+        GoalMap.Configure();
     }
 }

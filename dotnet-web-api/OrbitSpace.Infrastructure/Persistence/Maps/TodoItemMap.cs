@@ -16,6 +16,14 @@ public static class TodoItemMap
             cm.MapIdMember(m => m.Id)
                 .SetIdGenerator(StringObjectIdGenerator.Instance)
                 .SetSerializer(new StringSerializer(BsonType.ObjectId));
+            
+            cm.MapMember(m => m.CreatedAtUtc)
+                .SetElementName("createdAt")
+                .SetSerializer(new DateTimeSerializer(DateTimeKind.Utc));
+
+            cm.MapMember(m => m.UpdatedAtUtc)
+                .SetElementName("updatedAt")
+                .SetSerializer(new DateTimeSerializer(DateTimeKind.Utc));
         });
     }
 }

@@ -5,7 +5,7 @@ namespace OrbitSpace.Application.Dtos.TodoItem
     public record TodoItemDto(
     string Id,
     string Title,
-    DateTime CreatedAt,
-    DateTime UpdatedAt,
+    DateTime CreatedAtUtc,
+    DateTime UpdatedAtUtc,
     TodoItemStatus Status);
 }

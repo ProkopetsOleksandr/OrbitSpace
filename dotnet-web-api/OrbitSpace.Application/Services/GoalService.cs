@@ -25,7 +25,7 @@ namespace OrbitSpace.Application.Services
 
         public async Task<OperationResult<GoalDto>> CreateAsync(CreateGoalRequest request, string userId)
         {
-            if (request is { IsActive: true, DueDate: null })
+            if (request is { IsActive: true, DueAtUtc: null })
             {
                 return OperationResultError.Validation("Due date is required for active goals");
             }
@@ -37,10 +37,10 @@ namespace OrbitSpace.Application.Services
                 Title = request.Title,
                 LifeArea = request.LifeArea,
                 Status = request.IsActive ? GoalStatus.Active : GoalStatus.NotStarted,
-                CreatedAt = currentDateTime,
-                UpdatedAt = currentDateTime,
-                StartDate = request.IsActive ? currentDateTime : null,
-                DueDate = request.DueDate
+                CreatedAtUtc = currentDateTime,
+                UpdatedAtUtc = currentDateTime,
+                StartedAtUtc = request.IsActive ? currentDateTime : null,
+                DueAtUtc = request.DueAtUtc
             };
 
             if (request.IsSmartGoal)
@@ -73,7 +73,7 @@ namespace OrbitSpace.Application.Services
             entityInDb.Title = request.Title;
             entityInDb.LifeArea = request.LifeArea;
             entityInDb.Status = request.Status;
-            entityInDb.DueDate = request.DueDate;
+            entityInDb.DueAtUtc = request.DueDate;
             entityInDb.IsSmartGoal = request.IsSmartGoal;
             entityInDb.Description = request.Description;
             entityInDb.Metrics = request.Metrics;
@@ -83,19 +83,19 @@ namespace OrbitSpace.Application.Services
             var currentDateTime = DateTime.UtcNow;
             if (request.Status == GoalStatus.Completed)
             {
-                entityInDb.CompletedDate = currentDateTime;
+                entityInDb.CompletedAtUtc = currentDateTime;
             }
 
             if (entityInDb.Status != GoalStatus.Active
                 && request.Status == GoalStatus.Active)
             {
-                entityInDb.StartDate = currentDateTime;
+                entityInDb.StartedAtUtc = currentDateTime;
             }
 
             if (entityInDb.Status != GoalStatus.Cancelled
                 && request.Status == GoalStatus.Cancelled)
             {
-                entityInDb.CancelledDate = currentDateTime;
+                entityInDb.CancelledAtUtc = currentDateTime;
             }
 
             await goalRepository.UpdateAsync(entityInDb);

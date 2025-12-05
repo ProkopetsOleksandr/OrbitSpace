@@ -7,8 +7,8 @@ namespace OrbitSpace.Application.Dtos.Goal
         string Title,
         LifeArea LifeArea,
         GoalStatus Status,
-        DateTime CreatedAt,
-        DateTime? CompletedDate,
-        DateTime? DueDate
+        DateTime CreatedAtUtc,
+        DateTime? CompletedAtUtc,
+        DateTime? DueAtUtc
     );
 }

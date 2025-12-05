@@ -9,11 +9,11 @@ namespace OrbitSpace.Domain.Entities
         public string Title { get; set; } = string.Empty;
         public LifeArea LifeArea { get;set; }
         public GoalStatus Status { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public DateTime UpdatedAt { get; set; }
-        public DateTime? StartDate { get; set; }
-        public DateTime? CompletedDate { get; set; }
-        public DateTime? CancelledDate { get; set; }
+        public DateTime CreatedAtUtc { get; set; }
+        public DateTime UpdatedAtUtc { get; set; }
+        public DateTime? StartedAtUtc { get; set; }
+        public DateTime? CompletedAtUtc { get; set; }
+        public DateTime? CancelledAtUtc { get; set; }
 
         // Smart Goal Attributes
         public bool IsSmartGoal { get; set; }
@@ -21,6 +21,6 @@ namespace OrbitSpace.Domain.Entities
         public string? Metrics { get; set; }
         public string? AchievabilityRationale { get; set; }
         public string? Motivation { get; set; }
-        public DateTime? DueDate { get; set; }
+        public DateTime? DueAtUtc { get; set; }
     }
 }

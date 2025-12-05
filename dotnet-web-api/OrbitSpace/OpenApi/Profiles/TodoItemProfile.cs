@@ -13,8 +13,8 @@ namespace OrbitSpace.WebApi.OpenApi.Profiles
                 .WithExample(new TodoItemDto(
                     Id: "679c2e4fa7b19f34d2c8f91b",
                     Title: "Example Title",
-                    CreatedAt: new DateTime(2025, 11, 30, 17, 55, 0, DateTimeKind.Utc),
-                    UpdatedAt: new DateTime(2025, 11, 30, 17, 55, 0, DateTimeKind.Utc),
+                    CreatedAtUtc: new DateTime(2025, 11, 30, 17, 55, 0, DateTimeKind.Utc),
+                    UpdatedAtUtc: new DateTime(2025, 11, 30, 17, 55, 0, DateTimeKind.Utc),
                     Status: TodoItemStatus.New));
 
             CreateSchema<CreateTodoItemDto>()

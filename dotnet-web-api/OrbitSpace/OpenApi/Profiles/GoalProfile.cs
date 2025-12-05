@@ -15,9 +15,9 @@ namespace OrbitSpace.WebApi.OpenApi.Profiles
                     Title: "Learn Aspire",
                     LifeArea: LifeArea.Career,
                     Status: GoalStatus.NotStarted,
-                    CreatedAt: new DateTime(2025, 11, 30, 17, 55, 0, DateTimeKind.Utc),
-                    CompletedDate: null,
-                    DueDate: new DateTime(2026, 3, 3, 17, 55, 0, DateTimeKind.Utc)));
+                    CreatedAtUtc: new DateTime(2025, 11, 30, 17, 55, 0, DateTimeKind.Utc),
+                    CompletedAtUtc: null,
+                    DueAtUtc: new DateTime(2026, 3, 3, 17, 55, 0, DateTimeKind.Utc)));
 
             CreateSchema<CreateGoalRequest>()
                 .WithSchemaName("CreateGoalPayload")
@@ -31,7 +31,7 @@ namespace OrbitSpace.WebApi.OpenApi.Profiles
                     Metrics: "MVP completed; at least 3 core features implemented; deployed to production; project documented on GitHub.",
                     AchievabilityRationale: "I already have experience with .NET and modern frontend frameworks, and I can dedicate 5–7 hours per week.",
                     Motivation: "Grow as a developer, increase confidence in shipping real products, and potentially showcase it to future employers.",
-                    DueDate: new DateTime(2026, 3, 3, 17, 55, 0, DateTimeKind.Utc)));
+                    DueAtUtc: new DateTime(2026, 3, 3, 17, 55, 0, DateTimeKind.Utc)));
 
             CreateSchema<UpdateGoalRequest>()
                 .WithSchemaName("UpdateGoalPayload")

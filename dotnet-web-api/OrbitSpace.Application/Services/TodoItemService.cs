@@ -36,8 +36,8 @@ namespace OrbitSpace.Application.Services
             {
                 UserId = userId,
                 Title = todoItem.Title,
-                CreatedAt = currentDateTime,
-                UpdatedAt = currentDateTime,
+                CreatedAtUtc = currentDateTime,
+                UpdatedAtUtc = currentDateTime,
                 Status = TodoItemStatus.New
             });
 
@@ -54,7 +54,7 @@ namespace OrbitSpace.Application.Services
 
             entityInDb.Title = todoItem.Title;
             entityInDb.Status = todoItem.Status;
-            entityInDb.UpdatedAt = DateTime.UtcNow;
+            entityInDb.UpdatedAtUtc = DateTime.UtcNow;
 
             await todoItemRepository.UpdateAsync(entityInDb);
 
