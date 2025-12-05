@@ -138,7 +138,8 @@ export interface components {
          *       "Status": 1,
          *       "CreatedAtUtc": "2025-11-30T17:55:00Z",
          *       "CompletedAtUtc": null,
-         *       "DueAtUtc": "2026-03-03T17:55:00Z"
+         *       "DueAtUtc": "2026-03-03T17:55:00Z",
+         *       "IsSmartGoal": true
          *     }
          */
         Goal: {
@@ -152,6 +153,7 @@ export interface components {
             completedAtUtc: null | string;
             /** Format: date-time */
             dueAtUtc: null | string;
+            isSmartGoal: boolean;
         };
         GoalResponse: {
             data: components["schemas"]["Goal"];

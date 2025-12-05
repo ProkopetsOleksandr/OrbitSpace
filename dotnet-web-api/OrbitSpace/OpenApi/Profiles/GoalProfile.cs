@@ -17,7 +17,8 @@ namespace OrbitSpace.WebApi.OpenApi.Profiles
                     Status: GoalStatus.NotStarted,
                     CreatedAtUtc: new DateTime(2025, 11, 30, 17, 55, 0, DateTimeKind.Utc),
                     CompletedAtUtc: null,
-                    DueAtUtc: new DateTime(2026, 3, 3, 17, 55, 0, DateTimeKind.Utc)));
+                    DueAtUtc: new DateTime(2026, 3, 3, 17, 55, 0, DateTimeKind.Utc),
+                    IsSmartGoal: true));
 
             CreateSchema<CreateGoalRequest>()
                 .WithSchemaName("CreateGoalPayload")

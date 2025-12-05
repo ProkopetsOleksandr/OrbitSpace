@@ -9,6 +9,7 @@ namespace OrbitSpace.Application.Dtos.Goal
         GoalStatus Status,
         DateTime CreatedAtUtc,
         DateTime? CompletedAtUtc,
-        DateTime? DueAtUtc
+        DateTime? DueAtUtc,
+        bool IsSmartGoal
     );
 }
