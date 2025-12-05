@@ -105,7 +105,7 @@ export interface components {
          *       "Metrics": "MVP completed; at least 3 core features implemented; deployed to production; project documented on GitHub.",
          *       "AchievabilityRationale": "I already have experience with .NET and modern frontend frameworks, and I can dedicate 5–7 hours per week.",
          *       "Motivation": "Grow as a developer, increase confidence in shipping real products, and potentially showcase it to future employers.",
-         *       "DueDate": "2026-03-03T17:55:00Z"
+         *       "DueAtUtc": "2026-03-03T17:55:00Z"
          *     }
          */
         CreateGoalPayload: {
@@ -118,7 +118,7 @@ export interface components {
             achievabilityRationale: null | string;
             motivation: null | string;
             /** Format: date-time */
-            dueDate: null | string;
+            dueAtUtc: null | string;
         };
         /**
          * @description Model used to create todo items
@@ -136,9 +136,9 @@ export interface components {
          *       "Title": "Learn Aspire",
          *       "LifeArea": 1,
          *       "Status": 1,
-         *       "CreatedAt": "2025-11-30T17:55:00Z",
-         *       "CompletedDate": null,
-         *       "DueDate": "2026-03-03T17:55:00Z"
+         *       "CreatedAtUtc": "2025-11-30T17:55:00Z",
+         *       "CompletedAtUtc": null,
+         *       "DueAtUtc": "2026-03-03T17:55:00Z"
          *     }
          */
         Goal: {
@@ -147,11 +147,11 @@ export interface components {
             lifeArea: components["schemas"]["LifeArea"];
             status: components["schemas"]["GoalStatus"];
             /** Format: date-time */
-            createdAt: string;
+            createdAtUtc: string;
             /** Format: date-time */
-            completedDate: null | string;
+            completedAtUtc: null | string;
             /** Format: date-time */
-            dueDate: null | string;
+            dueAtUtc: null | string;
         };
         GoalResponse: {
             data: components["schemas"]["Goal"];
@@ -176,8 +176,8 @@ export interface components {
          * @example {
          *       "Id": "679c2e4fa7b19f34d2c8f91b",
          *       "Title": "Example Title",
-         *       "CreatedAt": "2025-11-30T17:55:00Z",
-         *       "UpdatedAt": "2025-11-30T17:55:00Z",
+         *       "CreatedAtUtc": "2025-11-30T17:55:00Z",
+         *       "UpdatedAtUtc": "2025-11-30T17:55:00Z",
          *       "Status": 1
          *     }
          */
@@ -185,9 +185,9 @@ export interface components {
             id: string;
             title: string;
             /** Format: date-time */
-            createdAt: string;
+            createdAtUtc: string;
             /** Format: date-time */
-            updatedAt: string;
+            updatedAtUtc: string;
             status: components["schemas"]["TodoItemStatus"];
         };
         TodoItemResponse: {

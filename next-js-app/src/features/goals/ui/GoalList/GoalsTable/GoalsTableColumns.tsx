@@ -47,12 +47,12 @@ export const columns = [
     cell: info => info.getValue()
   }),
 
-  columnHelper.accessor('createdAt', {
+  columnHelper.accessor('createdAtUtc', {
     header: () => 'Created At',
     cell: info => formatDate(info.getValue(), 'MM/dd/yyyy')
   }),
 
-  columnHelper.accessor('dueDate', {
+  columnHelper.accessor('dueAtUtc', {
     header: () => 'Deadline',
     cell: info => {
       const value = info.getValue();
@@ -60,7 +60,7 @@ export const columns = [
     }
   }),
 
-  columnHelper.accessor('completedDate', {
+  columnHelper.accessor('completedAtUtc', {
     header: () => 'Completed Date',
     cell: info => {
       const value = info.getValue();

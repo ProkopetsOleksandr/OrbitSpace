@@ -31,12 +31,12 @@ export const taskTableColumns = [
     }
   }),
 
-  columnHelper.accessor('createdAt', {
+  columnHelper.accessor('createdAtUtc', {
     header: 'Created At',
     cell: info => info.getValue()
   }),
 
-  columnHelper.accessor('updatedAt', {
+  columnHelper.accessor('updatedAtUtc', {
     header: 'Updated At',
     cell: info => info.getValue()
   }),

@@ -43,11 +43,10 @@ export const CreateGoalDialog = ({ children }: { children: React.ReactNode }) =>
       metrics: values.metrics ?? null,
       achievabilityRationale: values.achievabilityRationale ?? null,
       motivation: values.motivation ?? null,
-      dueDate: values.dueDate ? values.dueDate.toISOString() : null
+      dueAtUtc: values.dueDate ? values.dueDate.toISOString() : null
     };
 
     console.log(payload);
-    return;
 
     createGoal(payload, {
       onSuccess: () => {
