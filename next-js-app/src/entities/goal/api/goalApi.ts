@@ -1,4 +1,4 @@
-import { useApiClient } from '@/shared/lib/api/apiClient';
+import { useApiClient } from '@/shared/api/api-client';
 import { CreateGoalPayload, Goal, UpdateGoalPayload } from '../model/types';
 
 export function useGoalApi() {

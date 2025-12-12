@@ -1,16 +1,18 @@
 'use client';
 
-import type { paths } from '@/shared/types/api-types';
 import { useAuth } from '@clerk/nextjs';
 import createClient from 'openapi-fetch';
 import { useMemo } from 'react';
+
+import { backendBaseUrl } from '@/shared/config';
+import type { paths } from './v1';
 
 export const useApiClient = () => {
   const { getToken } = useAuth();
 
   return useMemo(() => {
     const client = createClient<paths>({
-      baseUrl: process.env.NEXT_PUBLIC_BACKEND_BASE_URL
+      baseUrl: backendBaseUrl
     });
 
     client.use({

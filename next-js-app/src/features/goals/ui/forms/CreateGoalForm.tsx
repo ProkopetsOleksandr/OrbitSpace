@@ -2,6 +2,7 @@ import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
 
 import { goalCreateSchemaType } from '@/entities/goal/model/schemas';
+import { LifeArea } from '@/entities/goal/model/types';
 import { Button } from '@/shared/components/ui/button';
 import { Calendar } from '@/shared/components/ui/calendar';
 import { Checkbox } from '@/shared/components/ui/checkbox';
@@ -12,7 +13,6 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/shared/components/ui/
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
 import { Textarea } from '@/shared/components/ui/textarea';
 import { cn } from '@/shared/lib/utils';
-import { LifeArea } from '@/shared/types/api-types';
 import { GenericFormProps } from '@/shared/types/form';
 
 export const CreateGoalForm = ({ form, onSubmit, id }: GenericFormProps<goalCreateSchemaType>) => {

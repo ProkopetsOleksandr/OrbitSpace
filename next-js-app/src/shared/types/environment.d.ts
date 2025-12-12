@@ -1,7 +1,7 @@
 namespace NodeJS {
   interface ProcessEnv {
     JWT_SECRET: string;
-    BACKEND_BASE_URL: string;
+    NEXT_PUBLIC_BACKEND_BASE_URL: string;
     NEXTAUTH_SECRET: string;
   }
 }
