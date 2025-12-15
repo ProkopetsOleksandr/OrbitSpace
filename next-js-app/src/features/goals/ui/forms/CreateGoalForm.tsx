@@ -2,7 +2,7 @@ import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
 
 import { goalCreateSchemaType } from '@/entities/goal/model/schemas';
-import { LifeArea } from '@/entities/goal/model/types';
+import { LifeArea } from '@/shared/api';
 import { Button } from '@/shared/components/ui/button';
 import { Calendar } from '@/shared/components/ui/calendar';
 import { Checkbox } from '@/shared/components/ui/checkbox';

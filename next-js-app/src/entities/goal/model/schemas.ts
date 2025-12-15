@@ -1,5 +1,6 @@
-import { LifeArea } from '@/entities/goal/model/types';
 import * as z from 'zod';
+
+import { LifeArea } from '@/shared/api';
 
 export const goalCreateSchema = z
   .object({

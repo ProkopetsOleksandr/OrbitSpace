@@ -1,4 +1,4 @@
-import { TodoItemStatus } from '@/entities/todoItem/model/types';
+import { TodoItemStatus } from '@/shared/api';
 import * as z from 'zod';
 
 export const todoItemCreateSchema = z.object({
