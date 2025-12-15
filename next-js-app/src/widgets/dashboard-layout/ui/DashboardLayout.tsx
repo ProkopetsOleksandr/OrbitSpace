@@ -1,4 +1,3 @@
-import { AppSidebar } from '@/shared/components/sidebar/app-sidebar';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -9,12 +8,9 @@ import {
 } from '@/shared/components/ui/breadcrumb';
 import { Separator } from '@/shared/components/ui/separator';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/shared/components/ui/sidebar';
+import { AppSidebar } from '@/widgets/app-sidebar';
 
-export default function DashboardLayout({
-  children
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export const DashboardLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -40,4 +36,4 @@ export default function DashboardLayout({
       </SidebarInset>
     </SidebarProvider>
   );
-}
+};

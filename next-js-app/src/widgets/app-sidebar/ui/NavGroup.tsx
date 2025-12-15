@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -9,14 +10,18 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem
-} from '../ui/sidebar';
-import { NavItem } from './nav.config';
+} from '@/shared/components/ui/sidebar';
+import { NavItem } from '../config/nav';
 
-export const NavSecondary = ({ items, ...props }: { items: NavItem[] } & React.ComponentPropsWithoutRef<typeof SidebarGroup>) => {
+export const NavGroup = ({
+  label,
+  items,
+  ...props
+}: { label: string; items: NavItem[] } & React.ComponentPropsWithoutRef<typeof SidebarGroup>) => {
   const pathname = usePathname();
   return (
     <SidebarGroup {...props}>
-      <SidebarGroupLabel>To-be developed</SidebarGroupLabel>
+      <SidebarGroupLabel>{label}</SidebarGroupLabel>
       <SidebarGroupContent>
         <SidebarMenu>
           {items.map(item => (

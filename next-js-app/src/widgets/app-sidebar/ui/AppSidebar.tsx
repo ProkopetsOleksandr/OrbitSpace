@@ -1,5 +1,7 @@
 'use client';
 
+import { Orbit, Settings } from 'lucide-react';
+
 import {
   Sidebar,
   SidebarContent,
@@ -10,14 +12,11 @@ import {
   SidebarMenuItem,
   SidebarRail
 } from '@/shared/components/ui/sidebar';
-import { Orbit, Settings } from 'lucide-react';
-import * as React from 'react';
-import { NavMain } from './nav-main';
-import { NavSecondary } from './nav-secondary';
-import { NavUser } from './nav-user';
-import { navItems } from './nav.config';
+import { navItems } from '../config/nav';
+import { NavGroup } from './NavGroup';
+import { NavUser } from './NavUser';
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -35,8 +34,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={navItems.navMainItems} />
-        <NavSecondary items={navItems.navSecondaryItems} />
+        <NavGroup label="Application" items={navItems.navMainItems} />
+        <NavGroup label="To-be developed" items={navItems.navSecondaryItems} />
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
@@ -54,4 +53,4 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarRail />
     </Sidebar>
   );
-}
+};
