@@ -1,4 +1,4 @@
-import { GoalsPage } from '@/features/goals/ui/GoalsPage';
+import { GoalsPage } from '@/pages/goals-page';
 
 export default function Page() {
   return <GoalsPage />;

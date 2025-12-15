@@ -1,7 +1,8 @@
 import { Fragment } from 'react';
-import { WidgetCard } from './Card';
-import { DayProgressBar } from './DayProgressBar';
-import { TaskList } from './TaskList/TaskList';
+
+import { WidgetCard } from '@/features/task-management/ui/Card';
+import { DayProgressBar } from '@/features/task-management/ui/DayProgressBar';
+import { TaskList } from '@/features/task-management/ui/TaskList/TaskList';
 
 export const TaskManagementPage = () => {
   return (

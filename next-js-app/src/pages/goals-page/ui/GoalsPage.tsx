@@ -1,6 +1,6 @@
-import { GoalList } from './GoalList/GoalList';
-import { StatusCards } from './GoalList/StatusCards';
-import { Toolbar } from './Toolbar/Toolbar';
+import { GoalList } from '@/features/goals/ui/GoalList/GoalList';
+import { StatusCards } from '@/features/goals/ui/GoalList/StatusCards';
+import { Toolbar } from '@/features/goals/ui/Toolbar/Toolbar';
 
 export const GoalsPage = () => {
   return (

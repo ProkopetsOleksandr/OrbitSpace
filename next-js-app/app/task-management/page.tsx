@@ -1,4 +1,4 @@
-import { TaskManagementPage } from '@/features/task-management/ui/TaskManagementPage';
+import { TaskManagementPage } from '@/pages/task-management-page';
 
 export default function Page() {
   return <TaskManagementPage />;
