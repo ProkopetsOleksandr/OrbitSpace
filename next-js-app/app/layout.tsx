@@ -1,8 +1,9 @@
-import DashboardLayout from '@/shared/components/layout/dashboard-layout';
-import Providers from '@/shared/components/layout/providers';
-import '@/shared/styles/globals.css';
 import type { Metadata } from 'next';
 import { Inter, Poppins } from 'next/font/google';
+
+import { Providers } from '@/app';
+import DashboardLayout from '@/shared/components/layout/dashboard-layout';
+import '@/shared/styles/globals.css';
 
 const inter = Inter({
   subsets: ['latin'],
