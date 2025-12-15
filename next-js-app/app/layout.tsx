@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Inter, Poppins } from 'next/font/google';
 
 import { Providers } from '@/app';
-import '@/shared/styles/globals.css';
+import '@/app/styles/globals.css';
 import { DashboardLayout } from '@/widgets/dashboard-layout';
 
 const inter = Inter({
