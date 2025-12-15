@@ -10,7 +10,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem
-} from '@/shared/components/ui/sidebar';
+} from '@/shared/ui/sidebar';
 import { NavItem } from '../config/nav';
 
 export const NavGroup = ({

@@ -5,9 +5,9 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator
-} from '@/shared/components/ui/breadcrumb';
-import { Separator } from '@/shared/components/ui/separator';
-import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/shared/components/ui/sidebar';
+} from '@/shared/ui/breadcrumb';
+import { Separator } from '@/shared/ui/separator';
+import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/shared/ui/sidebar';
 import { AppSidebar } from '@/widgets/app-sidebar';
 
 export const DashboardLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {

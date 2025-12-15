@@ -1,8 +1,8 @@
 'use client';
 
 import { TodoItem } from '@/entities/todoItem/model/types';
-import { Button } from '@/shared/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/shared/components/ui/dialog';
+import { Button } from '@/shared/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/shared/ui/dialog';
 import { useDeleteTodoItem } from '../../api/todoItemQueries';
 
 interface DeleteTaskDialogProps {

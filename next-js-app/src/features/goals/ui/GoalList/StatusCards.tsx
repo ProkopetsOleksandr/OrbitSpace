@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { CheckCircle2, PauseCircle, Target, TrendingUp } from 'lucide-react';
 
 interface StatusCardProps {

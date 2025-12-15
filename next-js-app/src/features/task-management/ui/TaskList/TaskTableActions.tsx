@@ -1,8 +1,8 @@
 'use client';
 
 import { TodoItem } from '@/entities/todoItem/model/types';
-import { Button } from '@/shared/components/ui/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/shared/components/ui/dropdown-menu';
+import { Button } from '@/shared/ui/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/shared/ui/dropdown-menu';
 import { MoreHorizontal, Pencil, Trash } from 'lucide-react';
 import { useState } from 'react';
 import { DeleteTaskDialog } from './DeleteTaskDialog';

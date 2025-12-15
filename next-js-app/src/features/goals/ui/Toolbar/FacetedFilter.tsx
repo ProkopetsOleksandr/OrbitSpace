@@ -1,10 +1,10 @@
 'use client';
 
-import { Badge } from '@/shared/components/ui/badge';
-import { Button } from '@/shared/components/ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from '@/shared/components/ui/popover';
-import { Separator } from '@/shared/components/ui/separator';
 import { cn } from '@/shared/lib/utils';
+import { Badge } from '@/shared/ui/badge';
+import { Button } from '@/shared/ui/button';
+import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
+import { Separator } from '@/shared/ui/separator';
 import { Check, PlusCircle } from 'lucide-react';
 import { useState } from 'react';
 

@@ -3,17 +3,17 @@ import { CalendarIcon } from 'lucide-react';
 
 import { goalCreateSchemaType } from '@/entities/goal/model/schemas';
 import { LifeArea } from '@/shared/api';
-import { Button } from '@/shared/components/ui/button';
-import { Calendar } from '@/shared/components/ui/calendar';
-import { Checkbox } from '@/shared/components/ui/checkbox';
-import { Collapsible, CollapsibleContent } from '@/shared/components/ui/collapsible';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/shared/components/ui/form';
-import { Input } from '@/shared/components/ui/input';
-import { Popover, PopoverContent, PopoverTrigger } from '@/shared/components/ui/popover';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
-import { Textarea } from '@/shared/components/ui/textarea';
 import { cn } from '@/shared/lib/utils';
 import { GenericFormProps } from '@/shared/types/form';
+import { Button } from '@/shared/ui/button';
+import { Calendar } from '@/shared/ui/calendar';
+import { Checkbox } from '@/shared/ui/checkbox';
+import { Collapsible, CollapsibleContent } from '@/shared/ui/collapsible';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/shared/ui/form';
+import { Input } from '@/shared/ui/input';
+import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
+import { Textarea } from '@/shared/ui/textarea';
 
 export const CreateGoalForm = ({ form, onSubmit, id }: GenericFormProps<goalCreateSchemaType>) => {
   const isSmartGoal = form.watch('isSmartGoal');

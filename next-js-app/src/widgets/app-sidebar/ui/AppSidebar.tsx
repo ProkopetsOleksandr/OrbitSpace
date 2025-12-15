@@ -11,7 +11,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail
-} from '@/shared/components/ui/sidebar';
+} from '@/shared/ui/sidebar';
 import { navItems } from '../config/nav';
 import { NavGroup } from './NavGroup';
 import { NavUser } from './NavUser';

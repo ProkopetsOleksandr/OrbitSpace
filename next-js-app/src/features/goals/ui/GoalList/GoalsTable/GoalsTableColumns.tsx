@@ -4,8 +4,8 @@ import { createColumnHelper } from '@tanstack/react-table';
 import { formatDate } from 'date-fns';
 
 import { Goal, GoalStatus } from '@/shared/api';
-import { Badge } from '@/shared/components/ui/badge';
 import { cn } from '@/shared/lib/utils';
+import { Badge } from '@/shared/ui/badge';
 import { GoalsTableRowActions } from './GoalsTableRowActions';
 
 const statusStyles: Record<GoalStatus, string> = {

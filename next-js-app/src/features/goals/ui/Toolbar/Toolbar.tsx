@@ -1,7 +1,7 @@
 'use client';
 
-import { Button } from '@/shared/components/ui/button';
-import { Input } from '@/shared/components/ui/input';
+import { Button } from '@/shared/ui/button';
+import { Input } from '@/shared/ui/input';
 import { ArrowDown, ArrowRight, ArrowUp, CheckCircle2, Circle, PauseCircle, Plus, Timer, XCircle } from 'lucide-react';
 import { useState } from 'react';
 import { CreateGoalDialog } from '../dialogs/CreateGoalDialog';

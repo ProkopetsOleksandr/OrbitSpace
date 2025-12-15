@@ -1,6 +1,6 @@
 import { goalCreateSchema, goalCreateSchemaType } from '@/entities/goal/model/schemas';
 import { CreateGoalPayload } from '@/entities/goal/model/types';
-import { Button } from '@/shared/components/ui/button';
+import { Button } from '@/shared/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -9,7 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger
-} from '@/shared/components/ui/dialog';
+} from '@/shared/ui/dialog';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { DefaultValues, useForm } from 'react-hook-form';
