@@ -1,5 +1,6 @@
-import { goalCreateSchema, goalCreateSchemaType } from '@/entities/goal/model/schemas';
-import { CreateGoalPayload } from '@/entities/goal/model/types';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { DefaultValues, useForm } from 'react-hook-form';
+
 import { Button } from '@/shared/ui/button';
 import {
   Dialog,
@@ -10,13 +11,12 @@ import {
   DialogTitle,
   DialogTrigger
 } from '@/shared/ui/dialog';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
-import { DefaultValues, useForm } from 'react-hook-form';
-import { useCreateGoal } from '../../api/goal-queries';
-import { CreateGoalForm } from '../forms/CreateGoalForm';
+import { useCreateGoal } from '../model/create-goal-mutation';
+import { createGoalFormValues, createGoalSchema } from '../model/create-goal-schema';
+import { CreateGoalForm } from './CreateGoalForm';
 
-const defaultValues: DefaultValues<goalCreateSchemaType> = {
+const defaultValues: DefaultValues<createGoalFormValues> = {
   title: '',
   imageUrl: '',
   isActive: false,
@@ -27,29 +27,17 @@ export const CreateGoalDialog = ({ children }: { children: React.ReactNode }) =>
   const [open, setOpen] = useState(false);
   const { mutate: createGoal, isPending } = useCreateGoal();
 
-  const form = useForm<goalCreateSchemaType>({
-    resolver: zodResolver(goalCreateSchema),
+  const form = useForm<createGoalFormValues>({
+    resolver: zodResolver(createGoalSchema),
     defaultValues
   });
 
   const { formState } = form;
 
-  const onSubmit = (values: goalCreateSchemaType) => {
-    const payload: CreateGoalPayload = {
-      title: values.title,
-      lifeArea: values.lifeArea,
-      isActive: values.isActive,
-      isSmartGoal: values.isSmartGoal,
-      description: values.description ?? null,
-      metrics: values.metrics ?? null,
-      achievabilityRationale: values.achievabilityRationale ?? null,
-      motivation: values.motivation ?? null,
-      dueAtUtc: values.dueDate ? values.dueDate.toISOString() : null
-    };
+  const onSubmit = (values: createGoalFormValues) => {
+    console.log(values);
 
-    console.log(payload);
-
-    createGoal(payload, {
+    createGoal(values, {
       onSuccess: () => {
         form.reset();
         setOpen(false);

@@ -1,10 +1,10 @@
 'use client';
 
+import { CreateGoalDialog } from '@/features/create-goal';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 import { ArrowDown, ArrowRight, ArrowUp, CheckCircle2, Circle, PauseCircle, Plus, Timer, XCircle } from 'lucide-react';
 import { useState } from 'react';
-import { CreateGoalDialog } from '../dialogs/CreateGoalDialog';
 import { DataTableFacetedFilter } from './FacetedFilter';
 
 const PriorityOptions = [

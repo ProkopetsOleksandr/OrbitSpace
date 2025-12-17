@@ -4,7 +4,7 @@ import createClient from 'openapi-fetch';
 import { backendBaseUrl } from '@/shared/config';
 import type { paths } from './v1';
 
-export const getServerClient = async () => {
+export const getServerApiClient = async () => {
   const { getToken } = await auth();
   const token = getToken();
 

@@ -2,7 +2,7 @@ import * as z from 'zod';
 
 import { LifeArea } from '@/shared/api';
 
-export const goalCreateSchema = z
+export const createGoalSchema = z
   .object({
     // Basic Info
     title: z.string().min(1, 'Field is required'),
@@ -54,4 +54,4 @@ export const goalCreateSchema = z
     }
   });
 
-export type goalCreateSchemaType = z.infer<typeof goalCreateSchema>;
+export type createGoalFormValues = z.infer<typeof createGoalSchema>;
