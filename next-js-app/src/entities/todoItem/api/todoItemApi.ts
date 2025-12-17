@@ -1,4 +1,4 @@
-import { useApiClient } from '@/shared/api/api-client';
+import { useApiClient } from '@/shared/api/api-server-client';
 import { type CreateTodoItemPayload, type TodoItem, type UpdateTodoItemPayload } from '../model/types';
 
 export function useTodoItemApi() {
