@@ -59,8 +59,8 @@ export function DataTableFacetedFilter({ title, options }: DataTableFacetedFilte
                 } else {
                   selectedValues.add(option.value);
                 }
-                const filterValues = Array.from(selectedValues);
 
+                const filterValues = Array.from(selectedValues);
                 setSelectedValues(new Set(filterValues.length ? filterValues : []));
               }}>
               <div className="flex items-center cursor-pointer hover:bg-accent hover:text-accent-foreground rounded-sm p-1">
