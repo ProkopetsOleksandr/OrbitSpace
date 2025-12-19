@@ -3,7 +3,7 @@
 import { Plus } from 'lucide-react';
 
 import { TodoItemTable, useTodoItems } from '@/entities/todo-item';
-import { CreateTodoItemDialog } from '@/features/create-todo-item';
+import { CreateTodoItemDialog } from '@/features/todo-items';
 import { Button } from '@/shared/ui/button';
 
 export const TodoItemList = () => {

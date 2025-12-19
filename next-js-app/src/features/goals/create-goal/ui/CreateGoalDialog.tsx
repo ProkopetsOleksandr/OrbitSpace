@@ -1,4 +1,7 @@
+'use client';
+
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from 'react';
 import { DefaultValues, useForm } from 'react-hook-form';
 
 import { Button } from '@/shared/ui/button';
@@ -11,7 +14,6 @@ import {
   DialogTitle,
   DialogTrigger
 } from '@/shared/ui/dialog';
-import { useState } from 'react';
 import { useCreateGoal } from '../model/create-goal-mutation';
 import { createGoalFormValues, createGoalSchema } from '../model/create-goal-schema';
 import { CreateGoalForm } from './CreateGoalForm';

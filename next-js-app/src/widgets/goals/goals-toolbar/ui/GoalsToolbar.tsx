@@ -1,7 +1,6 @@
 import { Plus } from 'lucide-react';
 
-import { CreateGoalDialog } from '@/features/create-goal';
-import { PriorityFilter, SearchInput, StatusFilter } from '@/features/filter-goals';
+import { CreateGoalDialog, PriorityFilter, SearchInput, StatusFilter } from '@/features/goals';
 import { Button } from '@/shared/ui/button';
 
 export const GoalsToolbar = () => {
