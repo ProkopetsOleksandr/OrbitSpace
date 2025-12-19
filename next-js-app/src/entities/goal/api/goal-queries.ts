@@ -15,7 +15,7 @@ export function useGoals(filters?: string) {
         throw res.error;
       }
 
-      return res.data;
+      return res.data.data;
     }
   });
 }

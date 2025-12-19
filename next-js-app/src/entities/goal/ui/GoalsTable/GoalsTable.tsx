@@ -2,7 +2,7 @@
 
 import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 
-import { Goal } from '@/entities/goal/model/types';
+import { Goal } from '@/shared/api';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
 import { columns } from './GoalsTableColumns';
 

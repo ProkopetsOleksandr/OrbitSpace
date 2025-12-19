@@ -1,12 +1,13 @@
 'use client';
 
+import { Check, PlusCircle } from 'lucide-react';
+import { useState } from 'react';
+
 import { cn } from '@/shared/lib/utils';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
 import { Separator } from '@/shared/ui/separator';
-import { Check, PlusCircle } from 'lucide-react';
-import { useState } from 'react';
 
 interface DataTableFacetedFilterProps {
   title: string;

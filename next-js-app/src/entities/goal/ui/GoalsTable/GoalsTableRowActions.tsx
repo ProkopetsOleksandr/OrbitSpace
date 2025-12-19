@@ -1,6 +1,6 @@
 import { MoreHorizontal } from 'lucide-react';
 
-import { Goal } from '@/entities/goal/model/types';
+import { Goal } from '@/shared/api';
 import { Button } from '@/shared/ui/button';
 import {
   DropdownMenu,

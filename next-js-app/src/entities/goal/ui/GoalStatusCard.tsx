@@ -1,5 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
-import { CheckCircle2, PauseCircle, Target, TrendingUp } from 'lucide-react';
+import { Card, CardContent, CardTitle } from '@/shared/ui/card';
 
 interface StatusCardProps {
   title: string;
@@ -22,7 +21,7 @@ const variantTextStyles = {
   onHold: 'text-gray-700 dark:text-gray-400'
 };
 
-const StatusCard = ({ title, count, icon, variant }: StatusCardProps) => {
+export const GoalStatusCard = ({ title, count, icon, variant }: StatusCardProps) => {
   return (
     <Card className={`border-l-4 ${variantStyles[variant]}`}>
       <CardContent>
@@ -33,23 +32,5 @@ const StatusCard = ({ title, count, icon, variant }: StatusCardProps) => {
         <div className={`text-2xl font-bold ${variantTextStyles[variant]}`}>{count}</div>
       </CardContent>
     </Card>
-  );
-};
-
-interface StatusCardsProps {
-  activeCount: number;
-  onHoldCount: number;
-  newCount: number;
-  completedCount: number;
-}
-
-export const StatusCards = ({ activeCount, onHoldCount, newCount, completedCount }: StatusCardsProps) => {
-  return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-      <StatusCard title="Active" count={activeCount} icon={<TrendingUp className="h-4 w-4" />} variant="active" />
-      <StatusCard title="On Hold" count={onHoldCount} icon={<PauseCircle className="h-4 w-4" />} variant="onHold" />
-      <StatusCard title="New Goals" count={newCount} icon={<Target className="h-4 w-4" />} variant="new" />
-      <StatusCard title="Completed" count={completedCount} icon={<CheckCircle2 className="h-4 w-4" />} variant="completed" />
-    </div>
   );
 };
