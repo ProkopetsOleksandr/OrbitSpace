@@ -1,6 +1,4 @@
-import { GoalsList } from '@/widgets/goals-list';
-import { GoalsStatusCards } from '@/widgets/goals-stats';
-import { GoalsToolbar } from '@/widgets/goals-toolbar';
+import { GoalsList, GoalsStatusCards, GoalsToolbar } from '@/widgets/goals';
 
 export const GoalsPage = () => {
   return (

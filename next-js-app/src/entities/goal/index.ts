@@ -3,5 +3,5 @@ export { getGoalByIdHandler, getGoalsHandler } from './api/server';
 export { useGoals } from './api/goal-queries';
 export { goalQueryKeys } from './api/goal-query-keys';
 
-export { GoalsTable } from './ui/GoalsTable/GoalsTable';
+export { GoalTable } from './ui/goal-table/GoalTable';
 export { GoalStatusCard } from './ui/GoalStatusCard';

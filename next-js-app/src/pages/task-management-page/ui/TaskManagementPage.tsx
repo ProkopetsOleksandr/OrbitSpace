@@ -1,8 +1,11 @@
-import { Fragment } from 'react';
+import { Fragment, ReactNode } from 'react';
 
-import { WidgetCard } from '@/features/task-management/ui/Card';
-import { DayProgressBar } from '@/features/task-management/ui/DayProgressBar';
-import { TaskList } from '@/features/task-management/ui/TaskList/TaskList';
+import { DayProgress } from '@/widgets/day-planner';
+import { TodoItemList } from '@/widgets/todo-items';
+
+const WidgetCard = ({ children }: { children: ReactNode }) => {
+  return <div className="p-4 bg-gray-50 rounded-lg shadow-sm">{children}</div>;
+};
 
 export const TaskManagementPage = () => {
   return (
@@ -11,11 +14,11 @@ export const TaskManagementPage = () => {
         <WidgetCard>Card1</WidgetCard>
         <WidgetCard>Card2</WidgetCard>
         <WidgetCard>
-          <DayProgressBar startTimeHour={6} endTimeHour={22} />
+          <DayProgress />
         </WidgetCard>
       </div>
       <WidgetCard>
-        <TaskList />
+        <TodoItemList />
       </WidgetCard>
     </Fragment>
   );
