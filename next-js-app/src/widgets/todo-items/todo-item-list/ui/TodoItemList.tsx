@@ -3,8 +3,9 @@
 import { Plus } from 'lucide-react';
 
 import { TodoItemTable, useTodoItems } from '@/entities/todo-item';
-import { CreateTodoItemDialog } from '@/features/todo-items';
+import { CreateTodoItemDialog } from '@/features/todo-items/create-todo-item';
 import { Button } from '@/shared/ui/button';
+import { TodoItemTableActions } from './TodoItemTableActions';
 
 export const TodoItemList = () => {
   const { data: todoItems, isLoading, error } = useTodoItems();
@@ -23,7 +24,12 @@ export const TodoItemList = () => {
           </CreateTodoItemDialog>
         </div>
       </div>
-      <TodoItemTable data={todoItems || []} isLoading={isLoading} error={error} />
+      <TodoItemTable
+        data={todoItems || []}
+        isLoading={isLoading}
+        error={error}
+        renderActions={todoItem => <TodoItemTableActions todoItem={todoItem} />}
+      />
     </div>
   );
 };

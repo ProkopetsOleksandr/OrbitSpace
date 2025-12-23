@@ -1,1 +1,1 @@
-export { getTodoItemsHandler as GET } from '@/entities/todo-item';
+export { getTodoItemsHandler as GET } from '@/entities/todo-item/server';

@@ -1,12 +1,16 @@
 'use client';
 
-import { TodoItem } from '@/entities/todoItem/model/types';
+import { TodoItem } from '@/shared/api';
 import { createColumnHelper } from '@tanstack/react-table';
-import { TaskTableActions } from './TodoItemTableActions';
+import { ReactNode } from 'react';
 
 const columnHelper = createColumnHelper<TodoItem>();
 
-export const taskTableColumns = [
+interface getTodoItemTableColumnsProps {
+  renderActions: (todoItem: TodoItem) => ReactNode;
+}
+
+export const getTodoItemTableColumns = ({ renderActions }: getTodoItemTableColumnsProps) => [
   columnHelper.accessor('title', {
     header: () => 'Title',
     cell: info => info.getValue()
@@ -44,7 +48,7 @@ export const taskTableColumns = [
   columnHelper.display({
     id: 'actions',
     cell: ({ row }) => {
-      return <TaskTableActions todoItem={row.original} />;
+      return renderActions(row.original);
     }
   })
 ];

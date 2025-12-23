@@ -1,18 +1,17 @@
-'use client';
+import { MoreHorizontal, Pencil, Trash } from 'lucide-react';
+import { useState } from 'react';
 
+import { DeleteTodoItemDialog } from '@/features/todo-items/delete-todo-item';
+import { EditTodoItemDialog } from '@/features/todo-items/update-todo-item';
 import { TodoItem } from '@/shared/api';
 import { Button } from '@/shared/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/shared/ui/dropdown-menu';
-import { MoreHorizontal, Pencil, Trash } from 'lucide-react';
-import { useState } from 'react';
-import { DeleteTaskDialog } from './DeleteTaskDialog';
-import { EditTaskDialog } from './EditTaskDialog';
 
 interface TaskTableActionsProps {
   todoItem: TodoItem;
 }
 
-export function TaskTableActions({ todoItem }: TaskTableActionsProps) {
+export function TodoItemTableActions({ todoItem }: TaskTableActionsProps) {
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
@@ -37,8 +36,8 @@ export function TaskTableActions({ todoItem }: TaskTableActionsProps) {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <EditTaskDialog open={showEditDialog} onOpenChange={setShowEditDialog} todoItem={todoItem} />
-      <DeleteTaskDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog} todoItem={todoItem} />
+      <EditTodoItemDialog open={showEditDialog} onOpenChange={setShowEditDialog} todoItem={todoItem} />
+      <DeleteTodoItemDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog} todoItem={todoItem} />
     </>
   );
 }

@@ -1,1 +1,1 @@
-export { getGoalByIdHandler, getGoalsHandler } from './api/server';
+export { getGoalByIdHandler, getGoalsHandler } from './api/handlers';

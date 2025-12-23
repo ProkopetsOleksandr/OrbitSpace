@@ -1,29 +1,30 @@
-'use client';
-
 import { flexRender, getCoreRowModel, Table, useReactTable } from '@tanstack/react-table';
 import { Loader2 } from 'lucide-react';
+import { ReactNode, useMemo } from 'react';
 
 import { TodoItem } from '@/shared/api';
-import { taskTableColumns } from './TodoItemTableColumns';
+import { getTodoItemTableColumns } from './TodoItemTableColumns';
 
 interface TodoItemsTableProps {
   isLoading: boolean;
   data: TodoItem[];
   error: Error | null;
+  renderActions: (todoItem: TodoItem) => ReactNode;
 }
 
 interface TodoItemsTableBodyProps {
   table: Table<TodoItem>;
   isLoading: boolean;
   error: Error | null;
+  totalColumns: number;
 }
 
-const TodoItemTableBody = ({ table, isLoading, error }: TodoItemsTableBodyProps) => {
+const TodoItemTableBody = ({ table, isLoading, error, totalColumns }: TodoItemsTableBodyProps) => {
   if (isLoading) {
     return (
       <tbody>
         <tr>
-          <td colSpan={taskTableColumns.length} className="h-24 text-center">
+          <td colSpan={totalColumns} className="h-24 text-center">
             <div className="flex items-center justify-center gap-4">
               <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
               Loading...
@@ -38,7 +39,7 @@ const TodoItemTableBody = ({ table, isLoading, error }: TodoItemsTableBodyProps)
     return (
       <tbody>
         <tr>
-          <td colSpan={taskTableColumns.length} className="h-24 text-center">
+          <td colSpan={totalColumns} className="h-24 text-center">
             Something went wrong. Details: {error.message}
           </td>
         </tr>
@@ -50,7 +51,7 @@ const TodoItemTableBody = ({ table, isLoading, error }: TodoItemsTableBodyProps)
     return (
       <tbody>
         <tr>
-          <td colSpan={taskTableColumns.length} className="h-24 text-center">
+          <td colSpan={totalColumns} className="h-24 text-center">
             No tasks yet. Create one to get started!
           </td>
         </tr>
@@ -76,10 +77,11 @@ const TodoItemTableBody = ({ table, isLoading, error }: TodoItemsTableBodyProps)
   );
 };
 
-export const TodoItemTable = ({ isLoading, data, error }: TodoItemsTableProps) => {
+export const TodoItemTable = ({ isLoading, data, error, renderActions }: TodoItemsTableProps) => {
+  const columns = useMemo(() => getTodoItemTableColumns({ renderActions }), [renderActions]);
   const table = useReactTable({
     data,
-    columns: taskTableColumns,
+    columns,
     getCoreRowModel: getCoreRowModel()
   });
 
@@ -102,7 +104,7 @@ export const TodoItemTable = ({ isLoading, data, error }: TodoItemsTableProps) =
               </tr>
             ))}
           </thead>
-          <TodoItemTableBody table={table} isLoading={isLoading} error={error} />
+          <TodoItemTableBody table={table} isLoading={isLoading} error={error} totalColumns={columns.length} />
         </table>
       </div>
     </div>

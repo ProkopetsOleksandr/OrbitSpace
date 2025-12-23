@@ -1,3 +1,3 @@
-export { createTodoItemHandler as POST } from '@/features/create-todo-item';
-export { deleteTodoItemHandler as DELETE } from '@/features/delete-todo-item';
-export { updateTodoItemHandler as PUT } from '@/features/update-todo-item';
+export { createTodoItemHandler as POST } from '@/features/todo-items/create-todo-item/server';
+export { deleteTodoItemHandler as DELETE } from '@/features/todo-items/delete-todo-item/server';
+export { updateTodoItemHandler as PUT } from '@/features/todo-items/update-todo-item/server';

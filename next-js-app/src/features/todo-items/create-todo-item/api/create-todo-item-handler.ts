@@ -9,5 +9,5 @@ export async function createTodoItemHandler(request: Request) {
 
   const { data, error, response } = await client.POST('/api/todo-items', { body: payload });
 
-  return error ? NextResponse.json(error, { status: response.status }) : NextResponse.json(data.data);
+  return error ? NextResponse.json(error, { status: response.status }) : NextResponse.json(data);
 }

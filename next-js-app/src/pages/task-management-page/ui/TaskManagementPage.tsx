@@ -1,7 +1,7 @@
 import { Fragment, ReactNode } from 'react';
 
-import { DayProgress } from '@/widgets/day-planner';
-import { TodoItemList } from '@/widgets/todo-items';
+import { DayProgress } from '@/widgets/day-planner/day-progress';
+import { TodoItemList } from '@/widgets/todo-items/todo-item-list';
 
 const WidgetCard = ({ children }: { children: ReactNode }) => {
   return <div className="p-4 bg-gray-50 rounded-lg shadow-sm">{children}</div>;

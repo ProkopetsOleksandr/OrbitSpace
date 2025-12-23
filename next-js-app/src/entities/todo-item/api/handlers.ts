@@ -5,5 +5,5 @@ export async function getTodoItemsHandler() {
   const client = await getServerApiClient();
   const { data, error, response } = await client.GET('/api/todo-items');
 
-  return error ? NextResponse.json(error, { status: response.status }) : NextResponse.json(data.data);
+  return error ? NextResponse.json(error, { status: response.status }) : NextResponse.json(data);
 }

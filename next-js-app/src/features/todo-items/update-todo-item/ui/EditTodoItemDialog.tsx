@@ -17,7 +17,7 @@ interface EditTaskDialogProps {
   todoItem: TodoItem;
 }
 
-export function EditTaskDialog({ open, onOpenChange, todoItem }: EditTaskDialogProps) {
+export function EditTodoItemDialog({ open, onOpenChange, todoItem }: EditTaskDialogProps) {
   const updateTodoItem = useUpdateTodoItem();
 
   const {
@@ -43,18 +43,11 @@ export function EditTaskDialog({ open, onOpenChange, todoItem }: EditTaskDialogP
   }, [open, todoItem, reset]);
 
   const onSubmit = (values: updateTodoItemFormValues) => {
-    updateTodoItem.mutate(
-      {
-        id: todoItem.id,
-        title: values.title,
-        status: values.status
-      },
-      {
-        onSuccess: () => {
-          onOpenChange(false);
-        }
+    updateTodoItem.mutate(values, {
+      onSuccess: () => {
+        onOpenChange(false);
       }
-    );
+    });
   };
 
   return (
