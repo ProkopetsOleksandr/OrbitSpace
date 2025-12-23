@@ -1,3 +1,5 @@
+'use client';
+
 import { CheckCircle2, Circle, PauseCircle, Timer, XCircle } from 'lucide-react';
 
 import { DataTableFacetedFilter } from './FacetedFilter';

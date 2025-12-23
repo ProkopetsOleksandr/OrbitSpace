@@ -1,3 +1,5 @@
+'use client';
+
 import { Input } from '@/shared/ui/input';
 import { useGoalFilters } from '../model/use-goal-filters';
 

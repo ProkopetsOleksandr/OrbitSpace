@@ -1,4 +1,4 @@
-import { getServerApiClient } from '@/shared/api';
+import { getServerApiClient } from '@/shared/api/server';
 import { NextResponse } from 'next/server';
 
 export async function getTodoItemsHandler() {

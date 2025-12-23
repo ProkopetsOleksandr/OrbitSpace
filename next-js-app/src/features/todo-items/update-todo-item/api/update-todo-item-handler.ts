@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 
-import { getServerApiClient, UpdateTodoItemPayload } from '@/shared/api';
+import { UpdateTodoItemPayload } from '@/shared/api';
+import { getServerApiClient } from '@/shared/api/server';
 
 export async function updateTodoItemHandler(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const apiClient = await getServerApiClient();

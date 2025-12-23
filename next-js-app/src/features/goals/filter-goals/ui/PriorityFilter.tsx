@@ -1,3 +1,5 @@
+'use client';
+
 import { ArrowDown, ArrowRight, ArrowUp } from 'lucide-react';
 import { DataTableFacetedFilter } from './FacetedFilter';
 

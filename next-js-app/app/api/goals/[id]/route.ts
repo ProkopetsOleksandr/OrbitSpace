@@ -1,1 +1,1 @@
-export { getGoalByIdHandler as GET } from '@/entities/goal';
+export { getGoalByIdHandler as GET } from '@/entities/goal/server';

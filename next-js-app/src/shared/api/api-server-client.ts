@@ -6,7 +6,7 @@ import type { paths } from './v1';
 
 export const getServerApiClient = async () => {
   const { getToken } = await auth();
-  const token = getToken();
+  const token = await getToken();
 
   return createClient<paths>({
     baseUrl: backendBaseUrl,

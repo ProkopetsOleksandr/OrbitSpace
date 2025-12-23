@@ -1,3 +1,5 @@
+'use client';
+
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 export interface GoalFilters {
@@ -10,11 +12,15 @@ export const useGoalFilters = () => {
   const searchParams = useSearchParams();
 
   const filters: GoalFilters = {
-    search: searchParams.get('search')
+    search: searchParams?.get('search') ?? null
   };
 
   const setFilters = (newFilters: Partial<GoalFilters>) => {
-    const params = new URLSearchParams(searchParams.toString());
+    if (!pathname) {
+      return;
+    }
+
+    const params = new URLSearchParams(searchParams?.toString());
 
     Object.entries(newFilters).forEach(([key, value]) => {
       if (!value) {
@@ -28,7 +34,9 @@ export const useGoalFilters = () => {
   };
 
   const clearFilters = () => {
-    router.push(pathname, { scroll: false });
+    if (pathname) {
+      router.push(pathname, { scroll: false });
+    }
   };
 
   return { filters, setFilters, clearFilters };

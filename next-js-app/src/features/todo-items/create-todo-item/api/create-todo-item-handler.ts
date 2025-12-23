@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 
-import { CreateTodoItemPayload, getServerApiClient } from '@/shared/api';
+import { CreateTodoItemPayload } from '@/shared/api';
+import { getServerApiClient } from '@/shared/api/server';
 
 export async function createTodoItemHandler(request: Request) {
   const client = await getServerApiClient();

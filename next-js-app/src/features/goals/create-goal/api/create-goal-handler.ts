@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 
-import { CreateGoalPayload, getServerApiClient } from '@/shared/api';
+import { CreateGoalPayload } from '@/shared/api';
+import { getServerApiClient } from '@/shared/api/server';
 
 export async function createGoalHandler(request: Request) {
   const client = await getServerApiClient();
