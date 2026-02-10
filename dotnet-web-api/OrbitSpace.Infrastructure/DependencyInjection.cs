@@ -20,7 +20,8 @@ public static class DependencyInjection
 
         services.AddScoped<IUserRepository, UserRepository>()
             .AddScoped<ITodoItemRepository, TodoItemRepository>()
-            .AddScoped<IGoalRepository, GoalRepository>();
+            .AddScoped<IGoalRepository, GoalRepository>()
+            .AddScoped<IActivityRepository, ActivityRepository>();
 
         return services;
     }

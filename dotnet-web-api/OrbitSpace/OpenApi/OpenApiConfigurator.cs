@@ -8,7 +8,8 @@ namespace OrbitSpace.WebApi.OpenApi
         {
             OpenApiSchemaProfile[] profiles = [
                 new TodoItemProfile(),
-                new GoalProfile()
+                new GoalProfile(),
+                new ActivityProfile()
             ];
 
             var config = new Dictionary<Type, OpenApiSchemaMetadata>();

@@ -8,4 +8,5 @@ public interface IMongoDbContext
     IMongoCollection<User> Users { get; }
     IMongoCollection<TodoItem> TodoItems { get; }
     IMongoCollection<Goal> Goals { get; }
+    IMongoCollection<Activity> Activities { get; }
 }

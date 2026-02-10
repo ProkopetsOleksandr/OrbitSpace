@@ -12,3 +12,8 @@ export type UpdateGoalPayload = components['schemas']['UpdateGoalPayload'];
 export type TodoItem = components['schemas']['TodoItem'];
 export type CreateTodoItemPayload = components['schemas']['CreateTodoItemPayload'];
 export type UpdateTodoItemPayload = components['schemas']['UpdateTodoItemPayload'];
+
+// Activity related types
+export type Activity = components['schemas']['Activity'];
+export type CreateActivityPayload = components['schemas']['CreateActivityPayload'];
+export type UpdateActivityPayload = components['schemas']['UpdateActivityPayload'];

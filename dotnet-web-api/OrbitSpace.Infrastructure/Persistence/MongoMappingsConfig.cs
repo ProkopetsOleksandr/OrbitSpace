@@ -19,5 +19,6 @@ public static class MongoMappingsConfig
         UserMap.Configure();
         TodoItemMap.Configure();
         GoalMap.Configure();
+        ActivityMap.Configure();
     }
 }

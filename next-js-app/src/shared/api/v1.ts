@@ -4,6 +4,49 @@
  */
 
 export interface paths {
+    "/api/activities": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get all activities
+         * @description Returns a list of activities associated with the currently authenticated user.
+         */
+        get: operations["getAllActivities"];
+        put?: never;
+        /** Create activity */
+        post: operations["createActivity"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/activities/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get activity by id
+         * @description Returns activity details with specified Id associated with the currently authenticated user.
+         */
+        get: operations["getActivityById"];
+        /** Update activity */
+        put: operations["updateActivity"];
+        post?: never;
+        /** Delete activity */
+        delete: operations["deleteActivity"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/goals": {
         parameters: {
             query?: never;
@@ -94,6 +137,42 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /**
+         * @description Represents an Activity
+         * @example {
+         *       "Id": "678a4f92c1a3b05f447e12f9",
+         *       "Name": "Programming",
+         *       "Code": "PRG",
+         *       "CreatedAtUtc": "2025-11-30T17:55:00Z",
+         *       "UpdatedAtUtc": "2025-11-30T17:55:00Z"
+         *     }
+         */
+        Activity: {
+            id: string;
+            name: string;
+            code: string;
+            /** Format: date-time */
+            createdAtUtc: string;
+            /** Format: date-time */
+            updatedAtUtc: string;
+        };
+        ActivityResponse: {
+            data: components["schemas"]["Activity"];
+        };
+        ActivitysResponse: {
+            data: components["schemas"]["Activity"][];
+        };
+        /**
+         * @description Model used to create an activity
+         * @example {
+         *       "Name": "Programming",
+         *       "Code": "PRG"
+         *     }
+         */
+        CreateActivityPayload: {
+            name: string;
+            code: string;
+        };
         /**
          * @description Model used to create a goal
          * @example {
@@ -201,6 +280,19 @@ export interface components {
         /** @enum {string} */
         TodoItemStatus: TodoItemStatus;
         /**
+         * @description Model used to update an activity
+         * @example {
+         *       "Id": "678a4f92c1a3b05f447e12f9",
+         *       "Name": "Programming",
+         *       "Code": "PRG"
+         *     }
+         */
+        UpdateActivityPayload: {
+            id: string;
+            name: string;
+            code: string;
+        };
+        /**
          * @description Model used to update a goal
          * @example {
          *       "Id": "678a4f92c1a3b05f447e12f9",
@@ -249,6 +341,212 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    getAllActivities: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ActivitysResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    createActivity: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateActivityPayload"];
+                "application/*+json": components["schemas"]["CreateActivityPayload"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ActivityResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    getActivityById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ActivityResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    updateActivity: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateActivityPayload"];
+                "application/*+json": components["schemas"]["UpdateActivityPayload"];
+            };
+        };
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    deleteActivity: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
     getAllGoals: {
         parameters: {
             query?: never;
