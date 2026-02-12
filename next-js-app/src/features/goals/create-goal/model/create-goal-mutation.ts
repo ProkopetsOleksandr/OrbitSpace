@@ -1,11 +1,11 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { goalQueryKeys } from '@/entities/goal';
-import { CreateGoalPayload, getApiClient } from '@/shared/api';
+import type { CreateGoalPayload } from '@/shared/api';
+import { createGoalAction } from '../api/create-goal-action';
 import { createGoalFormValues } from './create-goal-schema';
 
 export function useCreateGoal() {
-  const clientApi = getApiClient();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -22,10 +22,7 @@ export function useCreateGoal() {
         dueAtUtc: values.dueDate ? values.dueDate.toISOString() : null
       };
 
-      const { data, error } = await clientApi.POST('/api/goals', { body: payload });
-      if (error) throw error;
-
-      return data;
+      return createGoalAction(payload);
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: goalQueryKeys.lists() });

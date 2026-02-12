@@ -1,11 +1,11 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { activityQueryKeys } from '@/entities/activity';
-import { CreateActivityPayload, getApiClient } from '@/shared/api';
+import type { CreateActivityPayload } from '@/shared/api';
+import { createActivityAction } from '../api/create-activity-action';
 import { CreateActivityFormValues } from './create-activity-schema';
 
 export function useCreateActivity() {
-  const clientApi = getApiClient();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -15,10 +15,7 @@ export function useCreateActivity() {
         code: values.code
       };
 
-      const { data, error } = await clientApi.POST('/api/activities', { body: payload });
-      if (error) throw error;
-
-      return data;
+      return createActivityAction(payload);
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: activityQueryKeys.lists() });

@@ -1,11 +1,11 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { todoItemQueryKeys } from '@/entities/todo-item';
-import { getApiClient, UpdateTodoItemPayload } from '@/shared/api';
+import type { UpdateTodoItemPayload } from '@/shared/api';
+import { updateTodoItemAction } from '../api/update-todo-item-action';
 import { updateTodoItemFormValues } from './update-todo-item-schema';
 
 export function useUpdateTodoItem() {
-  const apiClient = getApiClient();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -16,12 +16,7 @@ export function useUpdateTodoItem() {
         status: values.status
       };
 
-      const { error } = await apiClient.PUT('/api/todo-items/{id}', {
-        params: { path: { id: payload.id } },
-        body: payload
-      });
-
-      if (error) throw error;
+      return updateTodoItemAction(payload.id, payload);
     },
     onSuccess: async (_data, variables) => {
       await queryClient.invalidateQueries({ queryKey: todoItemQueryKeys.lists() });
