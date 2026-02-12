@@ -8,13 +8,13 @@
 
 Three patterns exist for connecting Next.js App Router to a separate .NET API. After evaluating security, performance, and developer experience, the **hybrid BFF pattern** emerges as the clear winner for production applications.
 
-| Factor         | Direct calls         | Full proxy (BFF)            | Hybrid (recommended)                    |
-| -------------- | -------------------- | --------------------------- | --------------------------------------- |
-| Latency        | Best (no proxy hop)  | +5–50ms per request         | Good (SSR direct, mutations proxied)    |
-| Token security | Tokens in browser JS | Tokens fully server-side    | Mutations secured server-side           |
-| CORS config    | Required on .NET     | None needed                 | None (if client reads go through proxy) |
-| Dev complexity | Lowest               | High (mirror all endpoints) | Medium                                  |
-| File uploads   | No limits            | Serverless payload limits   | Direct for large files                  |
+| Factor | Direct calls | Full proxy (BFF) | Hybrid (recommended) |
+|--------|-------------|-------------------|---------------------|
+| Latency | Best (no proxy hop) | +5–50ms per request | Good (SSR direct, mutations proxied) |
+| Token security | Tokens in browser JS | Tokens fully server-side | Mutations secured server-side |
+| CORS config | Required on .NET | None needed | None (if client reads go through proxy) |
+| Dev complexity | Lowest | High (mirror all endpoints) | Medium |
+| File uploads | No limits | Serverless payload limits | Direct for large files |
 
 **The hybrid pattern works like this:** Server Components call the .NET API directly (server-to-server, zero CORS issues). All authentication flows and mutations route through Next.js Route Handlers or Server Actions, which read the JWT from an httpOnly cookie and forward it to the .NET API. Client Components use TanStack Query, calling Next.js proxy endpoints that inject authentication server-side.
 
@@ -59,16 +59,16 @@ The security consensus from OWASP, Auth0, Duende, and the IETF is unambiguous: *
 ```typescript
 // Recommended cookie settings for JWT storage
 const COOKIE_OPTIONS = {
-  httpOnly: true, // JS cannot read
-  secure: process.env.NODE_ENV === 'production', // HTTPS only
-  sameSite: 'lax' as const, // CSRF protection
+  httpOnly: true,                                    // JS cannot read
+  secure: process.env.NODE_ENV === 'production',     // HTTPS only
+  sameSite: 'lax' as const,                          // CSRF protection
   path: '/',
-  maxAge: 60 * 15 // 15 min (access token)
+  maxAge: 60 * 15,                                   // 15 min (access token)
 };
 
 const REFRESH_COOKIE_OPTIONS = {
   ...COOKIE_OPTIONS,
-  maxAge: 60 * 60 * 24 * 7 // 7 days (refresh token)
+  maxAge: 60 * 60 * 24 * 7,                          // 7 days (refresh token)
 };
 ```
 
@@ -81,7 +81,6 @@ const REFRESH_COOKIE_OPTIONS = {
 **Refresh token rotation (RTR)** ensures each refresh token is single-use. When a refresh token is exchanged for a new access token, the .NET backend issues a new refresh token and invalidates the old one. If a previously-used refresh token appears again, the server knows it was stolen and invalidates the entire token family.
 
 Configure your .NET backend to:
-
 - Assign a unique `jti` (JWT ID) claim to each refresh token
 - Store a SHA-256 hash server-side (never the raw token)
 - On reuse detection, invalidate ALL tokens in the family
@@ -101,7 +100,7 @@ import { z } from 'zod';
 
 export const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
-  password: z.string().min(8, 'Password must be at least 8 characters')
+  password: z.string().min(8, 'Password must be at least 8 characters'),
 });
 export type LoginInput = z.infer<typeof loginSchema>;
 ```
@@ -181,12 +180,15 @@ export async function POST(request: NextRequest) {
   const backendRes = await fetch(`${process.env.DOTNET_API_URL}/api/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(parsed.data)
+    body: JSON.stringify(parsed.data),
   });
 
   if (!backendRes.ok) {
     const err = await backendRes.json().catch(() => ({}));
-    return NextResponse.json({ error: err.message ?? 'Authentication failed' }, { status: 401 });
+    return NextResponse.json(
+      { error: err.message ?? 'Authentication failed' },
+      { status: 401 }
+    );
   }
 
   const { accessToken, refreshToken, user } = await backendRes.json();
@@ -198,16 +200,16 @@ export async function POST(request: NextRequest) {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
-    maxAge: 60 * 15, // 15 minutes
-    path: '/'
+    maxAge: 60 * 15,  // 15 minutes
+    path: '/',
   });
 
   cookieStore.set('refresh-token', refreshToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
-    maxAge: 60 * 60 * 24 * 7, // 7 days
-    path: '/'
+    maxAge: 60 * 60 * 24 * 7,  // 7 days
+    path: '/',
   });
 
   // Return only safe user data — never return raw tokens to the client
@@ -251,8 +253,8 @@ export async function fetchFromApi<T>(endpoint: string): Promise<T> {
   const res = await fetch(`${process.env.DOTNET_API_URL}${endpoint}`, {
     headers: {
       Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    }
+      'Content-Type': 'application/json',
+    },
   });
 
   if (res.status === 401) {
@@ -268,6 +270,69 @@ export async function fetchFromApi<T>(endpoint: string): Promise<T> {
 ```
 
 `React.cache()` memoizes `getSession()` so multiple components in a single render pass share one auth check rather than making redundant calls.
+
+### TanStack Query setup for App Router
+
+```typescript
+// lib/get-query-client.ts
+import { isServer, QueryClient } from '@tanstack/react-query';
+
+function makeQueryClient() {
+  return new QueryClient({
+    defaultOptions: {
+      queries: {
+        staleTime: 60 * 1000,  // 60 seconds — prevents immediate refetch after hydration
+      },
+    },
+  });
+}
+
+let browserQueryClient: QueryClient | undefined;
+
+export function getQueryClient() {
+  if (isServer) {
+    return makeQueryClient();  // Server: always new (per-request isolation)
+  }
+  if (!browserQueryClient) {
+    browserQueryClient = makeQueryClient();  // Browser: singleton
+  }
+  return browserQueryClient;
+}
+```
+
+```typescript
+// app/providers.tsx
+'use client';
+
+import { QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { getQueryClient } from '@/lib/get-query-client';
+
+export function Providers({ children }: { children: React.ReactNode }) {
+  const queryClient = getQueryClient();
+  return (
+    <QueryClientProvider client={queryClient}>
+      {children}
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
+  );
+}
+```
+
+```typescript
+// app/layout.tsx
+import { Providers } from './providers';
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en">
+      <body>
+        <Providers>{children}</Providers>
+      </body>
+    </html>
+  );
+}
+```
 
 ### Reusable query options for type safety
 
@@ -288,11 +353,12 @@ export const goalsQueryOptions = (params: GoalsParams) =>
   queryOptions({
     queryKey: ['goals', params],
     queryFn: () =>
-      fetch(`/api/proxy/goals?page=${params.page}&status=${params.status ?? ''}`).then(res => {
-        if (!res.ok) throw new Error('Failed to fetch goals');
-        return res.json() as Promise<{ items: Goal[]; totalPages: number; hasMore: boolean }>;
-      }),
-    staleTime: 60 * 1000
+      fetch(`/api/proxy/goals?page=${params.page}&status=${params.status ?? ''}`)
+        .then(res => {
+          if (!res.ok) throw new Error('Failed to fetch goals');
+          return res.json() as Promise<{ items: Goal[]; totalPages: number; hasMore: boolean }>;
+        }),
+    staleTime: 60 * 1000,
   });
 ```
 
@@ -415,12 +481,12 @@ async function proxyToBackend(request: NextRequest) {
   const res = await fetch(url, {
     method: request.method,
     headers,
-    body: ['GET', 'HEAD'].includes(request.method) ? undefined : await request.text()
+    body: ['GET', 'HEAD'].includes(request.method) ? undefined : await request.text(),
   });
 
   return new NextResponse(res.body, {
     status: res.status,
-    headers: res.headers
+    headers: res.headers,
   });
 }
 
@@ -531,7 +597,7 @@ import { z } from 'zod';
 
 const createGoalSchema = z.object({
   title: z.string().min(1),
-  description: z.string().optional()
+  description: z.string().optional(),
 });
 
 export async function createGoalAction(prevState: any, formData: FormData) {
@@ -548,9 +614,9 @@ export async function createGoalAction(prevState: any, formData: FormData) {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
     },
-    body: JSON.stringify(parsed.data)
+    body: JSON.stringify(parsed.data),
   });
 
   if (!res.ok) {
@@ -582,7 +648,7 @@ export async function createServerApiClient() {
   const token = cookieStore.get('access-token')?.value;
 
   const client = createClient<paths>({
-    baseUrl: process.env.DOTNET_API_URL!
+    baseUrl: process.env.DOTNET_API_URL!,
   });
 
   const authMiddleware: Middleware = {
@@ -591,7 +657,7 @@ export async function createServerApiClient() {
         request.headers.set('Authorization', `Bearer ${token}`);
       }
       return request;
-    }
+    },
   };
 
   client.use(authMiddleware);
@@ -611,11 +677,11 @@ const errorMiddleware: Middleware = {
     if (!response.ok) {
       throw new Error(`API error: ${response.status} ${response.statusText}`);
     }
-  }
+  },
 };
 
 export const browserApiClient = createClient<paths>({
-  baseUrl: '/api/proxy' // Routes through Next.js proxy — cookie auto-attached
+  baseUrl: '/api/proxy',  // Routes through Next.js proxy — cookie auto-attached
 });
 
 browserApiClient.use(errorMiddleware);
@@ -636,7 +702,7 @@ export const $api = createClient(fetchClient);
 
 // Usage in any Client Component:
 const { data, isLoading } = $api.useQuery('get', '/goals/{id}', {
-  params: { path: { id: goalId } }
+  params: { path: { id: goalId } },
 });
 
 const { mutate } = $api.useMutation('post', '/goals');
@@ -682,7 +748,7 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)']
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
 };
 ```
 
@@ -714,7 +780,7 @@ export async function POST(request: NextRequest) {
   const backendRes = await fetch(`${process.env.DOTNET_API_URL}/api/auth/refresh`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ refreshToken })
+    body: JSON.stringify({ refreshToken }),
   });
 
   if (!backendRes.ok) {
@@ -727,18 +793,12 @@ export async function POST(request: NextRequest) {
   const { accessToken: newAccess, refreshToken: newRefresh } = await backendRes.json();
 
   cookieStore.set('access-token', newAccess, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    maxAge: 60 * 15,
-    path: '/'
+    httpOnly: true, secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax', maxAge: 60 * 15, path: '/',
   });
   cookieStore.set('refresh-token', newRefresh, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    maxAge: 60 * 60 * 24 * 7,
-    path: '/'
+    httpOnly: true, secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax', maxAge: 60 * 60 * 24 * 7, path: '/',
   });
 
   return NextResponse.json({ success: true });
@@ -798,9 +858,9 @@ const queryClient = new QueryClient({
         // Don't retry auth errors — the refresh handler will take care of it
         if (error.message.includes('401')) return false;
         return failureCount < 3;
-      }
-    }
-  }
+      },
+    },
+  },
 });
 ```
 
@@ -810,14 +870,14 @@ const queryClient = new QueryClient({
 
 The decision framework is straightforward: **Server Components for initial data loading, Client Components for interactivity**.
 
-| Use Case                       | Component Type                        | Why                                                   |
-| ------------------------------ | ------------------------------------- | ----------------------------------------------------- |
-| Page-level data fetch + layout | Server Component                      | Fetches with auth cookie, no JS shipped to browser    |
-| List with pagination/filtering | Client Component                      | Needs `useState` for page/filter, `useQuery` for data |
-| Forms with validation          | Client Component                      | React Hook Form requires hooks, real-time validation  |
-| Static content with auth gate  | Server Component                      | Just needs `getSession()` check                       |
-| Optimistic updates             | Client Component                      | `useMutation` + cache manipulation                    |
-| Displaying user info in header | Client Component (hydrated by server) | Needs to react to auth state changes                  |
+| Use Case | Component Type | Why |
+|----------|---------------|-----|
+| Page-level data fetch + layout | Server Component | Fetches with auth cookie, no JS shipped to browser |
+| List with pagination/filtering | Client Component | Needs `useState` for page/filter, `useQuery` for data |
+| Forms with validation | Client Component | React Hook Form requires hooks, real-time validation |
+| Static content with auth gate | Server Component | Just needs `getSession()` check |
+| Optimistic updates | Client Component | `useMutation` + cache manipulation |
+| Displaying user info in header | Client Component (hydrated by server) | Needs to react to auth state changes |
 
 **The composition pattern:** A Server Component at the route level prefetches data and wraps a Client Component with `HydrationBoundary`. The Client Component takes over interactivity after hydration. This gives you the best of both worlds — fast initial render with zero JS for data fetching, then full interactivity once React hydrates.
 
@@ -849,9 +909,9 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: 3,
-      retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000)
-    }
-  }
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+    },
+  },
 });
 ```
 
