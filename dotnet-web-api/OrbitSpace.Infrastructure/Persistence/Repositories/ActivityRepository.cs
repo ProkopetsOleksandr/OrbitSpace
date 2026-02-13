@@ -1,49 +1,42 @@
-﻿using MongoDB.Driver;
+﻿using Microsoft.EntityFrameworkCore;
 using OrbitSpace.Application.Common.Interfaces;
 using OrbitSpace.Domain.Entities;
 
-namespace OrbitSpace.Infrastructure.Persistence.Repositories
+namespace OrbitSpace.Infrastructure.Persistence.Repositories;
+
+public class ActivityRepository(AppDbContext dbContext) : IActivityRepository
 {
-    public class ActivityRepository(IMongoDbContext dbContext) : IActivityRepository
+    public async Task<List<Activity>> GetAllAsync(Guid userId)
     {
-        public async Task<List<Activity>> GetAllAsync(string userId)
-        {
-            var filter = Builders<Activity>.Filter.Eq(x => x.UserId, userId);
+        return await dbContext.Activities
+            .Where(a => a.UserId == userId)
+            .ToListAsync();
+    }
 
-            return await dbContext.Activities.Find(filter).ToListAsync();
-        }
+    public async Task<Activity?> GetByIdAsync(Guid id)
+    {
+        return await dbContext.Activities.FindAsync(id);
+    }
 
-        public async Task<Activity?> GetByIdAsync(string id)
-        {
-            var filter = Builders<Activity>.Filter.Eq(x => x.Id, id);
+    public async Task<Activity> CreateAsync(Activity activity)
+    {
+        dbContext.Activities.Add(activity);
+        await dbContext.SaveChangesAsync();
+        return activity;
+    }
 
-            return await dbContext.Activities.Find(filter).FirstOrDefaultAsync();
-        }
+    public async Task<bool> UpdateAsync(Activity activity)
+    {
+        dbContext.Activities.Update(activity);
+        var affected = await dbContext.SaveChangesAsync();
+        return affected > 0;
+    }
 
-        public async Task<Activity> CreateAsync(Activity activity)
-        {
-            await dbContext.Activities.InsertOneAsync(activity);
-
-            return activity;
-        }
-
-        public async Task<bool> UpdateAsync(Activity activity)
-        {
-            var filter = Builders<Activity>.Filter.Eq(x => x.Id, activity.Id);
-            var updateResult = await dbContext.Activities.ReplaceOneAsync(filter, activity);
-
-            return updateResult.IsAcknowledged;
-        }
-
-        public async Task<bool> DeleteAsync(string id, string userId)
-        {
-            var filter = Builders<Activity>.Filter.And(
-                Builders<Activity>.Filter.Eq(x => x.Id, id),
-                Builders<Activity>.Filter.Eq(x => x.UserId, userId));
-
-            var deleteResult = await dbContext.Activities.DeleteOneAsync(filter);
-
-            return deleteResult.DeletedCount > 0;
-        }
+    public async Task<bool> DeleteAsync(Guid id, Guid userId)
+    {
+        var affected = await dbContext.Activities
+            .Where(a => a.Id == id && a.UserId == userId)
+            .ExecuteDeleteAsync();
+        return affected > 0;
     }
 }

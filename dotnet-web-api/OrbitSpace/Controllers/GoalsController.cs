@@ -32,7 +32,7 @@ namespace OrbitSpace.WebApi.Controllers
         [EndpointName("getGoalDetailsById")]
         [ProducesResponseType<ApiResponse<GoalDto>>(StatusCodes.Status200OK)]
         [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetById(string id)
+        public async Task<IActionResult> GetById(Guid id)
         {
             var goal = await goalService.GetGoalDetailsAsync(id, CurrentUser.Id);
             if (goal == null)
@@ -65,7 +65,7 @@ namespace OrbitSpace.WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
         [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Update(string id, [FromBody] UpdateGoalRequest request)
+        public async Task<IActionResult> Update(Guid id, [FromBody] UpdateGoalRequest request)
         {
             if (request.Id != id)
             {
@@ -86,7 +86,7 @@ namespace OrbitSpace.WebApi.Controllers
         [EndpointName("deleteGoal")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> Delete(Guid id)
         {
             if (!await goalService.DeleteAsync(id, CurrentUser.Id))
             {

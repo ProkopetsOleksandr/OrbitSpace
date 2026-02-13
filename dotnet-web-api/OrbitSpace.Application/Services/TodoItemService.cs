@@ -10,21 +10,21 @@ namespace OrbitSpace.Application.Services
 {
     public class TodoItemService(ITodoItemRepository todoItemRepository, IMapper mapper) : ITodoItemService
     {
-        public async Task<List<TodoItemDto>> GetAllAsync(string userId)
+        public async Task<List<TodoItemDto>> GetAllAsync(Guid userId)
         {
             var items = await todoItemRepository.GetAllAsync(userId);
 
             return mapper.Map<List<TodoItemDto>>(items);
         }
 
-        public async Task<TodoItemDto?> GetByIdAsync(string id, string userId)
+        public async Task<TodoItemDto?> GetByIdAsync(Guid id, Guid userId)
         {
             var item = await GetByIdForUserAsync(id, userId);
-            
+
             return item == null ? null : mapper.Map<TodoItemDto>(item);
         }
 
-        public async Task<OperationResult<TodoItemDto>> CreateAsync(CreateTodoItemDto todoItem, string userId)
+        public async Task<OperationResult<TodoItemDto>> CreateAsync(CreateTodoItemDto todoItem, Guid userId)
         {
             if (string.IsNullOrWhiteSpace(todoItem.Title))
             {
@@ -44,7 +44,7 @@ namespace OrbitSpace.Application.Services
             return mapper.Map<TodoItemDto>(createdItem);
         }
 
-        public async Task<OperationResult<TodoItemDto>> UpdateAsync(UpdateTodoItemDto todoItem, string userId)
+        public async Task<OperationResult<TodoItemDto>> UpdateAsync(UpdateTodoItemDto todoItem, Guid userId)
         {
             var entityInDb = await GetByIdForUserAsync(todoItem.Id, userId);
             if (entityInDb == null)
@@ -61,12 +61,12 @@ namespace OrbitSpace.Application.Services
             return mapper.Map<TodoItemDto>(entityInDb);
         }
 
-        public async Task<bool> DeleteAsync(string id, string userId)
+        public async Task<bool> DeleteAsync(Guid id, Guid userId)
         {
             return await todoItemRepository.DeleteAsync(id, userId);
         }
 
-        private async Task<TodoItem?> GetByIdForUserAsync(string id, string userId)
+        private async Task<TodoItem?> GetByIdForUserAsync(Guid id, Guid userId)
         {
             var entityInDb = await todoItemRepository.GetByIdAsync(id);
             if (entityInDb == null || entityInDb.UserId != userId)

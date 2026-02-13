@@ -3,7 +3,7 @@
 namespace OrbitSpace.Application.Dtos.Goal;
 
 public record UpdateGoalRequest(
-    string Id,
+    Guid Id,
     string Title,
     LifeArea LifeArea,
     GoalStatus Status,

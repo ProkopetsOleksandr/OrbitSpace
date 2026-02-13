@@ -2,6 +2,6 @@
 
 public interface IApplicationUserProvider
 {
-    string UserId { get; }
+    Guid UserId { get; }
     string UserEmail { get; }
 }

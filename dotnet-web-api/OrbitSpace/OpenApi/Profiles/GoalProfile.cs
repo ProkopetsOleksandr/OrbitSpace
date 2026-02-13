@@ -11,7 +11,7 @@ namespace OrbitSpace.WebApi.OpenApi.Profiles
                 .WithSchemaName("Goal")
                 .WithDescription("Represents a Goal")
                 .WithExample(new GoalDto(
-                    Id: "678a4f92c1a3b05f447e12f9",
+                    Id: Guid.CreateVersion7(new DateTimeOffset(2026, 2, 13, 14, 52, 0, TimeSpan.Zero)),
                     Title: "Learn Aspire",
                     LifeArea: LifeArea.Career,
                     Status: GoalStatus.NotStarted,
@@ -38,7 +38,7 @@ namespace OrbitSpace.WebApi.OpenApi.Profiles
                 .WithSchemaName("UpdateGoalPayload")
                 .WithDescription("Model used to update a goal")
                 .WithExample(new UpdateGoalRequest(
-                    Id: "678a4f92c1a3b05f447e12f9",
+                    Id: Guid.CreateVersion7(new DateTimeOffset(2026, 2, 13, 14, 52, 0, TimeSpan.Zero)),
                     Title: "Build and publish a full-stack side project",
                     LifeArea: LifeArea.Career,
                     Status: GoalStatus.Active,

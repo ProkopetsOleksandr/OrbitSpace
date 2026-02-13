@@ -1,7 +1,7 @@
 ﻿namespace OrbitSpace.Application.Dtos.Activity
 {
     public record UpdateActivityRequest(
-        string Id,
+        Guid Id,
         string Name,
         string Code
     );

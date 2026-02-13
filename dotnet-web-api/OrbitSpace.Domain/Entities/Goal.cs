@@ -4,9 +4,9 @@ namespace OrbitSpace.Domain.Entities
 {
     public class Goal
     {
-        public string Id { get; set; } = string.Empty;
-        public string UserId { get; set; } = string.Empty;
-        public string Title { get; set; } = string.Empty;
+        public Guid Id { get; set; }
+        public Guid UserId { get; set; }
+        public required string Title { get; set; }
         public LifeArea LifeArea { get;set; }
         public GoalStatus Status { get; set; }
         public DateTime CreatedAtUtc { get; set; }

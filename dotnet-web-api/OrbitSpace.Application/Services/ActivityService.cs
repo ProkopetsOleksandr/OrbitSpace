@@ -9,19 +9,19 @@ namespace OrbitSpace.Application.Services
 {
     public class ActivityService(IActivityRepository activityRepository, IMapper mapper) : IActivityService
     {
-        public async Task<List<ActivityDto>> GetAllAsync(string userId)
+        public async Task<List<ActivityDto>> GetAllAsync(Guid userId)
         {
             var data = await activityRepository.GetAllAsync(userId);
             return mapper.Map<List<ActivityDto>>(data);
         }
 
-        public async Task<ActivityDto?> GetByIdAsync(string id, string userId)
+        public async Task<ActivityDto?> GetByIdAsync(Guid id, Guid userId)
         {
             var item = await GetByIdForUserAsync(id, userId);
             return item == null ? null : mapper.Map<ActivityDto>(item);
         }
 
-        public async Task<OperationResult<ActivityDto>> CreateAsync(CreateActivityRequest request, string userId)
+        public async Task<OperationResult<ActivityDto>> CreateAsync(CreateActivityRequest request, Guid userId)
         {
             if (string.IsNullOrWhiteSpace(request.Name))
             {
@@ -48,7 +48,7 @@ namespace OrbitSpace.Application.Services
             return mapper.Map<ActivityDto>(createdItem);
         }
 
-        public async Task<OperationResult<ActivityDto>> UpdateAsync(UpdateActivityRequest request, string userId)
+        public async Task<OperationResult<ActivityDto>> UpdateAsync(UpdateActivityRequest request, Guid userId)
         {
             if (string.IsNullOrWhiteSpace(request.Name))
             {
@@ -75,12 +75,12 @@ namespace OrbitSpace.Application.Services
             return mapper.Map<ActivityDto>(entityInDb);
         }
 
-        public async Task<bool> DeleteAsync(string id, string userId)
+        public async Task<bool> DeleteAsync(Guid id, Guid userId)
         {
             return await activityRepository.DeleteAsync(id, userId);
         }
 
-        private async Task<Activity?> GetByIdForUserAsync(string id, string userId)
+        private async Task<Activity?> GetByIdForUserAsync(Guid id, Guid userId)
         {
             var entityInDb = await activityRepository.GetByIdAsync(id);
             if (entityInDb == null || entityInDb.UserId != userId)

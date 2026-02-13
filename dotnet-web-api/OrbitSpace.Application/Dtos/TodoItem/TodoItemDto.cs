@@ -3,7 +3,7 @@
 namespace OrbitSpace.Application.Dtos.TodoItem
 {
     public record TodoItemDto(
-    string Id,
+    Guid Id,
     string Title,
     DateTime CreatedAtUtc,
     DateTime UpdatedAtUtc,

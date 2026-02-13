@@ -1,19 +1,22 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using MongoDB.Driver;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using OrbitSpace.Application.Common.Interfaces;
 using OrbitSpace.Infrastructure.Persistence;
 using OrbitSpace.Infrastructure.Persistence.Repositories;
 using OrbitSpace.Infrastructure.Services;
-using OrbitSpace.Infrastructure.Settings;
 
 namespace OrbitSpace.Infrastructure;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services)
+    public static IServiceCollection AddInfrastructure(
+        this IServiceCollection services,
+        IConfiguration configuration)
     {
-        services.AddMongoDbServices();
+        services.AddDbContext<AppDbContext>(options =>
+            options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"))
+                   .UseSnakeCaseNamingConvention());
 
         services.AddScoped<ITokenService, JwtTokenService>()
             .AddScoped<IPasswordHasherService, BCryptPasswordHasherService>();
@@ -24,25 +27,5 @@ public static class DependencyInjection
             .AddScoped<IActivityRepository, ActivityRepository>();
 
         return services;
-    }
-
-    private static void AddMongoDbServices(this IServiceCollection services)
-    {
-        services.AddSingleton<IMongoClient>(serviceProvider =>
-        {
-            var settings = serviceProvider.GetRequiredService<IOptions<MongoDbSettings>>().Value;
-            return new MongoClient(settings.ConnectionString);
-        });
-
-        services.AddScoped<IMongoDatabase>(serviceProvider =>
-        {
-            var settings = serviceProvider.GetRequiredService<IOptions<MongoDbSettings>>().Value;
-            var client = serviceProvider.GetRequiredService<IMongoClient>();
-            return client.GetDatabase(settings.DatabaseName);
-        });
-
-        services.AddScoped<IMongoDbContext, MongoDbContext>();
-
-        MongoMappingsConfig.RegisterAll();
     }
 }

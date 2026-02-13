@@ -32,7 +32,7 @@ namespace OrbitSpace.WebApi.Controllers
         [EndpointName("getActivityById")]
         [ProducesResponseType<ApiResponse<ActivityDto>>(StatusCodes.Status200OK)]
         [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetById(string id)
+        public async Task<IActionResult> GetById(Guid id)
         {
             var activity = await activityService.GetByIdAsync(id, CurrentUser.Id);
             if (activity == null)
@@ -65,7 +65,7 @@ namespace OrbitSpace.WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
         [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Update(string id, [FromBody] UpdateActivityRequest request)
+        public async Task<IActionResult> Update(Guid id, [FromBody] UpdateActivityRequest request)
         {
             if (request.Id != id)
             {
@@ -86,7 +86,7 @@ namespace OrbitSpace.WebApi.Controllers
         [EndpointName("deleteActivity")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> Delete(Guid id)
         {
             if (!await activityService.DeleteAsync(id, CurrentUser.Id))
             {

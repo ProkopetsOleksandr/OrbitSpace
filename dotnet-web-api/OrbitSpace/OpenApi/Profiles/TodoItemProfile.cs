@@ -11,7 +11,7 @@ namespace OrbitSpace.WebApi.OpenApi.Profiles
                 .WithSchemaName("TodoItem")
                 .WithDescription("Represents a Todo item")
                 .WithExample(new TodoItemDto(
-                    Id: "679c2e4fa7b19f34d2c8f91b",
+                    Id: Guid.CreateVersion7(new DateTimeOffset(2026, 2, 13, 14, 52, 0, TimeSpan.Zero)),
                     Title: "Example Title",
                     CreatedAtUtc: new DateTime(2025, 11, 30, 17, 55, 0, DateTimeKind.Utc),
                     UpdatedAtUtc: new DateTime(2025, 11, 30, 17, 55, 0, DateTimeKind.Utc),
@@ -26,7 +26,7 @@ namespace OrbitSpace.WebApi.OpenApi.Profiles
             CreateSchema<UpdateTodoItemDto>()
                 .WithSchemaName("UpdateTodoItemPayload")
                 .WithExample(new UpdateTodoItemDto(
-                    Id: "679c2e4fa7b19f34d2c8f91b",
+                    Id: Guid.CreateVersion7(new DateTimeOffset(2026, 2, 13, 14, 52, 0, TimeSpan.Zero)),
                     Title: "New title",
                     Status: TodoItemStatus.InProgress));
         }

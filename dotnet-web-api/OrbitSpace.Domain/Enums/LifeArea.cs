@@ -2,7 +2,7 @@
 
 namespace OrbitSpace.Domain.Enums
 {
-    public enum LifeArea
+    public enum LifeArea : byte
     {
         [Description("Career & Business")]
         Career = 1,

@@ -1,48 +1,42 @@
-﻿using MongoDB.Driver;
+﻿using Microsoft.EntityFrameworkCore;
 using OrbitSpace.Application.Common.Interfaces;
 using OrbitSpace.Domain.Entities;
 
 namespace OrbitSpace.Infrastructure.Persistence.Repositories;
 
-public class TodoItemRepository(IMongoDbContext dbContext) : ITodoItemRepository
+public class TodoItemRepository(AppDbContext dbContext) : ITodoItemRepository
 {
-    public async Task<List<TodoItem>> GetAllAsync(string userId)
+    public async Task<List<TodoItem>> GetAllAsync(Guid userId)
     {
-        var filter = Builders<TodoItem>.Filter.Eq(x => x.UserId, userId);
-        
-        return await dbContext.TodoItems.Find(filter).ToListAsync();
+        return await dbContext.TodoItems
+            .Where(t => t.UserId == userId)
+            .ToListAsync();
     }
 
-    public async Task<TodoItem?> GetByIdAsync(string id)
+    public async Task<TodoItem?> GetByIdAsync(Guid id)
     {
-        var filter = Builders<TodoItem>.Filter.Eq(x => x.Id, id);
-        
-        return await dbContext.TodoItems.Find(filter).FirstOrDefaultAsync();
+        return await dbContext.TodoItems.FindAsync(id);
     }
 
     public async Task<TodoItem> CreateAsync(TodoItem todoItem)
     {
-        await dbContext.TodoItems.InsertOneAsync(todoItem);
-        
+        dbContext.TodoItems.Add(todoItem);
+        await dbContext.SaveChangesAsync();
         return todoItem;
     }
 
     public async Task<bool> UpdateAsync(TodoItem todoItem)
     {
-        var filter = Builders<TodoItem>.Filter.Eq(x => x.Id, todoItem.Id);
-        var updateResult = await dbContext.TodoItems.ReplaceOneAsync(filter, todoItem);
-        
-        return updateResult.IsAcknowledged;
+        dbContext.TodoItems.Update(todoItem);
+        var affected = await dbContext.SaveChangesAsync();
+        return affected > 0;
     }
 
-    public async Task<bool> DeleteAsync(string id, string userId)
+    public async Task<bool> DeleteAsync(Guid id, Guid userId)
     {
-        var filter = Builders<TodoItem>.Filter.And(
-        Builders<TodoItem>.Filter.Eq(x => x.Id, id),
-            Builders<TodoItem>.Filter.Eq(x => x.UserId, userId));
-        
-        var deleteResult = await dbContext.TodoItems.DeleteOneAsync(filter);
-
-        return deleteResult.DeletedCount > 0;
+        var affected = await dbContext.TodoItems
+            .Where(t => t.Id == id && t.UserId == userId)
+            .ExecuteDeleteAsync();
+        return affected > 0;
     }
 }

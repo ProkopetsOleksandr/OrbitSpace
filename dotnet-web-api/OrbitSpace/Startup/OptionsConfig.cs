@@ -16,16 +16,6 @@ namespace OrbitSpace.WebApi.Startup
                 },
                 "Jwt token settings are missing.")
                 .ValidateOnStart();
-
-            services.AddOptions<MongoDbSettings>()
-                .Bind(configuration.GetSection(MongoDbSettings.SectionName))
-                .Validate(settings =>
-                {
-                    return !string.IsNullOrWhiteSpace(settings.ConnectionString)
-                        && !string.IsNullOrWhiteSpace(settings.DatabaseName);
-                },
-                "ConnectionString or DatabaseName is missing in MongoDbSettings.")
-                .ValidateOnStart();
         }
     }
 }

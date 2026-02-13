@@ -32,7 +32,7 @@ public class TodoItemsController(ITodoItemService todoItemService) : ApiControll
     [EndpointName("getTodoItemById")]
     [ProducesResponseType<ApiResponse<TodoItemDto>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetById(string id)
+    public async Task<IActionResult> GetById(Guid id)
     {
         var todoItem = await todoItemService.GetByIdAsync(id, CurrentUser.Id);
         if (todoItem == null)
@@ -65,7 +65,7 @@ public class TodoItemsController(ITodoItemService todoItemService) : ApiControll
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Update(string id, [FromBody] UpdateTodoItemDto request)
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateTodoItemDto request)
     {
         if (request.Id != id)
         {
@@ -86,7 +86,7 @@ public class TodoItemsController(ITodoItemService todoItemService) : ApiControll
     [EndpointName("deleteTodoItem")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Delete(string id)
+    public async Task<IActionResult> Delete(Guid id)
     {
         if (!await todoItemService.DeleteAsync(id, CurrentUser.Id))
         {

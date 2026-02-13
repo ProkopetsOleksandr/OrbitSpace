@@ -13,7 +13,7 @@ namespace OrbitSpace.WebApi
             builder.Services
                 .AddPresentation(builder.Configuration)
                 .AddApplication()
-                .AddInfrastructure();
+                .AddInfrastructure(builder.Configuration);
 
             var app = builder.Build();
             app.UseCors(CorsPolicyConstants.PolicyName.AllowSpecificOrigins);

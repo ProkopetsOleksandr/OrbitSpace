@@ -1,7 +1,7 @@
 ﻿namespace OrbitSpace.Application.Dtos.Activity
 {
     public record ActivityDto(
-        string Id,
+        Guid Id,
         string Name,
         string Code,
         DateTime CreatedAtUtc,

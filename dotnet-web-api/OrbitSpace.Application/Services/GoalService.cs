@@ -10,20 +10,20 @@ namespace OrbitSpace.Application.Services
 {
     public class GoalService(IGoalRepository goalRepository, IMapper mapper) : IGoalService
     {
-        public async Task<List<GoalDto>> GetAllAsync(string userId)
+        public async Task<List<GoalDto>> GetAllAsync(Guid userId)
         {
             var data = await goalRepository.GetAllAsync(userId);
             return mapper.Map<List<GoalDto>>(data);
         }
 
-        public async Task<GoalDto?> GetGoalDetailsAsync(string id, string userId)
+        public async Task<GoalDto?> GetGoalDetailsAsync(Guid id, Guid userId)
         {
             var item = await GetByIdForUserAsync(id, userId);
-            
+
             return item == null ? null : mapper.Map<GoalDto>(item);
         }
 
-        public async Task<OperationResult<GoalDto>> CreateAsync(CreateGoalRequest request, string userId)
+        public async Task<OperationResult<GoalDto>> CreateAsync(CreateGoalRequest request, Guid userId)
         {
             if (request is { IsActive: true, DueAtUtc: null })
             {
@@ -51,25 +51,25 @@ namespace OrbitSpace.Application.Services
                 newGoal.AchievabilityRationale = request.AchievabilityRationale;
                 newGoal.Motivation = request.Motivation;
             }
-            
+
             var createdItem = await goalRepository.CreateAsync(newGoal);
 
             return mapper.Map<GoalDto>(createdItem);
         }
 
-        public async Task<OperationResult<GoalDto>> UpdateAsync(UpdateGoalRequest request, string userId)
+        public async Task<OperationResult<GoalDto>> UpdateAsync(UpdateGoalRequest request, Guid userId)
         {
             if (request is { Status: GoalStatus.Active,  DueDate: null })
             {
                 return OperationResultError.Validation("Due date is required for active goals");
             }
-            
+
             var entityInDb = await GetByIdForUserAsync(request.Id, userId);
             if (entityInDb == null)
             {
                 return OperationResultError.NotFound();
             }
-            
+
             entityInDb.Title = request.Title;
             entityInDb.LifeArea = request.LifeArea;
             entityInDb.Status = request.Status;
@@ -79,7 +79,7 @@ namespace OrbitSpace.Application.Services
             entityInDb.Metrics = request.Metrics;
             entityInDb.AchievabilityRationale =  request.AchievabilityRationale;
             entityInDb.Motivation = request.Motivation;
-            
+
             var currentDateTime = DateTime.UtcNow;
             if (request.Status == GoalStatus.Completed)
             {
@@ -99,16 +99,16 @@ namespace OrbitSpace.Application.Services
             }
 
             await goalRepository.UpdateAsync(entityInDb);
-            
+
             return mapper.Map<GoalDto>(entityInDb);
         }
 
-        public async Task<bool> DeleteAsync(string id, string userId)
+        public async Task<bool> DeleteAsync(Guid id, Guid userId)
         {
             return await goalRepository.DeleteAsync(id, userId);
         }
 
-        private async Task<Goal?> GetByIdForUserAsync(string id, string userId)
+        private async Task<Goal?> GetByIdForUserAsync(Guid id, Guid userId)
         {
             var entityInDb = await goalRepository.GetByIdAsync(id);
             if (entityInDb == null || entityInDb.UserId != userId)

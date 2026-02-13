@@ -2,7 +2,7 @@
 
 namespace OrbitSpace.Domain.Enums;
 
-public enum TodoItemStatus
+public enum TodoItemStatus : byte
 {
     New = 1,
     InProgress = 2,

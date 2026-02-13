@@ -1,6 +1,6 @@
 ﻿namespace OrbitSpace.Domain.Enums
 {
-    public enum GoalStatus
+    public enum GoalStatus : byte
     {
         NotStarted = 1,
         Active = 2,

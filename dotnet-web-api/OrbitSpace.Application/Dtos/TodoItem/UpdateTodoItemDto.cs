@@ -2,5 +2,5 @@
 
 namespace OrbitSpace.Application.Dtos.TodoItem
 {
-    public record UpdateTodoItemDto(string Id, string Title, TodoItemStatus Status);
+    public record UpdateTodoItemDto(Guid Id, string Title, TodoItemStatus Status);
 }

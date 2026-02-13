@@ -1,49 +1,42 @@
-﻿using MongoDB.Driver;
+﻿using Microsoft.EntityFrameworkCore;
 using OrbitSpace.Application.Common.Interfaces;
 using OrbitSpace.Domain.Entities;
 
-namespace OrbitSpace.Infrastructure.Persistence.Repositories
+namespace OrbitSpace.Infrastructure.Persistence.Repositories;
+
+public class GoalRepository(AppDbContext dbContext) : IGoalRepository
 {
-    public class GoalRepository(IMongoDbContext dbContext) : IGoalRepository
+    public async Task<List<Goal>> GetAllAsync(Guid userId)
     {
-        public async Task<List<Goal>> GetAllAsync(string userId)
-        {
-            var filter = Builders<Goal>.Filter.Eq(x => x.UserId, userId);
+        return await dbContext.Goals
+            .Where(g => g.UserId == userId)
+            .ToListAsync();
+    }
 
-            return await dbContext.Goals.Find(filter).ToListAsync();
-        }
+    public async Task<Goal?> GetByIdAsync(Guid id)
+    {
+        return await dbContext.Goals.FindAsync(id);
+    }
 
-        public async Task<Goal?> GetByIdAsync(string id)
-        {
-            var filter = Builders<Goal>.Filter.Eq(x => x.Id, id);
-        
-            return await dbContext.Goals.Find(filter).FirstOrDefaultAsync();
-        }
+    public async Task<Goal> CreateAsync(Goal goal)
+    {
+        dbContext.Goals.Add(goal);
+        await dbContext.SaveChangesAsync();
+        return goal;
+    }
 
-        public async Task<Goal> CreateAsync(Goal goal)
-        {
-            await dbContext.Goals.InsertOneAsync(goal);
-        
-            return goal;
-        }
+    public async Task<bool> UpdateAsync(Goal goal)
+    {
+        dbContext.Goals.Update(goal);
+        var affected = await dbContext.SaveChangesAsync();
+        return affected > 0;
+    }
 
-        public async Task<bool> UpdateAsync(Goal goal)
-        {
-            var filter = Builders<Goal>.Filter.Eq(x => x.Id, goal.Id);
-            var updateResult = await dbContext.Goals.ReplaceOneAsync(filter, goal);
-        
-            return updateResult.IsAcknowledged;
-        }
-
-        public async Task<bool> DeleteAsync(string id, string userId)
-        {
-            var filter = Builders<Goal>.Filter.And(
-                Builders<Goal>.Filter.Eq(x => x.Id, id),
-                Builders<Goal>.Filter.Eq(x => x.UserId, userId));
-        
-            var deleteResult = await dbContext.Goals.DeleteOneAsync(filter);
-
-            return deleteResult.DeletedCount > 0;
-        }
+    public async Task<bool> DeleteAsync(Guid id, Guid userId)
+    {
+        var affected = await dbContext.Goals
+            .Where(g => g.Id == id && g.UserId == userId)
+            .ExecuteDeleteAsync();
+        return affected > 0;
     }
 }
