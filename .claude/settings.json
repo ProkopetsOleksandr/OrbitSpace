@@ -1,5 +1,5 @@
 {
   "permissions": {
-    "allow": ["Bash(dir:*)", "Bash(ls:*)"]
+    "allow": ["Bash(dir:*)", "Bash(ls:*)", "Bash(grep:*)", "Bash(git:*)"]
   }
 }
