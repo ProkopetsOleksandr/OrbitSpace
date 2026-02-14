@@ -36,6 +36,7 @@ namespace OrbitSpace.Application.Services
             var currentDateTime = DateTime.UtcNow;
             var newActivity = new Activity
             {
+                Id = Guid.CreateVersion7(),
                 UserId = userId,
                 Name = request.Name,
                 Code = request.Code,

@@ -33,6 +33,7 @@ namespace OrbitSpace.Application.Services
             var currentDateTime = DateTime.UtcNow;
             var newGoal = new Goal
             {
+                Id = Guid.CreateVersion7(),
                 UserId = userId,
                 Title = request.Title,
                 LifeArea = request.LifeArea,

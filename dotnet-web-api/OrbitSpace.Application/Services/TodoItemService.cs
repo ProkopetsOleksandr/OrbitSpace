@@ -34,6 +34,7 @@ namespace OrbitSpace.Application.Services
             var currentDateTime = DateTime.UtcNow;
             var createdItem = await todoItemRepository.CreateAsync(new TodoItem
             {
+                Id = Guid.CreateVersion7(),
                 UserId = userId,
                 Title = todoItem.Title,
                 CreatedAtUtc = currentDateTime,
