@@ -102,30 +102,30 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| AUTH-01 | — | Pending |
-| AUTH-02 | — | Pending |
-| MNFST-01 | — | Pending |
-| MNFST-02 | — | Pending |
-| GRID-01 | — | Pending |
-| GRID-02 | — | Pending |
-| GRID-03 | — | Pending |
-| GRID-04 | — | Pending |
-| GRID-05 | — | Pending |
-| GRID-06 | — | Pending |
-| GOAL-01 | — | Pending |
-| GOAL-02 | — | Pending |
-| GOAL-03 | — | Pending |
-| GOAL-04 | — | Pending |
-| WHEEL-01 | — | Pending |
-| WHEEL-02 | — | Pending |
-| WHEEL-03 | — | Pending |
-| WHEEL-04 | — | Pending |
+| AUTH-01 | Phase 1 | Pending |
+| AUTH-02 | Phase 1 | Pending |
+| WHEEL-01 | Phase 2 | Pending |
+| WHEEL-02 | Phase 2 | Pending |
+| WHEEL-03 | Phase 2 | Pending |
+| WHEEL-04 | Phase 2 | Pending |
+| MNFST-01 | Phase 3 | Pending |
+| MNFST-02 | Phase 3 | Pending |
+| GRID-01 | Phase 4 | Pending |
+| GRID-02 | Phase 4 | Pending |
+| GRID-03 | Phase 4 | Pending |
+| GRID-04 | Phase 4 | Pending |
+| GRID-05 | Phase 4 | Pending |
+| GRID-06 | Phase 4 | Pending |
+| GOAL-01 | Phase 5 | Pending |
+| GOAL-02 | Phase 5 | Pending |
+| GOAL-03 | Phase 5 | Pending |
+| GOAL-04 | Phase 5 | Pending |
 
 **Coverage:**
 - v1 requirements: 18 total
-- Mapped to phases: 0
-- Unmapped: 18
+- Mapped to phases: 18
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-14*
-*Last updated: 2026-02-14 after initial definition*
+*Last updated: 2026-02-14 after roadmap creation*
