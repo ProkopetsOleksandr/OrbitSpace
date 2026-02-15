@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { backendBaseUrl } from '@/shared/config';
 
-async function proxyToBackend(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
+async function proxyToBackend(request: NextRequest) {
   const { getToken } = await auth();
   const token = await getToken();
 
@@ -11,8 +11,7 @@ async function proxyToBackend(request: NextRequest, { params }: { params: Promis
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const { path } = await params;
-  const backendPath = path.join('/');
+  const backendPath = request.nextUrl.pathname.replace(/^\//, '');
   const search = request.nextUrl.search;
   const url = `${backendBaseUrl}/${backendPath}${search}`;
 
@@ -23,12 +22,14 @@ async function proxyToBackend(request: NextRequest, { params }: { params: Promis
   const res = await fetch(url, {
     method: request.method,
     headers,
-    body: ['GET', 'HEAD'].includes(request.method) ? undefined : await request.text(),
+    body: ['GET', 'HEAD'].includes(request.method) ? undefined : await request.text()
   });
 
-  return new NextResponse(res.body, {
+  const body = await res.arrayBuffer();
+
+  return new NextResponse(body, {
     status: res.status,
-    headers: res.headers,
+    headers: res.headers
   });
 }
 
