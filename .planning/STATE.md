@@ -10,28 +10,28 @@ See: .planning/PROJECT.md (updated 2026-02-14)
 ## Current Position
 
 Phase: 1 of 6 (Foundation & Authentication)
-Plan: 2 of 5 in current phase
+Plan: 3 of 5 in current phase
 Status: Executing
-Last activity: 2026-02-15 - Completed plan 01-02 (Authentication Controller & User Provider)
+Last activity: 2026-02-15 - Completed plan 01-03 (Frontend Authentication Integration)
 
-Progress: [████░░░░░░] 40%
+Progress: [██████░░░░] 60%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 2
-- Average duration: 3 minutes
-- Total execution time: 0.1 hours
+- Total plans completed: 3
+- Average duration: 4 minutes
+- Total execution time: 0.2 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01 | 2 | 6 min | 3 min |
+| 01 | 3 | 12 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (5 min), 01-02 (1 min)
-- Trend: Gaining velocity
+- Last 5 plans: 01-01 (5 min), 01-02 (1 min), 01-03 (6 min)
+- Trend: Steady pace
 
 *Updated after each plan completion*
 
@@ -51,6 +51,9 @@ Recent decisions affecting current work:
 - Password minimum: 4 characters (dev phase) - Simplify development/testing (Status: Implemented)
 - [Phase 01-02]: Revoke-all endpoint requires [Authorize] attribute (access token) while revoke requires only refresh token
 - [Phase 01-02]: Login failures return 401 Unauthorized (not 400) to distinguish auth failures from validation errors
+- [Phase 01-03]: Route groups for layout separation - (auth) for public pages, (dashboard) for app routes
+- [Phase 01-03]: Auto-login after registration improves UX by eliminating manual sign-in step
+- [Phase 01-03]: JWT decoding in /api/auth/session avoids extra backend call for user info
 
 ### Pending Todos
 
@@ -68,8 +71,8 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-15 - Plan 01-02 execution
-Stopped at: Completed 01-02-PLAN.md - Authentication Controller & User Provider
+Last session: 2026-02-15 - Plan 01-03 execution
+Stopped at: Completed 01-03-PLAN.md - Frontend Authentication Integration
 Resume file: None
 
-**Next step:** Execute plan 01-03 (Next.js frontend authentication integration)
+**Next step:** Execute plan 01-04 (Middleware and Protected Routes)
