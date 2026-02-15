@@ -31,10 +31,14 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. JWT tokens are stored in httpOnly cookies (never exposed to browser JS)
   4. Server Components can fetch from .NET API with automatic auth header injection
   5. Client Components can call proxy routes that forward to .NET API with cookies
-**Plans**: TBD
+**Plans**: 5 plans
 
 Plans:
-- [ ] 01-01: TBD during phase planning
+- [ ] 01-01-PLAN.md — Backend auth foundation: RefreshToken entity, token service, auth service, DTOs, migration
+- [ ] 01-02-PLAN.md — Backend controller endpoints and ApplicationUserProvider fix
+- [ ] 01-03-PLAN.md — Frontend auth entity layer, pages, forms, and API route handlers
+- [ ] 01-04-PLAN.md — Custom middleware, DAL, proxy update, Clerk removal
+- [ ] 01-05-PLAN.md — End-to-end verification checkpoint
 
 ### Phase 2: Balance Wheel
 **Goal**: Users can visualize and track their life quality across custom sectors with radar chart representation
@@ -121,7 +125,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Authentication | 0/0 | Not started | - |
+| 1. Foundation & Authentication | 0/5 | Planning complete | - |
 | 2. Balance Wheel | 0/0 | Not started | - |
 | 3. Identity Manifest | 0/0 | Not started | - |
 | 4. Activity Grid | 0/0 | Not started | - |
