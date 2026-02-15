@@ -18,7 +18,7 @@ export function RegisterForm() {
     register,
     handleSubmit,
     formState: { errors }
-  } = useForm<RegisterInput>({
+  } = useForm({
     resolver: zodResolver(registerSchema)
   });
 

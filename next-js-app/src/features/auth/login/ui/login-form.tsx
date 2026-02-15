@@ -19,9 +19,11 @@ export function LoginForm() {
     register,
     handleSubmit,
     formState: { errors }
-  } = useForm<LoginInput>({
+  } = useForm({
     resolver: zodResolver(loginSchema),
     defaultValues: {
+      email: '',
+      password: '',
       rememberMe: false
     }
   });
