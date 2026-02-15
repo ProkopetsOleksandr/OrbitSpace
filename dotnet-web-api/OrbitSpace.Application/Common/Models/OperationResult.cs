@@ -56,15 +56,15 @@ namespace OrbitSpace.Application.Common.Models
         public static OperationResultError Validation(string? errorMessage = null) =>
             new(OperationResultErrorType.Validation, errorMessage);
 
-        // public static OperationResultError Unauthorized(string? errorMessage = null) =>
-        //     new(OperationResultErrorType.Unauthorized, errorMessage);
+        public static OperationResultError Unauthorized(string? errorMessage = null) =>
+            new(OperationResultErrorType.Unauthorized, errorMessage);
     }
 
     public enum OperationResultErrorType
     {
         NotFound = 1,
         Validation = 2,
-        //Unauthorized = 3
+        Unauthorized = 3
     }
 }
 
