@@ -11,8 +11,7 @@ public class ApplicationUserProvider : IApplicationUserProvider
         _claims = httpContextAccessor.HttpContext?.User ?? throw new UnauthorizedAccessException();
     }
 
-    private Guid TempUserId = new Guid("019c577c-c280-7036-a555-36746161bb89");
-    public Guid UserId => TempUserId; //Guid.Parse(GetValueFromClaim(ClaimTypes.NameIdentifier));
+    public Guid UserId => Guid.Parse(GetValueFromClaim(ClaimTypes.NameIdentifier));
 
     public string UserEmail => GetValueFromClaim(ClaimTypes.Email);
 
