@@ -34,6 +34,7 @@ public class AuthenticationService(
         var now = DateTime.UtcNow;
         await userRepository.CreateAsync(new User
         {
+            Id = Guid.CreateVersion7(),
             Email = request.Email,
             FirstName = request.FirstName,
             LastName = request.LastName,
@@ -75,7 +76,7 @@ public class AuthenticationService(
         // Create refresh token entity
         var refreshToken = new RefreshToken
         {
-            Id = Guid.NewGuid(),
+            Id = Guid.CreateVersion7(),
             UserId = user.Id,
             Token = hashedRefreshToken,
             CreatedAtUtc = now,

@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -21,8 +22,9 @@ namespace OrbitSpace.WebApi.Startup
                     {
                         ValidateAudience = false,
                         ValidateIssuer = true,
-                        ValidIssuer = jwtSettings.Issuer,
                         ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key)),
+                        ValidIssuer = jwtSettings.Issuer,
                         ValidateLifetime = true
                     };
 

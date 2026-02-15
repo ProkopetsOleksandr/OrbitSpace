@@ -25,7 +25,7 @@ async function proxyToBackend(request: NextRequest) {
     body: ['GET', 'HEAD'].includes(request.method) ? undefined : await request.text()
   });
 
-  const body = await res.arrayBuffer();
+  const body = await res.json();
 
   return new NextResponse(body, {
     status: res.status,
