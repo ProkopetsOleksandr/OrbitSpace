@@ -3,7 +3,6 @@ import { Inter, Poppins } from 'next/font/google';
 
 import { Providers } from '@/app';
 import '@/app/styles/globals.css';
-import { DashboardLayout } from '@/widgets/dashboard-layout';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -31,9 +30,7 @@ export default function RootLayout({
   return (
     <Providers>
       <html lang="en" className={`${inter.variable} ${poppins.variable} antialiased`}>
-        <body className="font-inter">
-          <DashboardLayout>{children}</DashboardLayout>
-        </body>
+        <body className="font-inter">{children}</body>
       </html>
     </Providers>
   );
