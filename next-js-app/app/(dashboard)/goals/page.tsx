@@ -1,5 +1,11 @@
+import { Suspense } from 'react';
+
 import { GoalsPage } from '@/pages/goals-page';
 
 export default function Page() {
-  return <GoalsPage />;
+  return (
+    <Suspense>
+      <GoalsPage />
+    </Suspense>
+  );
 }

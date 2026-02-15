@@ -1,7 +1,7 @@
 import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
 
-import { goalCreateSchemaType } from '@/entities/goal/model/schemas';
+import { createGoalFormValues } from '../model/create-goal-schema';
 import { LifeArea } from '@/shared/api';
 import { cn } from '@/shared/lib/utils';
 import { GenericFormProps } from '@/shared/types/form';
@@ -15,7 +15,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
 import { Textarea } from '@/shared/ui/textarea';
 
-export const CreateGoalForm = ({ form, onSubmit, id }: GenericFormProps<goalCreateSchemaType>) => {
+export const CreateGoalForm = ({ form, onSubmit, id }: GenericFormProps<createGoalFormValues>) => {
   const isSmartGoal = form.watch('isSmartGoal');
 
   const today = new Date();
