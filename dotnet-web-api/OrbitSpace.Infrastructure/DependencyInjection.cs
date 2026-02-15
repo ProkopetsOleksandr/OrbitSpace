@@ -24,7 +24,8 @@ public static class DependencyInjection
         services.AddScoped<IUserRepository, UserRepository>()
             .AddScoped<ITodoItemRepository, TodoItemRepository>()
             .AddScoped<IGoalRepository, GoalRepository>()
-            .AddScoped<IActivityRepository, ActivityRepository>();
+            .AddScoped<IActivityRepository, ActivityRepository>()
+            .AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
         return services;
     }

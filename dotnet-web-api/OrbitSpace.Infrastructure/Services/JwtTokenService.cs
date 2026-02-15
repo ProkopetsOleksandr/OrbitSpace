@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
@@ -26,7 +27,7 @@ public class JwtTokenService(IOptions<JwtSettings> jwtSettingsOptions) : ITokenS
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(claims),
-            Expires = DateTime.UtcNow.AddDays(7),
+            Expires = DateTime.UtcNow.AddMinutes(15),
             SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512),
             Issuer = _jwtSettings.Issuer,
             Audience = _jwtSettings.Audience
@@ -35,5 +36,19 @@ public class JwtTokenService(IOptions<JwtSettings> jwtSettingsOptions) : ITokenS
         var tokenHandler = new JsonWebTokenHandler();
 
         return tokenHandler.CreateToken(tokenDescriptor);
+    }
+
+    public string GenerateRefreshToken()
+    {
+        var randomBytes = new byte[64];
+        using var rng = RandomNumberGenerator.Create();
+        rng.GetBytes(randomBytes);
+        return Convert.ToBase64String(randomBytes);
+    }
+
+    public string HashToken(string token)
+    {
+        var hashBytes = SHA256.HashData(Encoding.UTF8.GetBytes(token));
+        return Convert.ToBase64String(hashBytes);
     }
 }

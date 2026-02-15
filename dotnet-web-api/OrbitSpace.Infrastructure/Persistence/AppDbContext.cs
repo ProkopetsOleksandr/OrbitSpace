@@ -9,6 +9,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<Goal> Goals => Set<Goal>();
     public DbSet<Activity> Activities => Set<Activity>();
     public DbSet<TodoItem> TodoItems => Set<TodoItem>();
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
