@@ -1,11 +1,11 @@
-import { auth } from '@clerk/nextjs/server';
+import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 
 import { backendBaseUrl } from '@/shared/config';
 
 async function proxyToBackend(request: NextRequest) {
-  const { getToken } = await auth();
-  const token = await getToken();
+  const cookieStore = await cookies();
+  const token = cookieStore.get('access-token')?.value;
 
   if (!token) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
