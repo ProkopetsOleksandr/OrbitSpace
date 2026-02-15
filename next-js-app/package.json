@@ -10,7 +10,6 @@
     "generate-api-types": "set NODE_TLS_REJECT_UNAUTHORIZED=0&& npx openapi-typescript https://localhost:7284/openapi/v1.json -o ./src/shared/api/v1.ts --enum"
   },
   "dependencies": {
-    "@clerk/nextjs": "^6.34.0",
     "@hookform/resolvers": "^5.2.2",
     "@radix-ui/react-avatar": "^1.1.10",
     "@radix-ui/react-checkbox": "^1.3.3",

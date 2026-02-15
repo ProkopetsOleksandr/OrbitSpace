@@ -37,4 +37,5 @@ dotnet test                               # Run tests
 
 - OpenAPI spec is consumed by frontend to generate TypeScript types
 - Frontend proxies all requests through Next.js API routes
-- Authentication: Clerk JWT in Authorization header
+- Authentication: Custom JWT (access/refresh tokens) in Authorization header
+- Next.js stores tokens in httpOnly cookies, never exposed to browser JavaScript

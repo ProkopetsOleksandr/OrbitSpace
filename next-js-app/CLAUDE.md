@@ -8,7 +8,7 @@
 - TanStack React Query v5, TanStack Table
 - React Hook Form v7 + Zod v4
 - openapi-fetch + openapi-typescript
-- Clerk for authentication
+- Custom JWT authentication with httpOnly cookies (BFF proxy pattern)
 - pnpm as package manager
 
 ## Project Structure (FSD)
@@ -35,21 +35,21 @@ pnpm generate-api-types   # Regenerate types from backend OpenAPI spec
 ## API Integration
 
 - Generated types: `src/shared/api/v1.ts`
-- Browser client: `getApiClient()` — proxies through `/api` routes
-- Server client: `getServerApiClient()` — direct backend connection with Clerk JWT
+- Browser client: `getApiClient()` — proxies through `/api/proxy` routes
+- Server client: `getServerApiClient()` — direct backend connection with JWT from httpOnly cookie
+- Data Access Layer: `fetchFromApi()` and `getSession()` for Server Components (defense-in-depth auth)
 - Backend must be running at `https://localhost:7284` for type generation
 
 ## Environment Variables
 
 ```bash
-NEXT_PUBLIC_BACKEND_BASE_URL=https://localhost:7284
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_...
-CLERK_SECRET_KEY=sk_...
+BACKEND_BASE_URL=https://localhost:7284  # Server-side only
+NODE_TLS_REJECT_UNAUTHORIZED=0           # Dev only: accept self-signed certs
 ```
 
 - Never commit `.env.local`
-- `NEXT_PUBLIC_` prefix = exposed to browser
-- Secrets stay server-side only
+- `NEXT_PUBLIC_` prefix = exposed to browser (avoid for sensitive data)
+- JWTs stored in httpOnly cookies, never exposed to client JavaScript
 
 ## Adding New Features
 
