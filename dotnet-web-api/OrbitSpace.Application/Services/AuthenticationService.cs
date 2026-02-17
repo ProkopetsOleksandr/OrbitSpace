@@ -63,7 +63,7 @@ public class AuthenticationService(
         }
 
         // Generate access token
-        var accessToken = tokenService.GenerateAccessToken(user);
+        var accessToken = tokenService.GenerateAccessToken(user.Id);
 
         // Generate refresh token
         var refreshTokenValue = tokenService.GenerateRefreshToken();
@@ -78,7 +78,7 @@ public class AuthenticationService(
         {
             Id = Guid.CreateVersion7(),
             UserId = user.Id,
-            Token = hashedRefreshToken,
+            TokenHash = hashedRefreshToken,
             CreatedAtUtc = now,
             ExpiresAtUtc = now.AddDays(expirationDays),
             DeviceInfo = request.DeviceInfo
@@ -101,7 +101,7 @@ public class AuthenticationService(
         );
     }
 
-    public async Task<OperationResult<RefreshResponseDto>> RefreshAsync(RefreshRequestDto request)
+    public async Task<OperationResult<RefreshResponseDto>> RefreshAsync(RefreshRequestDto request, Guid userId)
     {
         var hashedToken = tokenService.HashToken(request.RefreshToken);
         var refreshToken = await refreshTokenRepository.GetByTokenAsync(hashedToken);
@@ -111,11 +111,16 @@ public class AuthenticationService(
             return OperationResultError.Unauthorized("Invalid or expired refresh token");
         }
 
+        if (refreshToken == null || !refreshToken.IsActive)
+        {
+            return OperationResultError.Unauthorized("Not found");
+        }
+
         // Mark old token as used
         refreshToken.UsedAtUtc = DateTime.UtcNow;
 
         // Generate new tokens
-        var newAccessToken = tokenService.GenerateAccessToken(refreshToken.User);
+        var newAccessToken = tokenService.GenerateAccessToken(userId);
         var newRefreshTokenValue = tokenService.GenerateRefreshToken();
         var newHashedRefreshToken = tokenService.HashToken(newRefreshTokenValue);
 
@@ -127,16 +132,16 @@ public class AuthenticationService(
         // Create new refresh token
         var newRefreshToken = new RefreshToken
         {
-            Id = Guid.NewGuid(),
+            Id = Guid.CreateVersion7(),
             UserId = refreshToken.UserId,
-            Token = newHashedRefreshToken,
+            TokenHash = newHashedRefreshToken,
             CreatedAtUtc = now,
             ExpiresAtUtc = now.AddDays(expirationDays),
             DeviceInfo = refreshToken.DeviceInfo
         };
 
         // Set replacement tracking
-        refreshToken.ReplacedByToken = newHashedRefreshToken;
+        refreshToken.ReplacedByToken = newRefreshToken.Id;
 
         await refreshTokenRepository.CreateAsync(newRefreshToken);
         await refreshTokenRepository.SaveChangesAsync();
@@ -144,16 +149,14 @@ public class AuthenticationService(
         return new RefreshResponseDto(newAccessToken, newRefreshTokenValue);
     }
 
-    public async Task<OperationResult> RevokeAsync(RevokeRequestDto request)
+    public async Task RevokeAsync(RevokeRequestDto request)
     {
         var hashedToken = tokenService.HashToken(request.RefreshToken);
         await refreshTokenRepository.RevokeByTokenAsync(hashedToken);
-        return OperationResult.Success();
     }
 
-    public async Task<OperationResult> RevokeAllAsync(Guid userId)
+    public async Task RevokeAllAsync(Guid userId)
     {
         await refreshTokenRepository.RevokeAllByUserIdAsync(userId);
-        return OperationResult.Success();
     }
 }

@@ -4,7 +4,7 @@ namespace OrbitSpace.Application.Common.Interfaces
 {
     public interface ITokenService
     {
-        string GenerateAccessToken(User user);
+        string GenerateAccessToken(Guid userId);
         string GenerateRefreshToken();
         string HashToken(string token);
     }

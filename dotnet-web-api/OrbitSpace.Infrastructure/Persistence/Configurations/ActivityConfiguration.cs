@@ -13,7 +13,10 @@ public class ActivityConfiguration : IEntityTypeConfiguration<Activity>
         
         builder.Property(a => a.Name).HasMaxLength(200);
         builder.Property(a => a.Code).HasMaxLength(10);
-        
-        builder.HasIndex(a => a.UserId);
+
+        builder.HasOne<User>()
+            .WithMany()
+            .HasForeignKey(m => m.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

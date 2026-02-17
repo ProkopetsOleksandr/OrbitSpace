@@ -8,8 +8,12 @@ public class UserRepository(AppDbContext dbContext) : IUserRepository
 {
     public async Task CreateAsync(User user)
     {
-        dbContext.Users.Add(user);
-        await dbContext.SaveChangesAsync();
+        await dbContext.Users.AddAsync(user);
+    }
+
+    public async Task<User?> GetByIdAsync(Guid id)
+    {
+        return await dbContext.Users.FindAsync(id);
     }
 
     public async Task<User?> GetByEmailAsync(string username)

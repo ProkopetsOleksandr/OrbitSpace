@@ -12,7 +12,10 @@ public class TodoItemConfiguration : IEntityTypeConfiguration<TodoItem>
         builder.Property(a => a.Id).ValueGeneratedNever();
         
         builder.Property(t => t.Title).HasMaxLength(500);
-        
-        builder.HasIndex(t => t.UserId);
+
+        builder.HasOne<User>()
+            .WithMany()
+            .HasForeignKey(rt => rt.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

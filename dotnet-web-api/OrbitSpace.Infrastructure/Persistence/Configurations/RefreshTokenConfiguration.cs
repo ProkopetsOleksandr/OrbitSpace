@@ -8,20 +8,18 @@ public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshToken>
 {
     public void Configure(EntityTypeBuilder<RefreshToken> builder)
     {
-        builder.HasKey(rt => rt.Id);
-        builder.Property(rt => rt.Id).ValueGeneratedNever();
+        builder.HasKey(m => m.Id);
+        builder.Property(m => m.Id).ValueGeneratedNever();
 
-        builder.Property(rt => rt.Token).IsRequired().HasMaxLength(512);
-        builder.Property(rt => rt.DeviceInfo).HasMaxLength(500);
-        builder.Property(rt => rt.ReplacedByToken).HasMaxLength(512);
+        builder.Property(m => m.TokenHash).HasMaxLength(64);
+        builder.Property(m => m.DeviceInfo).HasMaxLength(256);
+        
+        builder.HasIndex(m => m.TokenHash);
+        builder.HasIndex(m => m.FamilyId);
 
-        builder.HasIndex(rt => rt.Token);
-        builder.HasIndex(rt => rt.UserId);
-        builder.HasIndex(rt => rt.ExpiresAtUtc);
-
-        builder.HasOne(rt => rt.User)
-            .WithMany(u => u.RefreshTokens)
-            .HasForeignKey(rt => rt.UserId)
+        builder.HasOne<User>()
+            .WithMany()
+            .HasForeignKey(m => m.UserId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

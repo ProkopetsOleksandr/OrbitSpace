@@ -14,17 +14,15 @@ public class RefreshTokenRepository(AppDbContext context) : IRefreshTokenReposit
 
     public async Task<RefreshToken?> GetByTokenAsync(string hashedToken)
     {
-        return await context.RefreshTokens
-            .Include(rt => rt.User)
-            .FirstOrDefaultAsync(rt => rt.Token == hashedToken);
+        return await context.RefreshTokens.FirstOrDefaultAsync(rt => rt.TokenHash == hashedToken);
     }
 
     public async Task<List<RefreshToken>> GetActiveByUserIdAsync(Guid userId)
     {
         return await context.RefreshTokens
             .Where(rt => rt.UserId == userId
-                && rt.RevokedAtUtc == null
-                && rt.UsedAtUtc == null
+                && !rt.RevokedAtUtc.HasValue
+                && !rt.UsedAtUtc.HasValue
                 && rt.ExpiresAtUtc > DateTime.UtcNow)
             .OrderByDescending(rt => rt.CreatedAtUtc)
             .ToListAsync();
@@ -32,7 +30,7 @@ public class RefreshTokenRepository(AppDbContext context) : IRefreshTokenReposit
 
     public async Task RevokeByTokenAsync(string hashedToken)
     {
-        var token = await context.RefreshTokens.FirstOrDefaultAsync(rt => rt.Token == hashedToken);
+        var token = await context.RefreshTokens.FirstOrDefaultAsync(rt => rt.TokenHash == hashedToken);
         if (token != null)
         {
             token.RevokedAtUtc = DateTime.UtcNow;
@@ -43,7 +41,7 @@ public class RefreshTokenRepository(AppDbContext context) : IRefreshTokenReposit
     public async Task RevokeAllByUserIdAsync(Guid userId)
     {
         var tokens = await context.RefreshTokens
-            .Where(rt => rt.UserId == userId && rt.RevokedAtUtc == null)
+            .Where(rt => rt.UserId == userId && !rt.RevokedAtUtc.HasValue)
             .ToListAsync();
 
         foreach (var token in tokens)

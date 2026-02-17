@@ -17,6 +17,9 @@ public class GoalConfiguration : IEntityTypeConfiguration<Goal>
         builder.Property(g => g.AchievabilityRationale).HasMaxLength(2000);
         builder.Property(g => g.Motivation).HasMaxLength(2000);
 
-        builder.HasIndex(g => g.UserId);
+        builder.HasOne<User>()
+            .WithMany()
+            .HasForeignKey(m => m.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
