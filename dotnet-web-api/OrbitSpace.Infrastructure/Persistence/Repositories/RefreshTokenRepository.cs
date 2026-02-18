@@ -8,52 +8,51 @@ public class RefreshTokenRepository(AppDbContext context) : IRefreshTokenReposit
 {
     public async Task CreateAsync(RefreshToken refreshToken)
     {
-        await context.RefreshTokens.AddAsync(refreshToken);
+        context.RefreshTokens.Add(refreshToken);
+        await context.SaveChangesAsync();
+    }
+    
+    public async Task UpdateAsync(RefreshToken refreshToken)
+    {
+        context.RefreshTokens.Update(refreshToken);
+        await context.SaveChangesAsync();
+    }
+    
+    public async Task UpdateAsync(List<RefreshToken> refreshTokens)
+    {
+        context.RefreshTokens.UpdateRange(refreshTokens);
         await context.SaveChangesAsync();
     }
 
-    public async Task<RefreshToken?> GetByTokenAsync(string hashedToken)
+    public async Task<RefreshToken?> FindByHashedTokenAsync(string hashedToken)
     {
-        return await context.RefreshTokens.FirstOrDefaultAsync(rt => rt.TokenHash == hashedToken);
+        return await context.RefreshTokens.FirstOrDefaultAsync(m => m.TokenHash == hashedToken);
+    }
+
+    public async Task<List<RefreshToken>> GetByFamilyIdAsync(Guid familyId)
+    {
+        return await context.RefreshTokens
+            .Where(m => m.FamilyId == familyId)
+            .ToListAsync();
     }
 
     public async Task<List<RefreshToken>> GetActiveByUserIdAsync(Guid userId)
     {
+        var now = DateTime.UtcNow;
         return await context.RefreshTokens
-            .Where(rt => rt.UserId == userId
-                && !rt.RevokedAtUtc.HasValue
-                && !rt.UsedAtUtc.HasValue
-                && rt.ExpiresAtUtc > DateTime.UtcNow)
-            .OrderByDescending(rt => rt.CreatedAtUtc)
+            .Where(m => m.UserId == userId
+                && !m.RevokedAtUtc.HasValue
+                && !m.UsedAtUtc.HasValue
+                && m.ExpiresAtUtc > now
+                && m.AbsoluteExpiresAtUtc > now)
+            .OrderByDescending(m => m.CreatedAtUtc)
             .ToListAsync();
     }
 
-    public async Task RevokeByTokenAsync(string hashedToken)
+    public async Task RotateTokensAsync(RefreshToken oldToken, RefreshToken newToken)
     {
-        var token = await context.RefreshTokens.FirstOrDefaultAsync(rt => rt.TokenHash == hashedToken);
-        if (token != null)
-        {
-            token.RevokedAtUtc = DateTime.UtcNow;
-            await context.SaveChangesAsync();
-        }
-    }
-
-    public async Task RevokeAllByUserIdAsync(Guid userId)
-    {
-        var tokens = await context.RefreshTokens
-            .Where(rt => rt.UserId == userId && !rt.RevokedAtUtc.HasValue)
-            .ToListAsync();
-
-        foreach (var token in tokens)
-        {
-            token.RevokedAtUtc = DateTime.UtcNow;
-        }
-
-        await context.SaveChangesAsync();
-    }
-
-    public async Task SaveChangesAsync()
-    {
+        context.RefreshTokens.Update(oldToken);
+        context.RefreshTokens.Add(newToken);
         await context.SaveChangesAsync();
     }
 }

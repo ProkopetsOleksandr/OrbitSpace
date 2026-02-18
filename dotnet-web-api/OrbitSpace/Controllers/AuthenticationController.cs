@@ -1,8 +1,8 @@
-﻿using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrbitSpace.Application.Dtos.Authentication;
 using OrbitSpace.Application.Services.Interfaces;
+using OrbitSpace.Domain.Enums;
 
 namespace OrbitSpace.WebApi.Controllers
 {
@@ -86,7 +86,7 @@ namespace OrbitSpace.WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> Revoke([FromBody] RevokeRequestDto request)
         {
-            await authenticationService.RevokeAsync(request);
+            await authenticationService.RevokeTokenAsync(request);
 
             return Ok();
         }
@@ -98,7 +98,11 @@ namespace OrbitSpace.WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> RevokeAll()
         {
-            await authenticationService.RevokeAllAsync(CurrentUser.Id);
+            // Этот метод кажется не полным. Кто вообще будет вызывать его?
+            // Если мы хотим оставить только "текущую" сессию, то нужно отозвать все кроме текущей.
+            // А вызов этого метода имеет смысл только если обнаружена кража токена.
+            // А какой вообще должен быть Reason? Пока что вставлю как заглушку значение.
+            await authenticationService.RevokeAllForUserAsync(CurrentUser.Id, TokenRevokedReason.UserLogout);
 
             return Ok();
         }

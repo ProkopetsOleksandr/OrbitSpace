@@ -5,9 +5,10 @@ namespace OrbitSpace.Application.Common.Interfaces;
 public interface IRefreshTokenRepository
 {
     Task CreateAsync(RefreshToken refreshToken);
-    Task<RefreshToken?> GetByTokenAsync(string hashedToken);
+    Task UpdateAsync(RefreshToken refreshToken);
+    Task UpdateAsync(List<RefreshToken> refreshTokens);
+    Task<RefreshToken?> FindByHashedTokenAsync(string hashedToken);
     Task<List<RefreshToken>> GetActiveByUserIdAsync(Guid userId);
-    Task RevokeByTokenAsync(string hashedToken);
-    Task RevokeAllByUserIdAsync(Guid userId);
-    Task SaveChangesAsync();
+    Task<List<RefreshToken>> GetByFamilyIdAsync(Guid familyId);
+    Task RotateTokensAsync(RefreshToken oldToken, RefreshToken newToken);
 }

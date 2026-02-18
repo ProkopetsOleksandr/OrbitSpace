@@ -19,7 +19,7 @@ public static class DependencyInjection
                    .UseSnakeCaseNamingConvention());
 
         services.AddScoped<ITokenService, JwtTokenService>()
-            .AddScoped<IPasswordHasherService, BCryptPasswordHasherService>();
+            .AddScoped<IPasswordHasherService, Argon2PasswordHasherService>();
 
         services.AddScoped<IUserRepository, UserRepository>()
             .AddScoped<ITodoItemRepository, TodoItemRepository>()

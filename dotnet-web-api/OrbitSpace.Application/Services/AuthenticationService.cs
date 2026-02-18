@@ -1,9 +1,9 @@
 ﻿using OrbitSpace.Application.Common.Interfaces;
 using OrbitSpace.Application.Common.Models;
-using OrbitSpace.Application.Dtos;
 using OrbitSpace.Application.Dtos.Authentication;
 using OrbitSpace.Application.Services.Interfaces;
 using OrbitSpace.Domain.Entities;
+using OrbitSpace.Domain.Enums;
 
 namespace OrbitSpace.Application.Services;
 
@@ -13,7 +13,8 @@ public class AuthenticationService(
     IPasswordHasherService passwordHasherService,
     IRefreshTokenRepository refreshTokenRepository) : IAuthenticationService
 {
-    private const string InvalidUsernameOrPasswordMessage = "Invalid username or password.";
+    private const int StandardTokenLifetimeDays = 7;
+    private const int RememberMeTokenLifetimeDays = 30;
 
     public async Task<OperationResult> RegisterAsync(RegisterRequestDto request)
     {
@@ -26,7 +27,7 @@ public class AuthenticationService(
             return OperationResultError.Validation("Invalid username or password");
         }
 
-        if (await userRepository.GetByEmailAsync(request.Email) != null)
+        if (await userRepository.FindByEmailAsync(request.Email) != null)
         {
             return OperationResultError.Validation("Email already exists");
         }
@@ -42,7 +43,8 @@ public class AuthenticationService(
             DateOfBirth = request.DateOfBirth,
             EmailVerified = false,
             CreatedAtUtc = now,
-            UpdatedAtUtc = now
+            UpdatedAtUtc = now,
+            IsActive = true
         });
 
         return OperationResult.Success();
@@ -50,30 +52,19 @@ public class AuthenticationService(
 
     public async Task<OperationResult<LoginResponseDto>> LoginAsync(LoginRequestDto request)
     {
-        var user = await userRepository.GetByEmailAsync(request.Email);
-        if (user == null)
+        var user = await userRepository.FindByEmailAsync(request.Email);
+        if (user == null || passwordHasherService.VerifyPassword(request.Password, user.PasswordHash))
         {
-            return OperationResultError.Validation(InvalidUsernameOrPasswordMessage);
+            return OperationResultError.Validation("Invalid username or password");
         }
-
-        var passwordHasherResult = passwordHasherService.VerifyPassword(user.PasswordHash, request.Password);
-        if (!passwordHasherResult)
-        {
-            return OperationResultError.Validation(InvalidUsernameOrPasswordMessage);
-        }
-
-        // Generate access token
+        
         var accessToken = tokenService.GenerateAccessToken(user.Id);
-
-        // Generate refresh token
         var refreshTokenValue = tokenService.GenerateRefreshToken();
         var hashedRefreshToken = tokenService.HashToken(refreshTokenValue);
-
-        // Determine expiration based on RememberMe
-        var expirationDays = request.RememberMe ? 30 : 7;
+        
+        var expirationDays = GetExpirationDays(request.RememberMe);
         var now = DateTime.UtcNow;
-
-        // Create refresh token entity
+        
         var refreshToken = new RefreshToken
         {
             Id = Guid.CreateVersion7(),
@@ -86,77 +77,87 @@ public class AuthenticationService(
 
         await refreshTokenRepository.CreateAsync(refreshToken);
 
-        return new LoginResponseDto(
-            accessToken,
-            refreshTokenValue,
-            new UserDto
-            {
-                Id = user.Id,
-                Email = user.Email,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                DateOfBirth = user.DateOfBirth,
-                EmailVerified = user.EmailVerified
-            }
-        );
+        return new LoginResponseDto(accessToken, refreshTokenValue);
     }
 
     public async Task<OperationResult<RefreshResponseDto>> RefreshAsync(RefreshRequestDto request, Guid userId)
     {
         var hashedToken = tokenService.HashToken(request.RefreshToken);
-        var refreshToken = await refreshTokenRepository.GetByTokenAsync(hashedToken);
-
-        if (refreshToken == null || !refreshToken.IsActive)
+        var refreshToken = await refreshTokenRepository.FindByHashedTokenAsync(hashedToken);
+        if (refreshToken?.IsActive != true || refreshToken.UserId != userId)
         {
             return OperationResultError.Unauthorized("Invalid or expired refresh token");
         }
 
-        if (refreshToken == null || !refreshToken.IsActive)
-        {
-            return OperationResultError.Unauthorized("Not found");
-        }
-
-        // Mark old token as used
-        refreshToken.UsedAtUtc = DateTime.UtcNow;
-
-        // Generate new tokens
-        var newAccessToken = tokenService.GenerateAccessToken(userId);
+        var newAccessToken = tokenService.GenerateAccessToken(refreshToken.UserId);
         var newRefreshTokenValue = tokenService.GenerateRefreshToken();
         var newHashedRefreshToken = tokenService.HashToken(newRefreshTokenValue);
-
-        // Determine expiration strategy from old token (preserve RememberMe choice)
-        var isRememberMe = refreshToken.ExpiresAtUtc > DateTime.UtcNow.AddDays(7);
-        var expirationDays = isRememberMe ? 30 : 7;
+        var expirationDays = GetExpirationDays(refreshToken.RememberMe);
         var now = DateTime.UtcNow;
-
-        // Create new refresh token
+        
         var newRefreshToken = new RefreshToken
         {
             Id = Guid.CreateVersion7(),
+            FamilyId = refreshToken.FamilyId,
             UserId = refreshToken.UserId,
             TokenHash = newHashedRefreshToken,
             CreatedAtUtc = now,
             ExpiresAtUtc = now.AddDays(expirationDays),
-            DeviceInfo = refreshToken.DeviceInfo
+            DeviceInfo = refreshToken.DeviceInfo,
+            AbsoluteExpiresAtUtc = refreshToken.AbsoluteExpiresAtUtc,
+            RememberMe = refreshToken.RememberMe
         };
-
-        // Set replacement tracking
+        
+        refreshToken.UsedAtUtc = now;
         refreshToken.ReplacedByToken = newRefreshToken.Id;
 
-        await refreshTokenRepository.CreateAsync(newRefreshToken);
-        await refreshTokenRepository.SaveChangesAsync();
+        await refreshTokenRepository.RotateTokensAsync(refreshToken, newRefreshToken);
 
         return new RefreshResponseDto(newAccessToken, newRefreshTokenValue);
     }
 
-    public async Task RevokeAsync(RevokeRequestDto request)
+    public async Task RevokeFamilyAsync(Guid familyId, TokenRevokedReason revokedReason)
     {
-        var hashedToken = tokenService.HashToken(request.RefreshToken);
-        await refreshTokenRepository.RevokeByTokenAsync(hashedToken);
+        var tokens = await refreshTokenRepository.GetByFamilyIdAsync(familyId);
+        await RevokeRefreshTokensAsync(tokens, revokedReason);
     }
 
-    public async Task RevokeAllAsync(Guid userId)
+    public async Task RevokeTokenAsync(RevokeRequestDto request)
     {
-        await refreshTokenRepository.RevokeAllByUserIdAsync(userId);
+        var hashedToken = tokenService.HashToken(request.RefreshToken);
+        var refreshToken =  await refreshTokenRepository.FindByHashedTokenAsync(hashedToken);
+        if (refreshToken != null)
+        {
+            refreshToken.RevokedAtUtc = DateTime.UtcNow;
+            await refreshTokenRepository.UpdateAsync(refreshToken);
+        }
+    }
+
+    public async Task RevokeAllForUserAsync(Guid userId, TokenRevokedReason tokenRevokedReason)
+    {
+        var tokens = await refreshTokenRepository.GetActiveByUserIdAsync(userId);
+        await RevokeRefreshTokensAsync(tokens, tokenRevokedReason);
+    }
+    
+    private int GetExpirationDays(bool rememberMe)
+    {
+        return rememberMe ? RememberMeTokenLifetimeDays : StandardTokenLifetimeDays;
+    }
+
+    private async Task RevokeRefreshTokensAsync(List<RefreshToken> refreshTokens, TokenRevokedReason revokedReason)
+    {
+        if (refreshTokens.Count == 0)
+        {
+            return;
+        }
+        
+        var now = DateTime.UtcNow;
+        foreach (var token in refreshTokens)
+        {
+            token.RevokedAtUtc = now;
+            token.TokenRevokedReason = revokedReason;
+        }
+
+        await refreshTokenRepository.UpdateAsync(refreshTokens);
     }
 }

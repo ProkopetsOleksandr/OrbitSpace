@@ -11,10 +11,10 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.HasKey(a => a.Id);
         builder.Property(a => a.Id).ValueGeneratedNever();
 
-        builder.Property(u => u.Email).HasMaxLength(256);
+        builder.Property(u => u.Email).HasMaxLength(256); // Todo: .UseCollation("case_insensitive");
         builder.Property(u => u.FirstName).HasMaxLength(100);
         builder.Property(u => u.LastName).HasMaxLength(100);
-        builder.Property(u => u.PasswordHash).HasMaxLength(256);
+        builder.Property(u => u.PasswordHash).HasMaxLength(128);
 
         builder.HasIndex(u => u.Email).IsUnique();
     }

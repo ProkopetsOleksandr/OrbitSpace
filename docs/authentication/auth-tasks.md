@@ -30,29 +30,33 @@
 
 ---
 
-## Эпик 2 — .NET: доменный слой и инфраструктура
+## Эпик 2 — .NET: сущности и инфраструктура
 
 **Цель:** Подготовить сущности и интерфейсы, чтобы бизнес-логика
 не зависела от деталей реализации.
 
 **Задачи:**
 
-1. Создать `User` domain entity с нужными полями и методами
-   (`VerifyEmail()`, `IncrementFailedLogin()`, `LockAccount()`)
-2. Создать `RefreshToken` domain entity с методами `Revoke(reason)`, `IsExpired()`
+1. Создать `User` entity с полями для аутентификации
+   (`PasswordHash`, `EmailVerified`, `IsActive`, `FailedLoginAttempts`,
+   `LockedUntil`, `TokensValidAfter`)
+2. Создать `RefreshToken` entity с полями
+   (`TokenHash`, `UserId`, `FamilyId`, `DeviceId`, `CreatedAt`, `ExpiresAt`,
+   `IsRevoked`, `RevokedAt`, `RevokedReason`, `ReplacedBy`, `AbsoluteExpiresAt`)
+   и computed property `IsExpired`
 3. Определить интерфейсы в Application слое:
-   - `IUserRepository` — `FindByEmail`, `FindById`, `Create`, `Update`
-   - `IRefreshTokenRepository` — `FindByHash`, `FindByFamilyId`,
-     `Create`, `RevokeFamily`, `RevokeAllForUser`
-   - `IPasswordHasher` — `Hash(password)`, `Verify(password, hash)`
+   - `IUserRepository` — `FindByEmailAsync`, `FindByIdAsync`, `CreateAsync`, `UpdateAsync`
+   - `IRefreshTokenRepository` — `FindByHashAsync`, `FindByFamilyIdAsync`,
+     `CreateAsync`, `RevokeFamilyAsync`, `RevokeAllForUserAsync`
+   - `IPasswordHasherService` — `Hash(password)`, `Verify(password, hash)`
    - `ITokenService` — `GenerateAccessToken(user)`, `GenerateRefreshToken()`
-4. Реализовать `IPasswordHasher` в Infrastructure через `Konscious.Security.Cryptography.Argon2`:
+4. Реализовать `IPasswordHasherService` в Infrastructure через `Konscious.Security.Cryptography.Argon2`:
    - Параметры: memory=19456 KiB, iterations=2, parallelism=1
    - Генерировать случайный salt при каждом хэшировании
 5. Реализовать репозитории через EF Core в Infrastructure слое
-6. Зарегистрировать всё в DI-контейнере
+6. Зарегистрировать всё в DI-контейнере (`DependencyInjection.cs`)
 
-**✓ Результат:** Код компилируется, unit-тесты на `PasswordHasher.Hash + Verify` проходят.
+**✓ Результат:** Код компилируется, unit-тесты на `PasswordHasherService.Hash + Verify` проходят.
 
 ---
 
@@ -62,20 +66,21 @@
 
 **Задачи:**
 
-1. Создать `RegisterCommand` (CQRS, MediatR) с полями `Email`, `Password`,
-   `FirstName`, `LastName`
-2. Добавить валидацию через FluentValidation:
+1. Создать DTO: `RegisterRequest` с полями `Email`, `Password`, `FirstName`, `LastName`
+2. Добавить валидацию в `IAuthenticationService.RegisterAsync`:
    - Email формат и уникальность (запрос к репозиторию)
    - Пароль: минимум 8 символов, максимум 128
-3. В `RegisterCommandHandler`:
-   - Захэшировать пароль через `IPasswordHasher`
+   - При ошибках валидации — вернуть `OperationResult` с `Validation` ошибкой
+3. В `AuthenticationService.RegisterAsync`:
+   - Захэшировать пароль через `IPasswordHasherService`
    - Создать `User` entity
    - Сохранить через `IUserRepository`
    - Сгенерировать токен верификации email (crypto-random, 32 байта)
    - Сохранить SHA-256 хэш токена в `email_verification_tokens`
 4. Создать `AuthController` с `POST /api/auth/register`
-5. Настроить FluentValidation pipeline behaviour в MediatR
-6. Вернуть `201 Created` с `{ id, email, message: "Check your email" }`
+   - Вызывает `IAuthenticationService.RegisterAsync(request)`
+   - Обрабатывает `OperationResult` — success/error через `ApiControllerBase`
+5. Вернуть `201 Created` с `{ id, email, message: "Check your email" }`
 
 **✓ Результат:** `POST /api/auth/register` через Postman создаёт пользователя в БД.
 
@@ -96,17 +101,17 @@
    - `GenerateRefreshToken()`:
      - `RandomNumberGenerator.GetBytes(32)` → base64url строка
      - Вернуть raw token (для клиента) + `SHA256(raw)` (для хранения в БД)
-2. Создать `LoginCommand` с `Email`, `Password`, `DeviceId`
-3. В `LoginCommandHandler`:
+2. Создать DTO: `LoginRequest` с `Email`, `Password`, `DeviceId`
+3. В `AuthenticationService.LoginAsync(LoginRequest)`:
    - Найти пользователя по email
    - Если не найден — вернуть ту же ошибку что и для неверного пароля
      (защита от user enumeration)
-   - Верифицировать пароль через `IPasswordHasher.Verify()`
-   - Проверить `email_verified` и `is_active`
+   - Верифицировать пароль через `IPasswordHasherService.Verify()`
+   - Проверить `EmailVerified` и `IsActive`
    - Сгенерировать access token + refresh token
    - Создать запись `RefreshToken` в БД:
-     новый `family_id` (Guid), `device_id` из запроса, `expires_at = +7 дней`
-   - Вернуть `{ accessToken, refreshToken, user: { id, email, firstName } }`
+     новый `FamilyId` (Guid), `DeviceId` из запроса, `ExpiresAt = +7 дней`
+   - Вернуть `OperationResult<LoginResponse>` с `{ AccessToken, RefreshToken, User }`
 4. Настроить валидацию JWT входящих запросов:
    `AddAuthentication().AddJwtBearer(...)` в `Program.cs`
    с `TokenValidationParameters`: `ValidAlgorithms = ["RS256"]`,
@@ -124,23 +129,23 @@
 
 **Задачи:**
 
-1. Создать `RefreshTokenCommand` с полем `RefreshToken` (raw token из куки)
-2. В `RefreshTokenCommandHandler` реализовать полный алгоритм:
+1. Создать DTO: `RefreshTokenRequest` с полем `RefreshToken` (raw token из куки)
+2. В `AuthenticationService.RefreshAsync(RefreshTokenRequest)` реализовать полный алгоритм:
    - Вычислить `hash = SHA256(rawToken)`
-   - Найти запись в БД по `token_hash`
-   - Если не найден → `401 invalid_token`
-   - Если `is_revoked = TRUE`:
-     → **Reuse detected**: вызвать `RevokeFamily(family_id)`,
-     залогировать инцидент, вернуть `401 reuse_detected`
-   - Если `expires_at < NOW()` → `401 token_expired`
+   - Найти запись в БД по `TokenHash` через `IRefreshTokenRepository`
+   - Если не найден → вернуть `OperationResult` с `Unauthorized` ошибкой
+   - Если `IsRevoked = true`:
+     → **Reuse detected**: вызвать `RevokeFamilyAsync(familyId)`,
+     залогировать инцидент, вернуть `Unauthorized`
+   - Если `ExpiresAt < DateTime.UtcNow` → вернуть `Unauthorized`
    - Открыть транзакцию:
-     - Пометить старый токен: `is_revoked = TRUE`, `revoked_reason = "rotation"`,
-       `replaced_by = <new_token_id>`
-     - Создать новый токен с тем же `family_id` и `device_id`
+     - Пометить старый токен: `IsRevoked = true`, `RevokedReason = "rotation"`,
+       `ReplacedBy = <new_token_id>`
+     - Создать новый токен с тем же `FamilyId` и `DeviceId`
    - Зафиксировать транзакцию
    - Сгенерировать новый access token
-   - Вернуть `{ accessToken, refreshToken }`
-3. Добавить grace period: хранить `replaced_by`, при reuse в течение 30 секунд
+   - Вернуть `OperationResult<RefreshResponse>` с `{ AccessToken, RefreshToken }`
+3. Добавить grace period: хранить `ReplacedBy`, при reuse в течение 30 секунд
    после ротации — вернуть ту же новую пару (идемпотентность)
 4. Настроить rate limiting: 20 запросов в минуту per user на `/api/auth/refresh`
 
@@ -155,17 +160,19 @@
 
 **Задачи:**
 
-1. Создать `LogoutCommand` с `RefreshToken` (для single-device logout)
-2. `LogoutCommandHandler`:
+1. В `AuthenticationService.LogoutAsync(string rawRefreshToken)`:
    - Найти токен по `SHA256(rawToken)`
-   - Пометить всю семью (`family_id`) как `is_revoked = TRUE`,
-     `revoked_reason = "logout"`
-3. Создать `LogoutAllCommand` (только `user_id` из JWT claims, без body)
-4. `LogoutAllCommandHandler`:
-   - `RevokeAllForUser(userId)` — пометить все активные токены
-   - Обновить `users.tokens_valid_after = NOW()`
-5. Добавить проверку `tokens_valid_after` в JWT validation pipeline:
-   через `JwtBearerEvents.OnTokenValidated` — если `iat < tokens_valid_after` → 401
+   - Пометить всю семью (`FamilyId`) как `IsRevoked = true`,
+     `RevokedReason = "logout"` через `IRefreshTokenRepository.RevokeFamilyAsync()`
+2. В `AuthenticationService.LogoutAllAsync(Guid userId)`:
+   - `RevokeAllForUserAsync(userId)` — пометить все активные токены
+   - Обновить `User.TokensValidAfter = DateTime.UtcNow`
+   - Сохранить через `IUserRepository.UpdateAsync()`
+3. Добавить проверку `TokensValidAfter` в JWT validation pipeline:
+   через `JwtBearerEvents.OnTokenValidated` — если `iat < TokensValidAfter` → 401
+4. Добавить эндпоинты в `AuthController`:
+   - `POST /api/auth/logout` (принимает refresh token в body)
+   - `POST /api/auth/logout-all` (берёт `userId` из JWT claims)
 
 **✓ Результат:** `POST /api/auth/logout` инвалидирует сессию.
 После logout старый refresh token не работает. `POST /api/auth/logout-all` разлогинивает все устройства.
@@ -178,15 +185,16 @@
 
 **Задачи:**
 
-1. Создать `TokenCleanupService` как `BackgroundService`
+1. Создать `TokenCleanupService` как `BackgroundService` в Infrastructure
 2. Каждые 6 часов выполнять:
    ```sql
    DELETE FROM refresh_tokens
    WHERE (expires_at < NOW() - INTERVAL '7 days')
       OR (is_revoked = TRUE AND revoked_at < NOW() - INTERVAL '24 hours')
    ```
-3. Логировать количество удалённых записей
-4. Зарегистрировать сервис в `Program.cs`
+3. Использовать `IServiceScopeFactory` для создания scoped `AppDbContext`
+4. Логировать количество удалённых записей через `ILogger`
+5. Зарегистрировать `AddHostedService<TokenCleanupService>()` в DI
 
 **✓ Результат:** Сервис запускается вместе с API, периодически чистит таблицу.
 
@@ -330,7 +338,7 @@
 
 ```
 Эпик 1 (БД)
-  └── Эпик 2 (Domain + Infrastructure)
+  └── Эпик 2 (Entities + Infrastructure)
         ├── Эпик 3 (Регистрация)
         └── Эпик 4 (Логин + JWT)
               ├── Эпик 5 (Ротация токенов)

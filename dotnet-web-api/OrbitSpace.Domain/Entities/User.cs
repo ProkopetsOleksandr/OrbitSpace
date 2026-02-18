@@ -12,7 +12,7 @@
         public DateTime CreatedAtUtc { get; set; }
         public DateTime UpdatedAtUtc { get; set; }
         public bool IsActive { get; set; }
-        public DateTime? LockedUntilUtc { get; set;}
+        public DateTime? LockedUntilUtc { get; set; }
         public DateTime? TokensValidAfterUtc { get; set; }
     }
 }

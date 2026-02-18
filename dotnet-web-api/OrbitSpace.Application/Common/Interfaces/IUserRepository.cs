@@ -4,8 +4,9 @@ namespace OrbitSpace.Application.Common.Interfaces
 {
     public interface IUserRepository
     {
-        Task<User?> GetByIdAsync(Guid id);
-        Task<User?> GetByEmailAsync(string username);
         Task CreateAsync(User user);
+        Task UpdateAsync(User user);
+        Task<User?> FindByIdAsync(Guid id);
+        Task<User?> FindByEmailAsync(string email);
     }
 }
