@@ -18,15 +18,6 @@ public class AuthenticationService(
 
     public async Task<OperationResult> RegisterAsync(RegisterRequestDto request)
     {
-        if (string.IsNullOrWhiteSpace(request.Email)
-            || string.IsNullOrWhiteSpace(request.FirstName)
-            || string.IsNullOrWhiteSpace(request.LastName)
-            || string.IsNullOrWhiteSpace(request.Password)
-            || request.Password.Length < 4)
-        {
-            return OperationResultError.Validation("Invalid username or password");
-        }
-
         if (await userRepository.FindByEmailAsync(request.Email) != null)
         {
             return OperationResultError.Validation("Email already exists");

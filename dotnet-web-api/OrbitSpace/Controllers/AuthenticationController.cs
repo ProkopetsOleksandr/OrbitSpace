@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrbitSpace.Application.Dtos.Authentication;
 using OrbitSpace.Application.Services.Interfaces;
@@ -18,10 +19,15 @@ namespace OrbitSpace.WebApi.Controllers
         [EndpointName("registerUser")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Register([FromBody] RegisterRequestDto request)
+        public async Task<IActionResult> Register([FromBody] RegisterRequestDto request, IValidator<RegisterRequestDto> validator)
         {
+            var validationResult = await validator.ValidateAsync(request);
+            if (!validationResult.IsValid)
+            {
+                return ValidationProblem(validationResult);
+            }
+            
             var result = await authenticationService.RegisterAsync(request);
-
             if (!result.IsSuccess)
             {
                 return Problem(statusCode: StatusCodes.Status400BadRequest, detail: result.Error.ErrorMessage);

@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc;
 using OrbitSpace.Application.Common.Models;
 using OrbitSpace.WebApi.Identity;
@@ -50,5 +51,15 @@ public class ApiControllerBase : ControllerBase
             detail: errorMessage,
             statusCode: StatusCodes.Status400BadRequest,
             type: "https://tools.ietf.org/html/rfc9110#section-15.5.1");
+    }
+    
+    protected IActionResult ValidationProblem(ValidationResult validationResult)
+    {
+        foreach (var error in validationResult.Errors)
+        {
+            ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
+        }
+        
+        return ValidationProblem(ModelState);
     }
 }
