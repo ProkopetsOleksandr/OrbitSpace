@@ -12,7 +12,7 @@ using OrbitSpace.Infrastructure.Persistence;
 namespace OrbitSpace.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260217202449_InitialCreate")]
+    [Migration("20260219113903_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -39,7 +39,7 @@ namespace OrbitSpace.Infrastructure.Migrations
 
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at_utc");
+                        .HasColumnName("created_at");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -49,7 +49,7 @@ namespace OrbitSpace.Infrastructure.Migrations
 
                     b.Property<DateTime>("UpdatedAtUtc")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at_utc");
+                        .HasColumnName("updated_at");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid")
@@ -72,7 +72,7 @@ namespace OrbitSpace.Infrastructure.Migrations
 
                     b.Property<DateTime>("ExpiresAtUtc")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("expires_at_utc");
+                        .HasColumnName("expires_at");
 
                     b.Property<bool>("IsUsed")
                         .HasColumnType("boolean")
@@ -108,17 +108,17 @@ namespace OrbitSpace.Infrastructure.Migrations
                         .HasColumnType("character varying(2000)")
                         .HasColumnName("achievability_rationale");
 
-                    b.Property<DateTime?>("CancelledAtUtc")
+                    b.Property<DateTime?>("CanceledAtUtc")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("cancelled_at_utc");
+                        .HasColumnName("canceled_at");
 
                     b.Property<DateTime?>("CompletedAtUtc")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("completed_at_utc");
+                        .HasColumnName("completed_at");
 
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at_utc");
+                        .HasColumnName("created_at");
 
                     b.Property<string>("Description")
                         .HasMaxLength(4000)
@@ -127,7 +127,7 @@ namespace OrbitSpace.Infrastructure.Migrations
 
                     b.Property<DateTime?>("DueAtUtc")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("due_at_utc");
+                        .HasColumnName("due_at");
 
                     b.Property<bool>("IsSmartGoal")
                         .HasColumnType("boolean")
@@ -149,7 +149,7 @@ namespace OrbitSpace.Infrastructure.Migrations
 
                     b.Property<DateTime?>("StartedAtUtc")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("started_at_utc");
+                        .HasColumnName("started_at");
 
                     b.Property<byte>("Status")
                         .HasColumnType("smallint")
@@ -163,7 +163,7 @@ namespace OrbitSpace.Infrastructure.Migrations
 
                     b.Property<DateTime>("UpdatedAtUtc")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at_utc");
+                        .HasColumnName("updated_at");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid")
@@ -186,11 +186,11 @@ namespace OrbitSpace.Infrastructure.Migrations
 
                     b.Property<DateTime>("AbsoluteExpiresAtUtc")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("absolute_expires_at_utc");
+                        .HasColumnName("absolute_expires_at");
 
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at_utc");
+                        .HasColumnName("created_at");
 
                     b.Property<string>("DeviceInfo")
                         .HasMaxLength(256)
@@ -199,11 +199,15 @@ namespace OrbitSpace.Infrastructure.Migrations
 
                     b.Property<DateTime>("ExpiresAtUtc")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("expires_at_utc");
+                        .HasColumnName("expires_at");
 
                     b.Property<Guid>("FamilyId")
                         .HasColumnType("uuid")
                         .HasColumnName("family_id");
+
+                    b.Property<bool>("RememberMe")
+                        .HasColumnType("boolean")
+                        .HasColumnName("remember_me");
 
                     b.Property<Guid?>("ReplacedByToken")
                         .HasColumnType("uuid")
@@ -211,7 +215,7 @@ namespace OrbitSpace.Infrastructure.Migrations
 
                     b.Property<DateTime?>("RevokedAtUtc")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("revoked_at_utc");
+                        .HasColumnName("revoked_at");
 
                     b.Property<string>("TokenHash")
                         .IsRequired()
@@ -225,7 +229,7 @@ namespace OrbitSpace.Infrastructure.Migrations
 
                     b.Property<DateTime?>("UsedAtUtc")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("used_at_utc");
+                        .HasColumnName("used_at");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid")
@@ -254,7 +258,7 @@ namespace OrbitSpace.Infrastructure.Migrations
 
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at_utc");
+                        .HasColumnName("created_at");
 
                     b.Property<byte>("Status")
                         .HasColumnType("smallint")
@@ -268,7 +272,7 @@ namespace OrbitSpace.Infrastructure.Migrations
 
                     b.Property<DateTime>("UpdatedAtUtc")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at_utc");
+                        .HasColumnName("updated_at");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid")
@@ -291,10 +295,10 @@ namespace OrbitSpace.Infrastructure.Migrations
 
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at_utc");
+                        .HasColumnName("created_at");
 
-                    b.Property<DateTime>("DateOfBirth")
-                        .HasColumnType("timestamp with time zone")
+                    b.Property<DateOnly>("DateOfBirth")
+                        .HasColumnType("date")
                         .HasColumnName("date_of_birth");
 
                     b.Property<string>("Email")
@@ -325,21 +329,21 @@ namespace OrbitSpace.Infrastructure.Migrations
 
                     b.Property<DateTime?>("LockedUntilUtc")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("locked_until_utc");
+                        .HasColumnName("locked_until");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
                         .HasColumnName("password_hash");
 
                     b.Property<DateTime?>("TokensValidAfterUtc")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("tokens_valid_after_utc");
+                        .HasColumnName("tokens_valid_after");
 
                     b.Property<DateTime>("UpdatedAtUtc")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at_utc");
+                        .HasColumnName("updated_at");
 
                     b.HasKey("Id")
                         .HasName("pk_users");

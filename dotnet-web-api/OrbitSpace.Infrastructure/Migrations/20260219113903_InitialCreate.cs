@@ -19,14 +19,14 @@ namespace OrbitSpace.Infrastructure.Migrations
                     email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
                     first_name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     last_name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    date_of_birth = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    password_hash = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    date_of_birth = table.Column<DateOnly>(type: "date", nullable: false),
+                    password_hash = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
                     email_verified = table.Column<bool>(type: "boolean", nullable: false),
-                    created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    updated_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     is_active = table.Column<bool>(type: "boolean", nullable: false),
-                    locked_until_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    tokens_valid_after_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    locked_until = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    tokens_valid_after = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -41,8 +41,8 @@ namespace OrbitSpace.Infrastructure.Migrations
                     user_id = table.Column<Guid>(type: "uuid", nullable: false),
                     name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     code = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),
-                    created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    updated_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -62,7 +62,7 @@ namespace OrbitSpace.Infrastructure.Migrations
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     user_id = table.Column<Guid>(type: "uuid", nullable: false),
                     token_hash = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
-                    expires_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    expires_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     is_used = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
@@ -85,17 +85,17 @@ namespace OrbitSpace.Infrastructure.Migrations
                     title = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
                     life_area = table.Column<byte>(type: "smallint", nullable: false),
                     status = table.Column<byte>(type: "smallint", nullable: false),
-                    created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    updated_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    started_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    completed_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    cancelled_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    started_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    completed_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    canceled_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     is_smart_goal = table.Column<bool>(type: "boolean", nullable: false),
                     description = table.Column<string>(type: "character varying(4000)", maxLength: 4000, nullable: true),
                     metrics = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true),
                     achievability_rationale = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true),
                     motivation = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true),
-                    due_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    due_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -116,14 +116,15 @@ namespace OrbitSpace.Infrastructure.Migrations
                     token_hash = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
                     user_id = table.Column<Guid>(type: "uuid", nullable: false),
                     family_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    expires_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    revoked_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    expires_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    remember_me = table.Column<bool>(type: "boolean", nullable: false),
+                    revoked_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     token_revoked_reason = table.Column<byte>(type: "smallint", nullable: true),
-                    used_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    used_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     replaced_by_token = table.Column<Guid>(type: "uuid", nullable: true),
                     device_info = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    absolute_expires_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    absolute_expires_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -143,8 +144,8 @@ namespace OrbitSpace.Infrastructure.Migrations
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     user_id = table.Column<Guid>(type: "uuid", nullable: false),
                     title = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
-                    created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    updated_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     status = table.Column<byte>(type: "smallint", nullable: false)
                 },
                 constraints: table =>
