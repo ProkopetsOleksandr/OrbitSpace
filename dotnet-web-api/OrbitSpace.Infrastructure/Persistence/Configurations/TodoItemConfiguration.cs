@@ -12,6 +12,8 @@ public class TodoItemConfiguration : IEntityTypeConfiguration<TodoItem>
         builder.Property(a => a.Id).ValueGeneratedNever();
         
         builder.Property(t => t.Title).HasMaxLength(500);
+        builder.Property(m => m.CreatedAtUtc).HasColumnName("created_at");
+        builder.Property(m => m.UpdatedAtUtc).HasColumnName("updated_at");
 
         builder.HasOne<User>()
             .WithMany()

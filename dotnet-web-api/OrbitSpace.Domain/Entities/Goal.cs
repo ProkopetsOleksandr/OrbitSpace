@@ -4,7 +4,7 @@ namespace OrbitSpace.Domain.Entities
 {
     public class Goal
     {
-        public Guid Id { get; set; }
+        public required Guid Id { get; set; }
         public Guid UserId { get; set; }
         public required string Title { get; set; }
         public LifeArea LifeArea { get;set; }
@@ -13,7 +13,7 @@ namespace OrbitSpace.Domain.Entities
         public DateTime UpdatedAtUtc { get; set; }
         public DateTime? StartedAtUtc { get; set; }
         public DateTime? CompletedAtUtc { get; set; }
-        public DateTime? CancelledAtUtc { get; set; }
+        public DateTime? CanceledAtUtc { get; set; }
 
         // Smart Goal Attributes
         public bool IsSmartGoal { get; set; }

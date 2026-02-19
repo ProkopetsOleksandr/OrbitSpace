@@ -4,7 +4,7 @@ namespace OrbitSpace.Domain.Entities;
 
 public class RefreshToken
 {
-    public Guid Id { get; set; }
+    public required Guid Id { get; set; }
     public required string TokenHash { get; set; }
     public Guid UserId { get; set; }
     public Guid FamilyId { get; set; }

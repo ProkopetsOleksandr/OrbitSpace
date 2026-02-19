@@ -81,22 +81,22 @@ namespace OrbitSpace.Application.Services
             entityInDb.AchievabilityRationale =  request.AchievabilityRationale;
             entityInDb.Motivation = request.Motivation;
 
-            var currentDateTime = DateTime.UtcNow;
+            var now = DateTime.UtcNow;
             if (request.Status == GoalStatus.Completed)
             {
-                entityInDb.CompletedAtUtc = currentDateTime;
+                entityInDb.CompletedAtUtc = now;
             }
 
             if (entityInDb.Status != GoalStatus.Active
                 && request.Status == GoalStatus.Active)
             {
-                entityInDb.StartedAtUtc = currentDateTime;
+                entityInDb.StartedAtUtc = now;
             }
 
-            if (entityInDb.Status != GoalStatus.Cancelled
-                && request.Status == GoalStatus.Cancelled)
+            if (entityInDb.Status != GoalStatus.Canceled
+                && request.Status == GoalStatus.Canceled)
             {
-                entityInDb.CancelledAtUtc = currentDateTime;
+                entityInDb.CanceledAtUtc = now;
             }
 
             await goalRepository.UpdateAsync(entityInDb);

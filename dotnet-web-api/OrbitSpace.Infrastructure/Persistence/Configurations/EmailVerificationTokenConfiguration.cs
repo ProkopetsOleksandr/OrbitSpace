@@ -12,6 +12,7 @@ namespace OrbitSpace.Infrastructure.Persistence.Configurations
             builder.Property(m => m.Id).ValueGeneratedNever();
 
             builder.Property(m => m.TokenHash).HasMaxLength(64);
+            builder.Property(m => m.ExpiresAtUtc).HasColumnName("expires_at");
 
             builder.HasOne<User>()
                 .WithMany()

@@ -16,6 +16,11 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(u => u.LastName).HasMaxLength(100);
         builder.Property(u => u.PasswordHash).HasMaxLength(128);
 
+        builder.Property(m => m.CreatedAtUtc).HasColumnName("created_at");
+        builder.Property(m => m.UpdatedAtUtc).HasColumnName("updated_at");
+        builder.Property(m => m.LockedUntilUtc).HasColumnName("locked_until");
+        builder.Property(m => m.TokensValidAfterUtc).HasColumnName("tokens_valid_after");
+
         builder.HasIndex(u => u.Email).IsUnique();
     }
 }
