@@ -31,7 +31,6 @@ public class AuthenticationService(
             FirstName = request.FirstName,
             LastName = request.LastName,
             PasswordHash = passwordHasherService.HashPassword(request.Password),
-            DateOfBirth = request.DateOfBirth,
             EmailVerified = false,
             CreatedAtUtc = now,
             UpdatedAtUtc = now,
