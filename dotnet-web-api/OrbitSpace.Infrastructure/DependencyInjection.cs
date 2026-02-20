@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using OrbitSpace.Application.Common.Interfaces;
+using OrbitSpace.Application.Services.Interfaces;
 using OrbitSpace.Infrastructure.Persistence;
 using OrbitSpace.Infrastructure.Persistence.Repositories;
 using OrbitSpace.Infrastructure.Services;
@@ -18,14 +19,16 @@ public static class DependencyInjection
             options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"))
                    .UseSnakeCaseNamingConvention());
 
-        services.AddScoped<ITokenService, JwtTokenService>()
-            .AddScoped<IPasswordHasherService, Argon2PasswordHasherService>();
+        services.AddScoped<IJwtTokenService, JwtTokenService>()
+            .AddScoped<IPasswordHasherService, Argon2PasswordHasherService>()
+            .AddScoped<IEmailSenderService, EmailSenderService>();
 
         services.AddScoped<IUserRepository, UserRepository>()
             .AddScoped<ITodoItemRepository, TodoItemRepository>()
             .AddScoped<IGoalRepository, GoalRepository>()
             .AddScoped<IActivityRepository, ActivityRepository>()
-            .AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+            .AddScoped<IRefreshTokenRepository, RefreshTokenRepository>()
+            .AddScoped<IEmailVerificationTokenRepository, EmailVerificationTokenRepository>();
 
         return services;
     }

@@ -3,7 +3,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using OrbitSpace.Infrastructure.Settings;
+using OrbitSpace.Infrastructure.Configuration;
 
 namespace OrbitSpace.WebApi.Startup
 {
@@ -11,8 +11,8 @@ namespace OrbitSpace.WebApi.Startup
     {
         public static void AddAuthenticationServices(this IServiceCollection services, ConfigurationManager configuration)
         {
-            var jwtSettings = new JwtSettings();
-            configuration.GetSection(JwtSettings.SectionName).Bind(jwtSettings);
+            var jwtSettings = configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>()
+                ?? throw new InvalidOperationException("JWT options are missing.");
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>

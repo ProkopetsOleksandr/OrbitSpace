@@ -1,4 +1,5 @@
-﻿using OrbitSpace.Infrastructure.Settings;
+﻿using OrbitSpace.Application.Common.Configuration;
+using OrbitSpace.Infrastructure.Configuration;
 
 namespace OrbitSpace.WebApi.Startup
 {
@@ -6,15 +7,21 @@ namespace OrbitSpace.WebApi.Startup
     {
         public static void AddOptionServices(this IServiceCollection services, ConfigurationManager configuration)
         {
-            services.AddOptions<JwtSettings>()
-                .Bind(configuration.GetSection(JwtSettings.SectionName))
+            services.AddOptions<JwtOptions>()
+                .Bind(configuration.GetSection(JwtOptions.SectionName))
                 .Validate(settings =>
-                {
-                    return !string.IsNullOrWhiteSpace(settings.Key)
-                        && !string.IsNullOrWhiteSpace(settings.Issuer)
-                        && !string.IsNullOrWhiteSpace(settings.Audience);
-                },
-                "Jwt token settings are missing.")
+                    !string.IsNullOrWhiteSpace(settings.Key)
+                    && !string.IsNullOrWhiteSpace(settings.Issuer)
+                    && !string.IsNullOrWhiteSpace(settings.Audience),
+                "JWT token options are missing.")
+                .ValidateOnStart();
+            
+            services.AddOptions<FrontendOptions>()
+                .Bind(configuration.GetSection(FrontendOptions.SectionName))
+                .Validate(options =>
+                    !string.IsNullOrWhiteSpace(options.BaseUrl)
+                    && !string.IsNullOrWhiteSpace(options.EmailVerificationUrlTemplate),
+                    "Frontend options are missing.")
                 .ValidateOnStart();
         }
     }
