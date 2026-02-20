@@ -8,8 +8,15 @@ using OrbitSpace.Domain.Enums;
 
 namespace OrbitSpace.Application.Services
 {
-    public class TodoItemService(ITodoItemRepository todoItemRepository, IMapper mapper) : ITodoItemService
+    public class TodoItemService(IUnitOfWork unitOfWork, ITodoItemRepository todoItemRepository, IMapper mapper) : ITodoItemService
     {
+        public async Task<OperationResult<TodoItemDto>> GetByIdAsync(Guid id, Guid userId)
+        {
+            var todoItem = await todoItemRepository.FindByIdAsync(id, userId);
+            
+            return todoItem == null ? OperationResultError.NotFound()  : mapper.Map<TodoItemDto>(todoItem);
+        }
+        
         public async Task<List<TodoItemDto>> GetAllAsync(Guid userId)
         {
             var items = await todoItemRepository.GetAllAsync(userId);
@@ -17,65 +24,53 @@ namespace OrbitSpace.Application.Services
             return mapper.Map<List<TodoItemDto>>(items);
         }
 
-        public async Task<TodoItemDto?> GetByIdAsync(Guid id, Guid userId)
+        public async Task<OperationResult<TodoItemDto>> CreateAsync(CreateTodoItemDto request, Guid userId)
         {
-            var item = await GetByIdForUserAsync(id, userId);
-
-            return item == null ? null : mapper.Map<TodoItemDto>(item);
-        }
-
-        public async Task<OperationResult<TodoItemDto>> CreateAsync(CreateTodoItemDto todoItem, Guid userId)
-        {
-            if (string.IsNullOrWhiteSpace(todoItem.Title))
+            if (string.IsNullOrWhiteSpace(request.Title))
             {
                 return OperationResultError.Validation("Title is required");
             }
 
             var currentDateTime = DateTime.UtcNow;
-            var createdItem = await todoItemRepository.CreateAsync(new TodoItem
+            var todoItem = new TodoItem
             {
                 Id = Guid.CreateVersion7(),
                 UserId = userId,
-                Title = todoItem.Title,
+                Title = request.Title,
                 CreatedAtUtc = currentDateTime,
                 UpdatedAtUtc = currentDateTime,
                 Status = TodoItemStatus.New
-            });
+            };
+            
+            todoItemRepository.Add(todoItem);
+            await unitOfWork.SaveChangesAsync();
 
-            return mapper.Map<TodoItemDto>(createdItem);
+            return mapper.Map<TodoItemDto>(todoItem);
         }
 
-        public async Task<OperationResult<TodoItemDto>> UpdateAsync(UpdateTodoItemDto todoItem, Guid userId)
+        public async Task<OperationResult<TodoItemDto>> UpdateAsync(UpdateTodoItemDto request, Guid userId)
         {
-            var entityInDb = await GetByIdForUserAsync(todoItem.Id, userId);
-            if (entityInDb == null)
+            var todoItem = await todoItemRepository.FindByIdAsync(request.Id, userId);
+            if (todoItem == null)
             {
                 return OperationResultError.NotFound();
             }
 
-            entityInDb.Title = todoItem.Title;
-            entityInDb.Status = todoItem.Status;
-            entityInDb.UpdatedAtUtc = DateTime.UtcNow;
+            todoItem.Title = request.Title;
+            todoItem.Status = request.Status;
+            todoItem.UpdatedAtUtc = DateTime.UtcNow;
 
-            await todoItemRepository.UpdateAsync(entityInDb);
+            todoItemRepository.Update(todoItem);
+            await unitOfWork.SaveChangesAsync();
 
-            return mapper.Map<TodoItemDto>(entityInDb);
+            return mapper.Map<TodoItemDto>(todoItem);
         }
 
-        public async Task<bool> DeleteAsync(Guid id, Guid userId)
+        public async Task<OperationResult> DeleteAsync(Guid id, Guid userId)
         {
-            return await todoItemRepository.DeleteAsync(id, userId);
-        }
-
-        private async Task<TodoItem?> GetByIdForUserAsync(Guid id, Guid userId)
-        {
-            var entityInDb = await todoItemRepository.GetByIdAsync(id);
-            if (entityInDb == null || entityInDb.UserId != userId)
-            {
-                return null;
-            }
-
-            return entityInDb;
+            var affected = await todoItemRepository.DeleteAsync(id, userId);
+            
+            return affected == 0 ? OperationResultError.NotFound() : OperationResult.Success();
         }
     }
 }

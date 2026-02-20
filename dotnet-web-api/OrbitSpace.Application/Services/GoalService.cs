@@ -8,19 +8,19 @@ using OrbitSpace.Domain.Enums;
 
 namespace OrbitSpace.Application.Services
 {
-    public class GoalService(IGoalRepository goalRepository, IMapper mapper) : IGoalService
+    public class GoalService(IUnitOfWork unitOfWork, IGoalRepository goalRepository, IMapper mapper) : IGoalService
     {
+        public async Task<OperationResult<GoalDto>> GetByIdAsync(Guid id, Guid userId)
+        {
+            var goal = await goalRepository.FindByIdAsync(id, userId);
+            
+            return goal == null ? OperationResultError.NotFound() : mapper.Map<GoalDto>(goal);
+        }
+        
         public async Task<List<GoalDto>> GetAllAsync(Guid userId)
         {
             var data = await goalRepository.GetAllAsync(userId);
             return mapper.Map<List<GoalDto>>(data);
-        }
-
-        public async Task<GoalDto?> GetGoalDetailsAsync(Guid id, Guid userId)
-        {
-            var item = await GetByIdForUserAsync(id, userId);
-
-            return item == null ? null : mapper.Map<GoalDto>(item);
         }
 
         public async Task<OperationResult<GoalDto>> CreateAsync(CreateGoalRequest request, Guid userId)
@@ -53,9 +53,10 @@ namespace OrbitSpace.Application.Services
                 newGoal.Motivation = request.Motivation;
             }
 
-            var createdItem = await goalRepository.CreateAsync(newGoal);
+            goalRepository.Add(newGoal);
+            await unitOfWork.SaveChangesAsync();
 
-            return mapper.Map<GoalDto>(createdItem);
+            return mapper.Map<GoalDto>(newGoal);
         }
 
         public async Task<OperationResult<GoalDto>> UpdateAsync(UpdateGoalRequest request, Guid userId)
@@ -65,59 +66,50 @@ namespace OrbitSpace.Application.Services
                 return OperationResultError.Validation("Due date is required for active goals");
             }
 
-            var entityInDb = await GetByIdForUserAsync(request.Id, userId);
-            if (entityInDb == null)
+            var goal = await goalRepository.FindByIdAsync(request.Id, userId);
+            if (goal == null)
             {
                 return OperationResultError.NotFound();
             }
 
-            entityInDb.Title = request.Title;
-            entityInDb.LifeArea = request.LifeArea;
-            entityInDb.Status = request.Status;
-            entityInDb.DueAtUtc = request.DueDate;
-            entityInDb.IsSmartGoal = request.IsSmartGoal;
-            entityInDb.Description = request.Description;
-            entityInDb.Metrics = request.Metrics;
-            entityInDb.AchievabilityRationale =  request.AchievabilityRationale;
-            entityInDb.Motivation = request.Motivation;
+            goal.Title = request.Title;
+            goal.LifeArea = request.LifeArea;
+            goal.Status = request.Status;
+            goal.DueAtUtc = request.DueDate;
+            goal.IsSmartGoal = request.IsSmartGoal;
+            goal.Description = request.Description;
+            goal.Metrics = request.Metrics;
+            goal.AchievabilityRationale =  request.AchievabilityRationale;
+            goal.Motivation = request.Motivation;
 
             var now = DateTime.UtcNow;
             if (request.Status == GoalStatus.Completed)
             {
-                entityInDb.CompletedAtUtc = now;
+                goal.CompletedAtUtc = now;
             }
 
-            if (entityInDb.Status != GoalStatus.Active
+            if (goal.Status != GoalStatus.Active
                 && request.Status == GoalStatus.Active)
             {
-                entityInDb.StartedAtUtc = now;
+                goal.StartedAtUtc = now;
             }
 
-            if (entityInDb.Status != GoalStatus.Canceled
+            if (goal.Status != GoalStatus.Canceled
                 && request.Status == GoalStatus.Canceled)
             {
-                entityInDb.CanceledAtUtc = now;
+                goal.CanceledAtUtc = now;
             }
 
-            await goalRepository.UpdateAsync(entityInDb);
+            goalRepository.Update(goal);
+            await unitOfWork.SaveChangesAsync();
 
-            return mapper.Map<GoalDto>(entityInDb);
+            return mapper.Map<GoalDto>(goal);
         }
 
-        public async Task<bool> DeleteAsync(Guid id, Guid userId)
+        public async Task<OperationResult> DeleteAsync(Guid id, Guid userId)
         {
-            return await goalRepository.DeleteAsync(id, userId);
-        }
-
-        private async Task<Goal?> GetByIdForUserAsync(Guid id, Guid userId)
-        {
-            var entityInDb = await goalRepository.GetByIdAsync(id);
-            if (entityInDb == null || entityInDb.UserId != userId)
-            {
-                return null;
-            }
-
-            return entityInDb;
+            var affected = await goalRepository.DeleteAsync(id, userId);
+            return affected == 0 ? OperationResultError.NotFound() : OperationResult.Success();
         }
     }
 }

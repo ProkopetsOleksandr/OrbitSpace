@@ -4,10 +4,10 @@ namespace OrbitSpace.Application.Common.Interfaces
 {
     public interface IActivityRepository
     {
+        Task<Activity?> FindByIdAsync(Guid id, Guid userId);
         Task<List<Activity>> GetAllAsync(Guid userId);
-        Task<Activity?> GetByIdAsync(Guid id);
-        Task<Activity> CreateAsync(Activity activity);
-        Task<bool> UpdateAsync(Activity activity);
-        Task<bool> DeleteAsync(Guid id, Guid userId);
+        void Add(Activity activity);
+        void Update(Activity activity);
+        Task<int> DeleteAsync(Guid id, Guid userId);
     }
 }

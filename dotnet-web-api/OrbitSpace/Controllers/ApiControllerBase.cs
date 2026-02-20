@@ -26,7 +26,7 @@ public class ApiControllerBase : ControllerBase
         }
     }
 
-    protected IActionResult HandleError(OperationResultError error)
+    protected IActionResult GetErrorResponse(OperationResultError error)
     {
         return error.ErrorType switch
         {

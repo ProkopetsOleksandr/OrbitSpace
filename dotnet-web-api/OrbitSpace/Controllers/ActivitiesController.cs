@@ -12,8 +12,19 @@ namespace OrbitSpace.WebApi.Controllers
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
     public class ActivitiesController(IActivityService activityService) : ApiControllerBase
     {
-        private const string ActivityNotFoundMessageTemplate = "Activity with id {0} not found";
-
+        [HttpGet("{id:guid}")]
+        [EndpointSummary("Get activity by id")]
+        [EndpointDescription("Returns activity details with specified Id associated with the currently authenticated user.")]
+        [EndpointName("getActivityById")]
+        [ProducesResponseType<ApiResponse<ActivityDto>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetById(Guid id)
+        {
+            var result = await activityService.GetByIdAsync(id, CurrentUser.Id);
+            
+            return !result.IsSuccess ? GetErrorResponse(result.Error) : Ok(new ApiResponse<ActivityDto>(result.Data));
+        }
+        
         [HttpGet]
         [EndpointSummary("Get all activities")]
         [EndpointDescription("Returns a list of activities associated with the currently authenticated user.")]
@@ -26,23 +37,6 @@ namespace OrbitSpace.WebApi.Controllers
             return Ok(new ApiResponse<IEnumerable<ActivityDto>>(data));
         }
 
-        [HttpGet("{id}")]
-        [EndpointSummary("Get activity by id")]
-        [EndpointDescription("Returns activity details with specified Id associated with the currently authenticated user.")]
-        [EndpointName("getActivityById")]
-        [ProducesResponseType<ApiResponse<ActivityDto>>(StatusCodes.Status200OK)]
-        [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetById(Guid id)
-        {
-            var activity = await activityService.GetByIdAsync(id, CurrentUser.Id);
-            if (activity == null)
-            {
-                return NotFoundProblem(string.Format(ActivityNotFoundMessageTemplate, id));
-            }
-
-            return Ok(new ApiResponse<ActivityDto>(activity));
-        }
-
         [HttpPost]
         [EndpointSummary("Create activity")]
         [EndpointName("createActivity")]
@@ -51,15 +45,13 @@ namespace OrbitSpace.WebApi.Controllers
         public async Task<IActionResult> Create([FromBody] CreateActivityRequest request)
         {
             var result = await activityService.CreateAsync(request, CurrentUser.Id);
-            if (!result.IsSuccess)
-            {
-                return HandleError(result.Error);
-            }
-
-            return CreatedAtAction(nameof(GetById), new { result.Data.Id }, new ApiResponse<ActivityDto>(result.Data));
+            
+            return !result.IsSuccess
+                ? GetErrorResponse(result.Error)
+                : CreatedAtAction(nameof(GetById), new { result.Data.Id }, new ApiResponse<ActivityDto>(result.Data));
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id:guid}")]
         [EndpointSummary("Update activity")]
         [EndpointName("updateActivity")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -73,27 +65,20 @@ namespace OrbitSpace.WebApi.Controllers
             }
 
             var result = await activityService.UpdateAsync(request, CurrentUser.Id);
-            if (!result.IsSuccess)
-            {
-                return HandleError(result.Error);
-            }
-
-            return NoContent();
+            
+            return !result.IsSuccess ? GetErrorResponse(result.Error) : NoContent();
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:guid}")]
         [EndpointSummary("Delete activity")]
         [EndpointName("deleteActivity")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Delete(Guid id)
         {
-            if (!await activityService.DeleteAsync(id, CurrentUser.Id))
-            {
-                return NotFoundProblem(string.Format(ActivityNotFoundMessageTemplate, id));
-            }
-
-            return NoContent();
+            var result = await activityService.DeleteAsync(id, CurrentUser.Id);
+            
+            return !result.IsSuccess ? GetErrorResponse(result.Error) : NoContent();
         }
     }
 }

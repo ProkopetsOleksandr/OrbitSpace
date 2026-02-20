@@ -11,6 +11,7 @@ using OrbitSpace.Domain.Enums;
 namespace OrbitSpace.Application.Services;
 
 public class AuthenticationService(
+    IUnitOfWork unitOfWork,
     IUserRepository userRepository,
     IJwtTokenService jwtTokenService,
     IPasswordHasherService passwordHasherService,
@@ -46,16 +47,18 @@ public class AuthenticationService(
             IsActive = true
         };
         
-        await userRepository.CreateAsync(user);
+        userRepository.Add(user);
         
         var (emailVerificationToken, hashedEmailVerificationToken) = SecureTokenGenerator.Generate();
-        await emailVerificationTokenRepository.CreateAsync(new EmailVerificationToken
+        emailVerificationTokenRepository.Add(new EmailVerificationToken
         {
             Id = Guid.CreateVersion7(),
             UserId = user.Id,
             TokenHash = hashedEmailVerificationToken,
             ExpiresAtUtc = now.Add(EmailVerificationTokenLifetime)
         });
+
+        await unitOfWork.SaveChangesAsync();
         
         await SendEmailVerificationMessageAsync(user.Email, emailVerificationToken);
         
@@ -87,7 +90,8 @@ public class AuthenticationService(
             DeviceInfo = request.DeviceInfo
         };
 
-        await refreshTokenRepository.CreateAsync(refreshToken);
+        refreshTokenRepository.Add(refreshToken);
+        await unitOfWork.SaveChangesAsync();
 
         return new LoginResponseDto(accessToken, refreshTokenValue);
     }
@@ -122,8 +126,10 @@ public class AuthenticationService(
         
         refreshToken.UsedAtUtc = now;
         refreshToken.ReplacedByToken = newRefreshToken.Id;
-
-        await refreshTokenRepository.RotateTokensAsync(refreshToken, newRefreshToken);
+        
+        refreshTokenRepository.Update(refreshToken);
+        refreshTokenRepository.Add(newRefreshToken);
+        await unitOfWork.SaveChangesAsync();
 
         return new RefreshResponseDto(newAccessToken, newRefreshTokenValue);
     }
@@ -141,7 +147,8 @@ public class AuthenticationService(
         if (refreshToken != null)
         {
             refreshToken.RevokedAtUtc = DateTime.UtcNow;
-            await refreshTokenRepository.UpdateAsync(refreshToken);
+            refreshTokenRepository.Update(refreshToken);
+            await unitOfWork.SaveChangesAsync();
         }
     }
 
@@ -149,11 +156,6 @@ public class AuthenticationService(
     {
         var tokens = await refreshTokenRepository.GetActiveByUserIdAsync(userId);
         await RevokeRefreshTokensAsync(tokens, tokenRevokedReason);
-    }
-    
-    private int GetExpirationDays(bool rememberMe)
-    {
-        return rememberMe ? RememberMeTokenLifetimeDays : StandardTokenLifetimeDays;
     }
 
     private async Task RevokeRefreshTokensAsync(List<RefreshToken> refreshTokens, TokenRevokedReason revokedReason)
@@ -170,7 +172,8 @@ public class AuthenticationService(
             token.TokenRevokedReason = revokedReason;
         }
 
-        await refreshTokenRepository.UpdateAsync(refreshTokens);
+        refreshTokenRepository.Update(refreshTokens);
+        await unitOfWork.SaveChangesAsync();
     }
     
     private async Task SendEmailVerificationMessageAsync(string email, string token)
@@ -180,5 +183,10 @@ public class AuthenticationService(
         var url = new Uri(baseUrl, emailVerificationPath).ToString();
         
         await emailSenderService.SendAsync(new EmailVerificationMessage(email, url));
+    }
+    
+    private static int GetExpirationDays(bool rememberMe)
+    {
+        return rememberMe ? RememberMeTokenLifetimeDays : StandardTokenLifetimeDays;
     }
 }

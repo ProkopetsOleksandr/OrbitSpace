@@ -4,10 +4,10 @@ namespace OrbitSpace.Application.Common.Interfaces
 {
     public interface ITodoItemRepository
     {
+        Task<TodoItem?> FindByIdAsync(Guid id, Guid userId);
         Task<List<TodoItem>> GetAllAsync(Guid userId);
-        Task<TodoItem?> GetByIdAsync(Guid id);
-        Task<TodoItem> CreateAsync(TodoItem todoItem);
-        Task<bool> UpdateAsync(TodoItem todoItem);
-        Task<bool> DeleteAsync(Guid id, Guid userId);
+        void Add(TodoItem todoItem);
+        void Update(TodoItem todoItem);
+        Task<int> DeleteAsync(Guid id, Guid userId);
     }
 }

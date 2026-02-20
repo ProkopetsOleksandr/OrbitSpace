@@ -4,10 +4,10 @@ namespace OrbitSpace.Application.Common.Interfaces
 {
     public interface IGoalRepository
     {
+        Task<Goal?> FindByIdAsync(Guid id, Guid userId);
         Task<List<Goal>> GetAllAsync(Guid userId);
-        Task<Goal?> GetByIdAsync(Guid id);
-        Task<Goal> CreateAsync(Goal goal);
-        Task<bool> UpdateAsync(Goal goal);
-        Task<bool> DeleteAsync(Guid id, Guid userId);
+        void Add(Goal goal);
+        void Update(Goal goal);
+        Task<int> DeleteAsync(Guid id, Guid userId);
     }
 }

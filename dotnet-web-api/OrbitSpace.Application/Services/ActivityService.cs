@@ -7,20 +7,25 @@ using OrbitSpace.Domain.Entities;
 
 namespace OrbitSpace.Application.Services
 {
-    public class ActivityService(IActivityRepository activityRepository, IMapper mapper) : IActivityService
+    public class ActivityService(IUnitOfWork unitOfWork, IActivityRepository activityRepository, IMapper mapper) : IActivityService
     {
+        public async Task<OperationResult<ActivityDto>> GetByIdAsync(Guid id, Guid userId)
+        {
+            var activity = await activityRepository.FindByIdAsync(id, userId);
+            if (activity == null)
+            {
+                return OperationResultError.NotFound();
+            }
+            
+            return mapper.Map<ActivityDto>(activity);
+        }
+        
         public async Task<List<ActivityDto>> GetAllAsync(Guid userId)
         {
             var data = await activityRepository.GetAllAsync(userId);
             return mapper.Map<List<ActivityDto>>(data);
         }
-
-        public async Task<ActivityDto?> GetByIdAsync(Guid id, Guid userId)
-        {
-            var item = await GetByIdForUserAsync(id, userId);
-            return item == null ? null : mapper.Map<ActivityDto>(item);
-        }
-
+        
         public async Task<OperationResult<ActivityDto>> CreateAsync(CreateActivityRequest request, Guid userId)
         {
             if (string.IsNullOrWhiteSpace(request.Name))
@@ -44,9 +49,10 @@ namespace OrbitSpace.Application.Services
                 UpdatedAtUtc = currentDateTime
             };
 
-            var createdItem = await activityRepository.CreateAsync(newActivity);
+            activityRepository.Add(newActivity);
+            await unitOfWork.SaveChangesAsync();
 
-            return mapper.Map<ActivityDto>(createdItem);
+            return mapper.Map<ActivityDto>(newActivity);
         }
 
         public async Task<OperationResult<ActivityDto>> UpdateAsync(UpdateActivityRequest request, Guid userId)
@@ -61,35 +67,26 @@ namespace OrbitSpace.Application.Services
                 return OperationResultError.Validation("Code must be between 1 and 5 characters");
             }
 
-            var entityInDb = await GetByIdForUserAsync(request.Id, userId);
-            if (entityInDb == null)
+            var activity = await activityRepository.FindByIdAsync(request.Id, userId);
+            if (activity == null)
             {
                 return OperationResultError.NotFound();
             }
 
-            entityInDb.Name = request.Name;
-            entityInDb.Code = request.Code;
-            entityInDb.UpdatedAtUtc = DateTime.UtcNow;
+            activity.Name = request.Name;
+            activity.Code = request.Code;
+            activity.UpdatedAtUtc = DateTime.UtcNow;
 
-            await activityRepository.UpdateAsync(entityInDb);
+            activityRepository.Update(activity);
+            await unitOfWork.SaveChangesAsync();
 
-            return mapper.Map<ActivityDto>(entityInDb);
+            return mapper.Map<ActivityDto>(activity);
         }
 
-        public async Task<bool> DeleteAsync(Guid id, Guid userId)
+        public async Task<OperationResult> DeleteAsync(Guid id, Guid userId)
         {
-            return await activityRepository.DeleteAsync(id, userId);
-        }
-
-        private async Task<Activity?> GetByIdForUserAsync(Guid id, Guid userId)
-        {
-            var entityInDb = await activityRepository.GetByIdAsync(id);
-            if (entityInDb == null || entityInDb.UserId != userId)
-            {
-                return null;
-            }
-
-            return entityInDb;
+            var affected = await activityRepository.DeleteAsync(id, userId);
+            return affected == 0 ? OperationResultError.NotFound() : OperationResult.Success();
         }
     }
 }

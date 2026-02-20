@@ -12,7 +12,18 @@ namespace OrbitSpace.WebApi.Controllers
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
     public class GoalsController(IGoalService goalService) : ApiControllerBase
     {
-        private const string GoalNotFoundMessageTemplate = "Goal with id {0} not found";
+        [HttpGet("{id:guid}")]
+        [EndpointSummary("Get goal details")]
+        [EndpointDescription("Returns goal details with specified Id associated with the currently authenticated user.")]
+        [EndpointName("getGoalDetailsById")]
+        [ProducesResponseType<ApiResponse<GoalDto>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetById(Guid id)
+        {
+            var result = await goalService.GetByIdAsync(id, CurrentUser.Id);
+            
+            return !result.IsSuccess ? GetErrorResponse(result.Error) : Ok(new ApiResponse<GoalDto>(result.Data));
+        }
         
         [HttpGet]
         [EndpointSummary("Get all goals")]
@@ -26,23 +37,6 @@ namespace OrbitSpace.WebApi.Controllers
             return Ok(new ApiResponse<IEnumerable<GoalDto>>(data));
         }
         
-        [HttpGet("{id}")]
-        [EndpointSummary("Get goal details")]
-        [EndpointDescription("Returns goal details with specified Id associated with the currently authenticated user.")]
-        [EndpointName("getGoalDetailsById")]
-        [ProducesResponseType<ApiResponse<GoalDto>>(StatusCodes.Status200OK)]
-        [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetById(Guid id)
-        {
-            var goal = await goalService.GetGoalDetailsAsync(id, CurrentUser.Id);
-            if (goal == null)
-            {
-                return NotFoundProblem(string.Format(GoalNotFoundMessageTemplate, id));
-            }
-
-            return Ok(new ApiResponse<GoalDto>(goal));
-        }
-        
         [HttpPost]
         [EndpointSummary("Create goal")]
         [EndpointName("createGoal")]
@@ -51,15 +45,12 @@ namespace OrbitSpace.WebApi.Controllers
         public async Task<IActionResult> Create([FromBody] CreateGoalRequest request)
         {
             var result = await goalService.CreateAsync(request, CurrentUser.Id);
-            if (!result.IsSuccess)
-            {
-                return HandleError(result.Error);
-            }
-
-            return CreatedAtAction(nameof(GetById), new { result.Data.Id }, new ApiResponse<GoalDto>(result.Data));
+            return !result.IsSuccess
+                ? GetErrorResponse(result.Error)
+                : CreatedAtAction(nameof(GetById), new { result.Data.Id }, new ApiResponse<GoalDto>(result.Data));
         }
         
-        [HttpPut("{id}")]
+        [HttpPut("{id:guid}")]
         [EndpointSummary("Update goal")]
         [EndpointName("updateGoal")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -73,27 +64,20 @@ namespace OrbitSpace.WebApi.Controllers
             }
 
             var result = await goalService.UpdateAsync(request, CurrentUser.Id);
-            if (!result.IsSuccess)
-            {
-                return HandleError(result.Error);
-            }
-
-            return NoContent();
+            
+            return !result.IsSuccess ? GetErrorResponse(result.Error) : NoContent();
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:guid}")]
         [EndpointSummary("Delete goal")]
         [EndpointName("deleteGoal")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Delete(Guid id)
         {
-            if (!await goalService.DeleteAsync(id, CurrentUser.Id))
-            {
-                return NotFoundProblem(string.Format(GoalNotFoundMessageTemplate, id));
-            }
+            var result = await goalService.DeleteAsync(id, CurrentUser.Id);
 
-            return NoContent();
+            return !result.IsSuccess ? GetErrorResponse(result.Error) : NoContent();
         }
     }
 }

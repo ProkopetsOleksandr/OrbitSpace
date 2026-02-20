@@ -5,9 +5,9 @@ namespace OrbitSpace.Application.Services.Interfaces;
 
 public interface ITodoItemService
 {
+    Task<OperationResult<TodoItemDto>> GetByIdAsync(Guid id, Guid userId);
     Task<List<TodoItemDto>> GetAllAsync(Guid userId);
-    Task<TodoItemDto?> GetByIdAsync(Guid id, Guid userId);
     Task<OperationResult<TodoItemDto>> CreateAsync(CreateTodoItemDto todoItem, Guid userId);
-    Task<OperationResult<TodoItemDto>> UpdateAsync(UpdateTodoItemDto todoItem, Guid userId);
-    Task<bool> DeleteAsync(Guid id, Guid userId);
+    Task<OperationResult<TodoItemDto>> UpdateAsync(UpdateTodoItemDto request, Guid userId);
+    Task<OperationResult> DeleteAsync(Guid id, Guid userId);
 }

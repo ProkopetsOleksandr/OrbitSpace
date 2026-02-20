@@ -4,5 +4,5 @@ namespace OrbitSpace.Application.Common.Interfaces;
 
 public interface IEmailVerificationTokenRepository
 {
-    Task CreateAsync(EmailVerificationToken emailVerificationToken);
+    void Add(EmailVerificationToken emailVerificationToken);
 }

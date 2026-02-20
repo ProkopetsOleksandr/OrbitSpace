@@ -14,6 +14,19 @@ public class TodoItemsController(ITodoItemService todoItemService) : ApiControll
 {
     private const string TodoItemNotFoundMessageTemplate = "Todo-item with id:{0} not found";
 
+    [HttpGet("{id:guid}")]
+    [EndpointSummary("Get todo item")]
+    [EndpointDescription("Returns todo item with specified Id associated with the currently authenticated user.")]
+    [EndpointName("getTodoItemById")]
+    [ProducesResponseType<ApiResponse<TodoItemDto>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetById(Guid id)
+    {
+        var result = await todoItemService.GetByIdAsync(id, CurrentUser.Id);
+        
+        return !result.IsSuccess ? GetErrorResponse(result.Error) : Ok(new ApiResponse<TodoItemDto>(result.Data));
+    }
+    
     [HttpGet]
     [EndpointSummary("Get all todo items")]
     [EndpointDescription("Returns a list of todo items associated with the currently authenticated user.")]
@@ -26,23 +39,6 @@ public class TodoItemsController(ITodoItemService todoItemService) : ApiControll
         return Ok(new ApiResponse<IEnumerable<TodoItemDto>>(data));
     }
 
-    [HttpGet("{id}")]
-    [EndpointSummary("Get todo item")]
-    [EndpointDescription("Returns todo item with specified Id associated with the currently authenticated user.")]
-    [EndpointName("getTodoItemById")]
-    [ProducesResponseType<ApiResponse<TodoItemDto>>(StatusCodes.Status200OK)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetById(Guid id)
-    {
-        var todoItem = await todoItemService.GetByIdAsync(id, CurrentUser.Id);
-        if (todoItem == null)
-        {
-            return NotFoundProblem(string.Format(TodoItemNotFoundMessageTemplate, id));
-        }
-
-        return Ok(new ApiResponse<TodoItemDto>(todoItem));
-    }
-
     [HttpPost]
     [EndpointSummary("Create todo item")]
     [EndpointName("createTodoItem")]
@@ -51,15 +47,13 @@ public class TodoItemsController(ITodoItemService todoItemService) : ApiControll
     public async Task<IActionResult> Create([FromBody] CreateTodoItemDto request)
     {
         var result = await todoItemService.CreateAsync(request, CurrentUser.Id);
-        if (!result.IsSuccess)
-        {
-            return HandleError(result.Error);
-        }
-
-        return CreatedAtAction(nameof(GetById), new { result.Data.Id }, new ApiResponse<TodoItemDto>(result.Data));
+        
+        return !result.IsSuccess
+            ? GetErrorResponse(result.Error)
+            : CreatedAtAction(nameof(GetById), new { result.Data.Id }, new ApiResponse<TodoItemDto>(result.Data));
     }
 
-    [HttpPut("{id}")]
+    [HttpPut("{id:guid}")]
     [EndpointSummary("Update todo item")]
     [EndpointName("updateTodoItem")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -73,26 +67,19 @@ public class TodoItemsController(ITodoItemService todoItemService) : ApiControll
         }
 
         var result = await todoItemService.UpdateAsync(request, CurrentUser.Id);
-        if (!result.IsSuccess)
-        {
-            return HandleError(result.Error);
-        }
-
-        return NoContent();
+        
+        return !result.IsSuccess ? GetErrorResponse(result.Error) : NoContent();
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("{id:guid}")]
     [EndpointSummary("Delete todo item")]
     [EndpointName("deleteTodoItem")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(Guid id)
     {
-        if (!await todoItemService.DeleteAsync(id, CurrentUser.Id))
-        {
-            return NotFoundProblem(string.Format(TodoItemNotFoundMessageTemplate, id));
-        }
-
-        return NoContent();
+        var result = await todoItemService.DeleteAsync(id, CurrentUser.Id);
+        
+        return !result.IsSuccess ? GetErrorResponse(result.Error) : NoContent();
     }
 }
