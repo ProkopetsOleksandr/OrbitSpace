@@ -20,13 +20,11 @@ public class AuthenticationService(
     IEmailVerificationTokenRepository emailVerificationTokenRepository,
     IEmailSenderService emailSenderService,
     IEmailTemplateRenderService emailTemplateRenderService,
-    IOptions<FrontendOptions> frontendOptions) : IAuthenticationService
+    IFrontendUrlBuilder frontendUrlBuilder) : IAuthenticationService
 {
     private const int StandardTokenLifetimeDays = 7;
     private const int RememberMeTokenLifetimeDays = 30;
     private static readonly TimeSpan EmailVerificationTokenLifetime = TimeSpan.FromHours(24);
-
-    private readonly FrontendOptions _frontendOptions = frontendOptions.Value;
 
     public async Task<OperationResult> RegisterAsync(RegisterRequestDto request)
     {
@@ -180,14 +178,10 @@ public class AuthenticationService(
     
     private async Task SendEmailVerificationMessageAsync(string firstName, string email, string token)
     {
-        var baseUrl = new Uri(_frontendOptions.BaseUrl);
-        var emailVerificationPath = string.Format(_frontendOptions.EmailVerificationUrlTemplate, token);
-        var url = new Uri(baseUrl, emailVerificationPath).ToString();
-
         var body = emailTemplateRenderService.Render(new EmailVerificationTemplate
         {
             FirstName = firstName,
-            ConfirmationUrl = url
+            ConfirmationUrl = frontendUrlBuilder.BuildEmailVerificationUrl(token)
         });
 
         await emailSenderService.SendAsync("Verify email", email, body);

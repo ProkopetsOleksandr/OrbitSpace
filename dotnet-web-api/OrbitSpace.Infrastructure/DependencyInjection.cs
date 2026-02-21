@@ -20,14 +20,13 @@ public static class DependencyInjection
                 .UseSnakeCaseNamingConvention());
 
             services.AddSingleton<IEmailSenderService, EmailSenderService>()
-                .AddSingleton<IEmailTemplateRenderService, EmailTemplateRenderService>();
+                .AddSingleton<IEmailTemplateRenderService, EmailTemplateRenderService>()
+                .AddSingleton<IPasswordHasherService, Argon2PasswordHasherService>()
+                .AddSingleton<IJwtTokenService, JwtTokenService>()
+                .AddSingleton<IFrontendUrlBuilder, FrontendUrlBuilder>();
 
-            services.AddSingleton<IPasswordHasherService, Argon2PasswordHasherService>()
-                .AddSingleton<IJwtTokenService, JwtTokenService>();
-
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
-
-            services.AddScoped<IUserRepository, UserRepository>()
+            services.AddScoped<IUnitOfWork, UnitOfWork>()
+                .AddScoped<IUserRepository, UserRepository>()
                 .AddScoped<ITodoItemRepository, TodoItemRepository>()
                 .AddScoped<IGoalRepository, GoalRepository>()
                 .AddScoped<IActivityRepository, ActivityRepository>()
