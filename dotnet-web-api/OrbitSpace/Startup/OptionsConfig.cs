@@ -23,6 +23,16 @@ namespace OrbitSpace.WebApi.Startup
                     && !string.IsNullOrWhiteSpace(options.EmailVerificationUrlTemplate),
                     "Frontend options are missing.")
                 .ValidateOnStart();
+
+            services.AddOptions<SmtpOptions>()
+                .Bind(configuration.GetSection(SmtpOptions.SectionName))
+                .Validate(options =>
+                    !string.IsNullOrWhiteSpace(options.Host)
+                    && options.Port > 0
+                    && options.Port <= 65535
+                    && !string.IsNullOrWhiteSpace(options.From),
+                    "SMTP options are missing")
+                .ValidateOnStart();
         }
     }
 }

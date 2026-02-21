@@ -11,6 +11,16 @@ services:
       - '5432:5432'
     volumes:
       - 'F:/Docker-vault/Orbit-space/PosgreSql:/var/lib/postgresql/data'
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: orbit-space-mailpit
+    ports:
+      - '1025:1025' # SMTP
+      - '8025:8025' # Web UI
+    volumes:
+      - 'F:/Docker-vault/Orbit-space/Mailpit:/data'
+    environment:
+      MP_DATABASE: /data/mailpit.db
 
 networks:
   default:

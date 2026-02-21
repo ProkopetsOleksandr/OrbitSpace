@@ -18,12 +18,14 @@ public static class DependencyInjection
             services.AddDbContext<AppDbContext>(options => options
                 .UseNpgsql(configuration.GetConnectionString("DefaultConnection"))
                 .UseSnakeCaseNamingConvention());
-        
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-            services.AddScoped<IJwtTokenService, JwtTokenService>()
-                .AddScoped<IPasswordHasherService, Argon2PasswordHasherService>()
-                .AddScoped<IEmailSenderService, EmailSenderService>();
+            services.AddSingleton<IEmailSenderService, EmailSenderService>()
+                .AddSingleton<IEmailTemplateRenderService, EmailTemplateRenderService>();
+
+            services.AddSingleton<IPasswordHasherService, Argon2PasswordHasherService>()
+                .AddSingleton<IJwtTokenService, JwtTokenService>();
+
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             services.AddScoped<IUserRepository, UserRepository>()
                 .AddScoped<ITodoItemRepository, TodoItemRepository>()

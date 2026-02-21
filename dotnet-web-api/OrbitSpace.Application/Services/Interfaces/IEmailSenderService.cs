@@ -1,8 +1,6 @@
-﻿using OrbitSpace.Application.Common.Models;
-
-namespace OrbitSpace.Application.Services.Interfaces;
+﻿namespace OrbitSpace.Application.Services.Interfaces;
 
 public interface IEmailSenderService
 {
-    Task SendAsync(EmailMessage message);
+    Task SendAsync(string subject, string to, string body, CancellationToken cancellationToken = default);
 }

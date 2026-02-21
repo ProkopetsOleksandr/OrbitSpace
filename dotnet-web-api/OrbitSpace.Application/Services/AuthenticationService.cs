@@ -4,6 +4,7 @@ using OrbitSpace.Application.Common.Interfaces;
 using OrbitSpace.Application.Common.Models;
 using OrbitSpace.Application.Common.Utilities;
 using OrbitSpace.Application.Dtos.Authentication;
+using OrbitSpace.Application.Email.Templates;
 using OrbitSpace.Application.Services.Interfaces;
 using OrbitSpace.Domain.Entities;
 using OrbitSpace.Domain.Enums;
@@ -18,6 +19,7 @@ public class AuthenticationService(
     IRefreshTokenRepository refreshTokenRepository,
     IEmailVerificationTokenRepository emailVerificationTokenRepository,
     IEmailSenderService emailSenderService,
+    IEmailTemplateRenderService emailTemplateRenderService,
     IOptions<FrontendOptions> frontendOptions) : IAuthenticationService
 {
     private const int StandardTokenLifetimeDays = 7;
@@ -60,7 +62,7 @@ public class AuthenticationService(
 
         await unitOfWork.SaveChangesAsync();
         
-        await SendEmailVerificationMessageAsync(user.Email, emailVerificationToken);
+        await SendEmailVerificationMessageAsync(user.FirstName, user.Email, emailVerificationToken);
         
         return OperationResult.Success();
     }
@@ -176,13 +178,19 @@ public class AuthenticationService(
         await unitOfWork.SaveChangesAsync();
     }
     
-    private async Task SendEmailVerificationMessageAsync(string email, string token)
+    private async Task SendEmailVerificationMessageAsync(string firstName, string email, string token)
     {
         var baseUrl = new Uri(_frontendOptions.BaseUrl);
         var emailVerificationPath = string.Format(_frontendOptions.EmailVerificationUrlTemplate, token);
         var url = new Uri(baseUrl, emailVerificationPath).ToString();
-        
-        await emailSenderService.SendAsync(new EmailVerificationMessage(email, url));
+
+        var body = emailTemplateRenderService.Render(new EmailVerificationTemplate
+        {
+            FirstName = firstName,
+            ConfirmationUrl = url
+        });
+
+        await emailSenderService.SendAsync("Verify email", email, body);
     }
     
     private static int GetExpirationDays(bool rememberMe)
