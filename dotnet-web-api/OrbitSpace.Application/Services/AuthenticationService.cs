@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Options;
-using OrbitSpace.Application.Common.Configuration;
-using OrbitSpace.Application.Common.Interfaces;
+﻿using OrbitSpace.Application.Common.Interfaces;
 using OrbitSpace.Application.Common.Models;
 using OrbitSpace.Application.Common.Utilities;
 using OrbitSpace.Application.Dtos.Authentication;
