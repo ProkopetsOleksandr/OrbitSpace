@@ -10,7 +10,8 @@ namespace OrbitSpace.WebApi.Startup
             services.AddOptions<JwtOptions>()
                 .Bind(configuration.GetSection(JwtOptions.SectionName))
                 .Validate(settings =>
-                    !string.IsNullOrWhiteSpace(settings.Key)
+                    !string.IsNullOrWhiteSpace(settings.PrivateKey)
+                    && !string.IsNullOrWhiteSpace(settings.PublicKey)
                     && !string.IsNullOrWhiteSpace(settings.Issuer)
                     && !string.IsNullOrWhiteSpace(settings.Audience),
                 "JWT token options are missing.")

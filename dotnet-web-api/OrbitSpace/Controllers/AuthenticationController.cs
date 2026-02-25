@@ -1,14 +1,17 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using OrbitSpace.Application.Dtos.Authentication;
 using OrbitSpace.Application.Services.Interfaces;
 using OrbitSpace.Domain.Enums;
+using OrbitSpace.WebApi.Constants;
 
 namespace OrbitSpace.WebApi.Controllers
 {
     [Authorize]
     [Route("api/[controller]")]
+    [EnableRateLimiting(PolicyConstants.RateLimiting.Auth)]
     [Tags("Authentication")]
     public class AuthenticationController(IAuthenticationService authenticationService) : ApiControllerBase
     {

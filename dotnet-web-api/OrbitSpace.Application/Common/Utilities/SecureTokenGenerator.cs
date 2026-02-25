@@ -13,4 +13,17 @@ public static class SecureTokenGenerator
         var hashedToken = Convert.ToBase64String(SHA256.HashData(rawBytes));
         return (rawToken, hashedToken);
     }
+
+    public static string Hash(string rawToken)
+    {
+        try
+        {
+            var rawBytes = Convert.FromBase64String(rawToken);
+            return Convert.ToBase64String(SHA256.HashData(rawBytes));
+        }
+        catch (FormatException)
+        {
+            throw new ArgumentException("Invalid token format.", nameof(rawToken));
+        }
+    }
 }

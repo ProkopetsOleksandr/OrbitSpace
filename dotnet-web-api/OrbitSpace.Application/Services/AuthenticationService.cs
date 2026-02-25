@@ -20,8 +20,10 @@ public class AuthenticationService(
     IEmailTemplateRenderService emailTemplateRenderService,
     IFrontendUrlBuilder frontendUrlBuilder) : IAuthenticationService
 {
-    private const int StandardTokenLifetimeDays = 7;
-    private const int RememberMeTokenLifetimeDays = 30;
+    private const int StandardTokenLifetimeDays = 1;
+    private const int StandardTokenAbsoluteLifetimeDays = 7;
+    private const int LongLivedTokenLifetimeDays = 30;
+    private const int LongLivedTokenAbsoluteLifetimeDays = 90;
     private static readonly TimeSpan EmailVerificationTokenLifetime = TimeSpan.FromHours(24);
 
     public async Task<OperationResult> RegisterAsync(RegisterRequestDto request)
@@ -70,22 +72,34 @@ public class AuthenticationService(
         {
             return OperationResultError.Validation("Invalid username or password");
         }
+
+        if (!user.EmailVerified)
+        {
+            return OperationResultError.Validation("Email not verified");
+        }
+
+        if (!user.IsActive)
+        {
+            // Todo: Need to send CODE of the problem to identify on UI for "Send email again"
+            return OperationResultError.Validation("Account disabled");
+        }
         
         var accessToken = jwtTokenService.GenerateAccessToken(user.Id);
-        var refreshTokenValue = jwtTokenService.GenerateRefreshToken();
-        var hashedRefreshToken = jwtTokenService.HashToken(refreshTokenValue);
+        var (refreshTokenValue, hashedRefreshTokenValue) = SecureTokenGenerator.Generate();
         
-        var expirationDays = GetExpirationDays(request.RememberMe);
         var now = DateTime.UtcNow;
         
         var refreshToken = new RefreshToken
         {
             Id = Guid.CreateVersion7(),
+            FamilyId = Guid.CreateVersion7(),
             UserId = user.Id,
-            TokenHash = hashedRefreshToken,
+            TokenHash = hashedRefreshTokenValue,
             CreatedAtUtc = now,
-            ExpiresAtUtc = now.AddDays(expirationDays),
-            DeviceInfo = request.DeviceInfo
+            ExpiresAtUtc = now.AddDays(request.RememberMe ? LongLivedTokenLifetimeDays : StandardTokenLifetimeDays),
+            DeviceInfo = request.DeviceInfo,
+            IsLongLived = request.RememberMe,
+            AbsoluteExpiresAtUtc = now.AddDays(request.RememberMe ? LongLivedTokenAbsoluteLifetimeDays : StandardTokenAbsoluteLifetimeDays),
         };
 
         refreshTokenRepository.Add(refreshToken);
@@ -96,7 +110,7 @@ public class AuthenticationService(
 
     public async Task<OperationResult<RefreshResponseDto>> RefreshAsync(RefreshRequestDto request, Guid userId)
     {
-        var hashedToken = jwtTokenService.HashToken(request.RefreshToken);
+        var hashedToken = SecureTokenGenerator.Hash(request.RefreshToken);
         var refreshToken = await refreshTokenRepository.FindByHashedTokenAsync(hashedToken);
         if (refreshToken?.IsActive != true || refreshToken.UserId != userId)
         {
@@ -104,9 +118,7 @@ public class AuthenticationService(
         }
 
         var newAccessToken = jwtTokenService.GenerateAccessToken(refreshToken.UserId);
-        var newRefreshTokenValue = jwtTokenService.GenerateRefreshToken();
-        var newHashedRefreshToken = jwtTokenService.HashToken(newRefreshTokenValue);
-        var expirationDays = GetExpirationDays(refreshToken.RememberMe);
+        var (newRefreshTokenValue, newHashedRefreshToken) = SecureTokenGenerator.Generate();
         var now = DateTime.UtcNow;
         
         var newRefreshToken = new RefreshToken
@@ -116,10 +128,10 @@ public class AuthenticationService(
             UserId = refreshToken.UserId,
             TokenHash = newHashedRefreshToken,
             CreatedAtUtc = now,
-            ExpiresAtUtc = now.AddDays(expirationDays),
+            ExpiresAtUtc = now.AddDays(refreshToken.IsLongLived ? LongLivedTokenLifetimeDays : StandardTokenLifetimeDays),
             DeviceInfo = refreshToken.DeviceInfo,
             AbsoluteExpiresAtUtc = refreshToken.AbsoluteExpiresAtUtc,
-            RememberMe = refreshToken.RememberMe
+            IsLongLived = refreshToken.IsLongLived
         };
         
         refreshToken.UsedAtUtc = now;
@@ -140,7 +152,7 @@ public class AuthenticationService(
 
     public async Task RevokeTokenAsync(RevokeRequestDto request)
     {
-        var hashedToken = jwtTokenService.HashToken(request.RefreshToken);
+        var hashedToken = SecureTokenGenerator.Hash(request.RefreshToken);
         var refreshToken =  await refreshTokenRepository.FindByHashedTokenAsync(hashedToken);
         if (refreshToken != null)
         {
@@ -183,10 +195,5 @@ public class AuthenticationService(
         });
 
         await emailSenderService.SendAsync("Verify email", email, body);
-    }
-    
-    private static int GetExpirationDays(bool rememberMe)
-    {
-        return rememberMe ? RememberMeTokenLifetimeDays : StandardTokenLifetimeDays;
     }
 }

@@ -1,4 +1,6 @@
 ﻿using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.RateLimiting;
+using OrbitSpace.WebApi.Constants;
 using OrbitSpace.WebApi.Exceptions;
 using OrbitSpace.WebApi.Identity;
 
@@ -13,6 +15,18 @@ namespace OrbitSpace.WebApi.Startup
             services.AddOptionServices(configuration);
 
             services.AddAuthenticationServices(configuration);
+            
+            services.AddRateLimiter(options =>
+            {
+                options.AddFixedWindowLimiter(PolicyConstants.RateLimiting.Auth, limiterOptions =>
+                {
+                    limiterOptions.PermitLimit = 5;
+                    limiterOptions.Window = TimeSpan.FromMinutes(1);
+                    limiterOptions.QueueLimit = 0;
+                });
+
+                options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+            });
 
             services.AddProblemDetails(options =>
             {

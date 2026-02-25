@@ -16,8 +16,12 @@ namespace OrbitSpace.WebApi
                 .AddInfrastructure(builder.Configuration);
 
             var app = builder.Build();
+            app.UseRouting();
+            
             app.UseCors(CorsPolicyConstants.PolicyName.AllowSpecificOrigins);
 
+            app.UseRateLimiter();
+            
             app.UseHttpsRedirection();
             
             if (app.Environment.IsDevelopment())

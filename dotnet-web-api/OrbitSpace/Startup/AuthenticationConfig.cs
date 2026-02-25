@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Security.Cryptography;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
@@ -11,21 +12,31 @@ namespace OrbitSpace.WebApi.Startup
     {
         public static void AddAuthenticationServices(this IServiceCollection services, ConfigurationManager configuration)
         {
-            var jwtSettings = configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>()
+            var jwtOptions = configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>()
                 ?? throw new InvalidOperationException("JWT options are missing.");
 
+            var rsa = RSA.Create();
+            rsa.ImportFromPem(jwtOptions.PublicKey);
+            var rsaKey = new RsaSecurityKey(rsa);
+            
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
-                    options.Authority = jwtSettings.Issuer;
+                    options.MapInboundClaims = false;
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
-                        ValidateAudience = false,
                         ValidateIssuer = true,
+                        ValidIssuer = jwtOptions.Issuer,
+                        
+                        ValidateAudience = true,
+                        ValidAudience = jwtOptions.Audience,
+                        
                         ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key)),
-                        ValidIssuer = jwtSettings.Issuer,
-                        ValidateLifetime = true
+                        IssuerSigningKey = rsaKey,
+                        ValidAlgorithms = [SecurityAlgorithms.RsaSha256],
+                        
+                        ValidateLifetime = true,
+                        ClockSkew = TimeSpan.FromSeconds(30),
                     };
 
                     options.Events = new JwtBearerEvents

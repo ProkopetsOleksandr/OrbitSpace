@@ -1,6 +1,5 @@
 ﻿using System.Security.Claims;
 using System.Security.Cryptography;
-using System.Text;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
@@ -15,18 +14,24 @@ public class JwtTokenService(IOptions<JwtOptions> jwtSettingsOptions) : IJwtToke
 
     public string GenerateAccessToken(Guid userId)
     {
+        var rsa = RSA.Create();
+        rsa.ImportFromPem(_jwtOptions.PrivateKey);
+        var rsaKey = new RsaSecurityKey(rsa);
+        
+        var now = DateTime.UtcNow;
+        
         var claims = new List<Claim>
         {
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.CreateVersion7().ToString()),
             new Claim(JwtRegisteredClaimNames.Sub, userId.ToString()),
         };
-
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Key));
+        
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(claims),
-            Expires = DateTime.UtcNow.AddMinutes(15),
-            SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512),
+            IssuedAt = now,
+            Expires = now.AddMinutes(15),
+            SigningCredentials = new SigningCredentials(rsaKey, SecurityAlgorithms.RsaSha256),
             Issuer = _jwtOptions.Issuer,
             Audience = _jwtOptions.Audience
         };
@@ -34,19 +39,5 @@ public class JwtTokenService(IOptions<JwtOptions> jwtSettingsOptions) : IJwtToke
         var tokenHandler = new JsonWebTokenHandler();
 
         return tokenHandler.CreateToken(tokenDescriptor);
-    }
-
-    public string GenerateRefreshToken()
-    {
-        var randomBytes = new byte[64];
-        using var rng = RandomNumberGenerator.Create();
-        rng.GetBytes(randomBytes);
-        return Convert.ToBase64String(randomBytes);
-    }
-
-    public string HashToken(string token)
-    {
-        var hashBytes = SHA256.HashData(Encoding.UTF8.GetBytes(token));
-        return Convert.ToBase64String(hashBytes);
     }
 }
