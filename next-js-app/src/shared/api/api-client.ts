@@ -4,6 +4,6 @@ import type { paths } from './v1';
 
 export const getApiClient = () => {
   return createClient<paths>({
-    baseUrl: '/'
+    baseUrl: '/api/proxy'
   });
 };

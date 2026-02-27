@@ -1,18 +1,17 @@
-import { cookies } from 'next/headers';
 import createClient from 'openapi-fetch';
 
 import { backendBaseUrl } from '@/shared/config';
+import { getAccessToken } from '../lib/cookies';
 import type { paths } from './v1';
 
 export const getServerApiClient = async () => {
-  const cookieStore = await cookies();
-  const token = cookieStore.get('access-token')?.value;
+  const accessToken = await getAccessToken();
 
   return createClient<paths>({
     baseUrl: backendBaseUrl,
     headers: {
-      Authorization: token ? `Bearer ${token}` : '',
-      ContentType: 'application/json'
+      'Content-Type': 'application/json',
+      ...(accessToken && { Authorization: `Bearer ${accessToken}` })
     }
   });
 };
