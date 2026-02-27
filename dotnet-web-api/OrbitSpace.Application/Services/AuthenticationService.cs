@@ -68,7 +68,7 @@ public class AuthenticationService(
     public async Task<OperationResult<LoginResponseDto>> LoginAsync(LoginRequestDto request)
     {
         var user = await userRepository.FindByEmailAsync(request.Email);
-        if (user == null || passwordHasherService.VerifyPassword(request.Password, user.PasswordHash))
+        if (user == null || !passwordHasherService.VerifyPassword(request.Password, user.PasswordHash))
         {
             return OperationResultError.Validation("Invalid username or password");
         }
