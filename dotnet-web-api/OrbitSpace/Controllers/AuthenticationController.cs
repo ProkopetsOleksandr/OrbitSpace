@@ -87,31 +87,15 @@ namespace OrbitSpace.WebApi.Controllers
             return Ok(result.Data);
         }
 
-        [HttpPost("revoke")]
+        [HttpPost("logout")]
         [AllowAnonymous]
-        [EndpointSummary("Revoke a refresh token")]
-        [EndpointDescription("Invalidates a specific refresh token, preventing further use.")]
-        [EndpointName("revokeToken")]
+        [EndpointSummary("Logout from current device")]
+        [EndpointDescription("Revokes the current refresh token and invalidates the session on this device.")]
+        [EndpointName("logout")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> Revoke([FromBody] RevokeRequestDto request)
+        public async Task<IActionResult> Logout([FromBody] LogoutRequestDto request)
         {
-            await authenticationService.RevokeTokenAsync(request);
-
-            return Ok();
-        }
-
-        [HttpPost("revoke-all")]
-        [EndpointSummary("Revoke all refresh tokens")]
-        [EndpointDescription("Invalidates all refresh tokens for the currently authenticated user. Requires a valid access token.")]
-        [EndpointName("revokeAllTokens")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> RevokeAll()
-        {
-            // Этот метод кажется не полным. Кто вообще будет вызывать его?
-            // Если мы хотим оставить только "текущую" сессию, то нужно отозвать все кроме текущей.
-            // А вызов этого метода имеет смысл только если обнаружена кража токена.
-            // А какой вообще должен быть Reason? Пока что вставлю как заглушку значение.
-            await authenticationService.RevokeAllForUserAsync(CurrentUser.Id, TokenRevokedReason.UserLogout);
+            await authenticationService.LogoutAsync(request);
 
             return Ok();
         }

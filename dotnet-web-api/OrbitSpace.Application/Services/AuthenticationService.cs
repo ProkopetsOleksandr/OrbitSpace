@@ -150,28 +150,20 @@ public class AuthenticationService(
         return new RefreshResponseDto(newAccessToken, newRefreshTokenValue);
     }
 
-    public async Task RevokeFamilyAsync(Guid familyId, TokenRevokedReason revokedReason)
-    {
-        var tokens = await refreshTokenRepository.GetByFamilyIdAsync(familyId);
-        await RevokeRefreshTokensAsync(tokens, revokedReason);
-    }
-
-    public async Task RevokeTokenAsync(RevokeRequestDto request)
+    public async Task LogoutAsync(LogoutRequestDto request)
     {
         var hashedToken = SecureTokenGenerator.Hash(request.RefreshToken);
         var refreshToken =  await refreshTokenRepository.FindByHashedTokenAsync(hashedToken);
         if (refreshToken != null)
         {
-            refreshToken.RevokedAtUtc = DateTime.UtcNow;
-            refreshTokenRepository.Update(refreshToken);
-            await unitOfWork.SaveChangesAsync();
+            await RevokeFamilyAsync(refreshToken.FamilyId, TokenRevokedReason.UserLogout);
         }
     }
-
-    public async Task RevokeAllForUserAsync(Guid userId, TokenRevokedReason tokenRevokedReason)
+    
+    private async Task RevokeFamilyAsync(Guid familyId, TokenRevokedReason revokedReason)
     {
-        var tokens = await refreshTokenRepository.GetActiveByUserIdAsync(userId);
-        await RevokeRefreshTokensAsync(tokens, tokenRevokedReason);
+        var tokens = await refreshTokenRepository.GetByFamilyIdAsync(familyId);
+        await RevokeRefreshTokensAsync(tokens, revokedReason);
     }
 
     private async Task RevokeRefreshTokensAsync(List<RefreshToken> refreshTokens, TokenRevokedReason revokedReason)
