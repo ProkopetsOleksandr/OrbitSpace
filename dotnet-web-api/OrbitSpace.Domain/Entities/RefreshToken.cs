@@ -17,9 +17,16 @@ public class RefreshToken
     public Guid? ReplacedByToken { get; set; } // for 30 sec grace period
     public required string DeviceInfo { get; set; }
     public DateTime AbsoluteExpiresAtUtc { get; set; }
-    
-    public bool IsActive => !RevokedAtUtc.HasValue
-        && !UsedAtUtc.HasValue
-        && ExpiresAtUtc > DateTime.UtcNow
-        && AbsoluteExpiresAtUtc > DateTime.UtcNow;
+
+    public bool IsRevoked => RevokedAtUtc.HasValue;
+    public bool IsUsed => UsedAtUtc.HasValue;
+
+    public bool IsActive
+    {
+        get
+        {
+            var now = DateTime.UtcNow;
+            return !IsRevoked && !IsUsed && ExpiresAtUtc > now && AbsoluteExpiresAtUtc > now;
+        }
+    }
 }

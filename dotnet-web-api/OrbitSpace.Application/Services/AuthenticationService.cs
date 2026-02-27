@@ -114,6 +114,12 @@ public class AuthenticationService(
         var refreshToken = await refreshTokenRepository.FindByHashedTokenAsync(hashedToken);
         if (refreshToken?.IsActive != true || refreshToken.UserId != userId)
         {
+            if (refreshToken != null && (refreshToken.IsRevoked || refreshToken.IsUsed))
+            {
+                // Reuse detection.
+                await RevokeFamilyAsync(refreshToken.FamilyId, TokenRevokedReason.TokenReuse);
+            }
+            
             return OperationResultError.Unauthorized("Invalid or expired refresh token");
         }
 
