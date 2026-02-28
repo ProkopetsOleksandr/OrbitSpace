@@ -4,27 +4,6 @@
  */
 
 export interface paths {
-    "/api/activities": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get all activities
-         * @description Returns a list of activities associated with the currently authenticated user.
-         */
-        get: operations["getAllActivities"];
-        put?: never;
-        /** Create activity */
-        post: operations["createActivity"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/activities/{id}": {
         parameters: {
             query?: never;
@@ -47,7 +26,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/goals": {
+    "/api/activities": {
         parameters: {
             query?: never;
             header?: never;
@@ -55,13 +34,113 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Get all goals
-         * @description Returns a list of goals associated with the currently authenticated user.
+         * Get all activities
+         * @description Returns a list of activities associated with the currently authenticated user.
          */
-        get: operations["getAllGoals"];
+        get: operations["getAllActivities"];
         put?: never;
-        /** Create goal */
-        post: operations["createGoal"];
+        /** Create activity */
+        post: operations["createActivity"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/authentication/register": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Register a new user
+         * @description Creates a new user account with the provided email and password.
+         */
+        post: operations["registerUser"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/authentication/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Login to get authentication tokens
+         * @description Authenticates a user and returns access and refresh tokens.
+         */
+        post: operations["loginUser"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/authentication/refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Refresh authentication tokens
+         * @description Generates a new access token using a valid refresh token.
+         */
+        post: operations["refreshToken"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/authentication/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Logout from current device
+         * @description Revokes the current refresh token and invalidates the session on this device.
+         */
+        post: operations["logout"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/authentication/verify-email": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Verify email address
+         * @description Confirms the user's email using a one-time verification token sent via email.
+         */
+        post: operations["verifyEmail"];
         delete?: never;
         options?: never;
         head?: never;
@@ -90,7 +169,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/todo-items": {
+    "/api/goals": {
         parameters: {
             query?: never;
             header?: never;
@@ -98,13 +177,33 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Get all todo items
-         * @description Returns a list of todo items associated with the currently authenticated user.
+         * Get all goals
+         * @description Returns a list of goals associated with the currently authenticated user.
          */
-        get: operations["getAllTodoItems"];
+        get: operations["getAllGoals"];
         put?: never;
-        /** Create todo item */
-        post: operations["createTodoItem"];
+        /** Create goal */
+        post: operations["createGoal"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get user info
+         * @description Returns info of currently authenticated user
+         */
+        get: operations["getMe"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -133,6 +232,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/todo-items": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get all todo items
+         * @description Returns a list of todo items associated with the currently authenticated user.
+         */
+        get: operations["getAllTodoItems"];
+        put?: never;
+        /** Create todo item */
+        post: operations["createTodoItem"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -140,7 +260,7 @@ export interface components {
         /**
          * @description Represents an Activity
          * @example {
-         *       "Id": "678a4f92c1a3b05f447e12f9",
+         *       "Id": "019c577c-c280-7695-8c0a-9dbb466b3bcf",
          *       "Name": "Programming",
          *       "Code": "PRG",
          *       "CreatedAtUtc": "2025-11-30T17:55:00Z",
@@ -148,6 +268,7 @@ export interface components {
          *     }
          */
         Activity: {
+            /** Format: uuid */
             id: string;
             name: string;
             code: string;
@@ -211,7 +332,7 @@ export interface components {
         /**
          * @description Represents a Goal
          * @example {
-         *       "Id": "678a4f92c1a3b05f447e12f9",
+         *       "Id": "019c577c-c280-7d1c-81d4-626cf4a87cf0",
          *       "Title": "Learn Aspire",
          *       "LifeArea": 1,
          *       "Status": 1,
@@ -222,6 +343,7 @@ export interface components {
          *     }
          */
         Goal: {
+            /** Format: uuid */
             id: string;
             title: string;
             lifeArea: components["schemas"]["LifeArea"];
@@ -244,6 +366,19 @@ export interface components {
         GoalStatus: GoalStatus;
         /** @enum {string} */
         LifeArea: LifeArea;
+        LoginRequestDto: {
+            email: string;
+            password: string;
+            rememberMe: boolean;
+            deviceInfo: null | string;
+        };
+        LoginResponseDto: {
+            accessToken: string;
+            refreshToken: string;
+        };
+        LogoutRequestDto: {
+            refreshToken: string;
+        };
         ProblemDetails: {
             type?: null | string;
             title?: null | string;
@@ -252,10 +387,23 @@ export interface components {
             detail?: null | string;
             instance?: null | string;
         };
+        RefreshRequestDto: {
+            refreshToken: string;
+        };
+        RefreshResponseDto: {
+            accessToken: string;
+            refreshToken: string;
+        };
+        RegisterRequestDto: {
+            email: string;
+            firstName: string;
+            lastName: string;
+            password: string;
+        };
         /**
          * @description Represents a Todo item
          * @example {
-         *       "Id": "679c2e4fa7b19f34d2c8f91b",
+         *       "Id": "019c577c-c280-7e4a-a25c-557035e9c242",
          *       "Title": "Example Title",
          *       "CreatedAtUtc": "2025-11-30T17:55:00Z",
          *       "UpdatedAtUtc": "2025-11-30T17:55:00Z",
@@ -263,6 +411,7 @@ export interface components {
          *     }
          */
         TodoItem: {
+            /** Format: uuid */
             id: string;
             title: string;
             /** Format: date-time */
@@ -282,12 +431,13 @@ export interface components {
         /**
          * @description Model used to update an activity
          * @example {
-         *       "Id": "678a4f92c1a3b05f447e12f9",
+         *       "Id": "019c577c-c280-7599-84c2-06ce15bc86ed",
          *       "Name": "Programming",
          *       "Code": "PRG"
          *     }
          */
         UpdateActivityPayload: {
+            /** Format: uuid */
             id: string;
             name: string;
             code: string;
@@ -295,7 +445,7 @@ export interface components {
         /**
          * @description Model used to update a goal
          * @example {
-         *       "Id": "678a4f92c1a3b05f447e12f9",
+         *       "Id": "019c577c-c280-7612-88bb-04daffc955d0",
          *       "Title": "Build and publish a full-stack side project",
          *       "LifeArea": 1,
          *       "Status": 2,
@@ -308,6 +458,7 @@ export interface components {
          *     }
          */
         UpdateGoalPayload: {
+            /** Format: uuid */
             id: string;
             title: string;
             lifeArea: components["schemas"]["LifeArea"];
@@ -322,15 +473,23 @@ export interface components {
         };
         /**
          * @example {
-         *       "Id": "679c2e4fa7b19f34d2c8f91b",
+         *       "Id": "019c577c-c280-7fd6-aa0a-80dbd4d81c46",
          *       "Title": "New title",
          *       "Status": 2
          *     }
          */
         UpdateTodoItemPayload: {
+            /** Format: uuid */
             id: string;
             title: string;
             status: components["schemas"]["TodoItemStatus"];
+        };
+        UserDtoMock: {
+            /** Format: uuid */
+            id?: string;
+        };
+        UserDtoMockResponse: {
+            data: components["schemas"]["UserDtoMock"];
         };
     };
     responses: never;
@@ -341,78 +500,6 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
-    getAllActivities: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ActivitysResponse"];
-                };
-            };
-            /** @description Unauthorized */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ProblemDetails"];
-                };
-            };
-        };
-    };
-    createActivity: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CreateActivityPayload"];
-                "application/*+json": components["schemas"]["CreateActivityPayload"];
-            };
-        };
-        responses: {
-            /** @description Created */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ActivityResponse"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ProblemDetails"];
-                };
-            };
-            /** @description Unauthorized */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ProblemDetails"];
-                };
-            };
-        };
-    };
     getActivityById: {
         parameters: {
             query?: never;
@@ -547,7 +634,7 @@ export interface operations {
             };
         };
     };
-    getAllGoals: {
+    getAllActivities: {
         parameters: {
             query?: never;
             header?: never;
@@ -562,7 +649,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["GoalsResponse"];
+                    "application/json": components["schemas"]["ActivitysResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -576,7 +663,7 @@ export interface operations {
             };
         };
     };
-    createGoal: {
+    createActivity: {
         parameters: {
             query?: never;
             header?: never;
@@ -585,8 +672,8 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["CreateGoalPayload"];
-                "application/*+json": components["schemas"]["CreateGoalPayload"];
+                "application/json": components["schemas"]["CreateActivityPayload"];
+                "application/*+json": components["schemas"]["CreateActivityPayload"];
             };
         };
         responses: {
@@ -596,7 +683,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["GoalResponse"];
+                    "application/json": components["schemas"]["ActivityResponse"];
                 };
             };
             /** @description Bad Request */
@@ -610,6 +697,167 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    registerUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegisterRequestDto"];
+                "application/*+json": components["schemas"]["RegisterRequestDto"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    loginUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LoginRequestDto"];
+                "application/*+json": components["schemas"]["LoginRequestDto"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LoginResponseDto"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    refreshToken: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RefreshRequestDto"];
+                "application/*+json": components["schemas"]["RefreshRequestDto"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RefreshResponseDto"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    logout: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LogoutRequestDto"];
+                "application/*+json": components["schemas"]["LogoutRequestDto"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    verifyEmail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": string;
+                "application/*+json": string;
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Bad Request */
+            400: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -753,7 +1001,7 @@ export interface operations {
             };
         };
     };
-    getAllTodoItems: {
+    getAllGoals: {
         parameters: {
             query?: never;
             header?: never;
@@ -768,7 +1016,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["TodoItemsResponse"];
+                    "application/json": components["schemas"]["GoalsResponse"];
                 };
             };
             /** @description Unauthorized */
@@ -782,7 +1030,7 @@ export interface operations {
             };
         };
     };
-    createTodoItem: {
+    createGoal: {
         parameters: {
             query?: never;
             header?: never;
@@ -791,8 +1039,8 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["CreateTodoItemPayload"];
-                "application/*+json": components["schemas"]["CreateTodoItemPayload"];
+                "application/json": components["schemas"]["CreateGoalPayload"];
+                "application/*+json": components["schemas"]["CreateGoalPayload"];
             };
         };
         responses: {
@@ -802,7 +1050,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["TodoItemResponse"];
+                    "application/json": components["schemas"]["GoalResponse"];
                 };
             };
             /** @description Bad Request */
@@ -816,6 +1064,44 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    getMe: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserDtoMockResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -959,13 +1245,85 @@ export interface operations {
             };
         };
     };
+    getAllTodoItems: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TodoItemsResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    createTodoItem: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateTodoItemPayload"];
+                "application/*+json": components["schemas"]["CreateTodoItemPayload"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TodoItemResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
 }
 export enum GoalStatus {
     NotStarted = "NotStarted",
     Active = "Active",
     OnHold = "OnHold",
     Completed = "Completed",
-    Cancelled = "Cancelled"
+    Canceled = "Canceled"
 }
 export enum LifeArea {
     Career = "Career",
