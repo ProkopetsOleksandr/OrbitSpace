@@ -5,4 +5,5 @@ namespace OrbitSpace.Application.Common.Interfaces;
 public interface IEmailVerificationTokenRepository
 {
     void Add(EmailVerificationToken emailVerificationToken);
+    Task<EmailVerificationToken?> FindEmailByTokenHashAsync(string hashedToken);
 }

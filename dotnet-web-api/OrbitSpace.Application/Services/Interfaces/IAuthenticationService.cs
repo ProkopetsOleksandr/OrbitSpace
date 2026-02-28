@@ -1,6 +1,5 @@
 ﻿using OrbitSpace.Application.Common.Models;
 using OrbitSpace.Application.Dtos.Authentication;
-using OrbitSpace.Domain.Enums;
 
 namespace OrbitSpace.Application.Services.Interfaces
 {
@@ -10,5 +9,6 @@ namespace OrbitSpace.Application.Services.Interfaces
         Task<OperationResult<LoginResponseDto>> LoginAsync(LoginRequestDto request);
         Task<OperationResult<RefreshResponseDto>> RefreshAsync(RefreshRequestDto request, Guid userId);
         Task LogoutAsync(LogoutRequestDto request);
+        Task<OperationResult> VerifyEmailAsync(string token);
     }
 }

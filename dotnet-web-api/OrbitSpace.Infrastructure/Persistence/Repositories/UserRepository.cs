@@ -15,6 +15,11 @@ public class UserRepository(AppDbContext dbContext) : IUserRepository
     {
         return await dbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
     }
+
+    public async Task<User> GetByIdAsync(Guid id)
+    {
+        return await FindByIdAsync(id) ?? throw new InvalidOperationException($"User with id '{id}' was not found.");
+    }
     
     public void Add(User user)
     {

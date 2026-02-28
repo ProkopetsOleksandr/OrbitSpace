@@ -159,6 +159,30 @@ public class AuthenticationService(
             await RevokeFamilyAsync(refreshToken.FamilyId, TokenRevokedReason.UserLogout);
         }
     }
+
+    public async Task<OperationResult> VerifyEmailAsync(string token)
+    {
+        var hashedToken = SecureTokenGenerator.Hash(token);
+        var emailVerificationToken = await emailVerificationTokenRepository.FindEmailByTokenHashAsync(hashedToken);
+
+        if (emailVerificationToken == null || emailVerificationToken.IsExpired) {
+            return OperationResultError.Validation("Verification link has expired. Please request a new one.");
+        }
+
+        if (emailVerificationToken.IsUsed)
+        {
+            return OperationResultError.Validation("Email already verified");
+        }
+
+        emailVerificationToken.IsUsed = true;
+        
+        var user = await userRepository.GetByIdAsync(emailVerificationToken.UserId);
+        user.EmailVerified = true;
+
+        await unitOfWork.SaveChangesAsync();
+
+        return OperationResult.Success();
+    }
     
     private async Task RevokeFamilyAsync(Guid familyId, TokenRevokedReason revokedReason)
     {

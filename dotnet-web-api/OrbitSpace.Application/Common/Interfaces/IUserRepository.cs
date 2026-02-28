@@ -6,6 +6,7 @@ namespace OrbitSpace.Application.Common.Interfaces
     {
         Task<User?> FindByIdAsync(Guid id);
         Task<User?> FindByEmailAsync(string email);
+        Task<User> GetByIdAsync(Guid id);
         void Add(User user);
         void Update(User user);
     }

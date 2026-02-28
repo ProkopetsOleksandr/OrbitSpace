@@ -7,5 +7,7 @@
         public required string TokenHash { get; set; }
         public DateTime ExpiresAtUtc { get; set; }
         public bool IsUsed { get; set; }
+
+        public bool IsExpired => ExpiresAtUtc <= DateTime.UtcNow;
     }
 }

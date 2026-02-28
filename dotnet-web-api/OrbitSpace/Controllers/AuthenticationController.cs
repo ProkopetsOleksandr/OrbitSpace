@@ -64,7 +64,6 @@ namespace OrbitSpace.WebApi.Controllers
         }
 
         [HttpPost("refresh")]
-        [AllowAnonymous]
         [EndpointSummary("Refresh authentication tokens")]
         [EndpointDescription("Generates a new access token using a valid refresh token.")]
         [EndpointName("refreshToken")]
@@ -88,7 +87,6 @@ namespace OrbitSpace.WebApi.Controllers
         }
 
         [HttpPost("logout")]
-        [AllowAnonymous]
         [EndpointSummary("Logout from current device")]
         [EndpointDescription("Revokes the current refresh token and invalidates the session on this device.")]
         [EndpointName("logout")]
@@ -96,6 +94,24 @@ namespace OrbitSpace.WebApi.Controllers
         public async Task<IActionResult> Logout([FromBody] LogoutRequestDto request)
         {
             await authenticationService.LogoutAsync(request);
+
+            return Ok();
+        }
+
+        [HttpPost("verify-email")]
+        [AllowAnonymous]
+        [EndpointSummary("Verify email address")]
+        [EndpointDescription("Confirms the user's email using a one-time verification token sent via email.")]
+        [EndpointName("verifyEmail")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> VerifyEmail([FromBody] string token)
+        {
+            var result = await authenticationService.VerifyEmailAsync(token);
+            if (!result.IsSuccess)
+            {
+                return GetErrorResponse(result.Error);
+            }
 
             return Ok();
         }
