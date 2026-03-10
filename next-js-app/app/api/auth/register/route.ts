@@ -3,7 +3,6 @@ import { z } from 'zod';
 
 import { registerSchema } from '@/entities/auth';
 import { getServerApiClient } from '@/shared/api/api-server-client';
-import { backendBaseUrl } from '@/shared/config';
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
@@ -21,17 +20,13 @@ export async function POST(request: NextRequest) {
 
   const { email, password, firstName, lastName } = parsed.data;
 
-  const serverApiClient = await getServerApiClient();
-
-  const backendRes = await fetch(`${backendBaseUrl}/api/authentication/register`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password, firstName, lastName })
+  const apiClient = await getServerApiClient();
+  const { error, response } = await apiClient.POST('/api/authentication/register', {
+    body: { email, password, firstName, lastName }
   });
 
-  if (!backendRes.ok) {
-    const err = await backendRes.json().catch(() => ({ message: 'Registration failed' }));
-    return NextResponse.json({ error: err.message ?? 'Registration failed' }, { status: backendRes.status });
+  if (error) {
+    return NextResponse.json({ error: error.title ?? error.detail ?? 'Registration failed' }, { status: response.status });
   }
 
   return NextResponse.json({ success: true });
