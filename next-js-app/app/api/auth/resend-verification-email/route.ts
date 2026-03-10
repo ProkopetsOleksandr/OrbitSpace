@@ -14,13 +14,10 @@ export async function POST(request: NextRequest) {
   }
 
   const apiClient = await getServerApiClient();
-  const { error, response } = await apiClient.POST('/api/authentication/resend-verification-email', {
+  await apiClient.POST('/api/authentication/resend-verification-email', {
     body: parsed.data.email
   });
 
-  if (error) {
-    return NextResponse.json({ error: error.detail ?? 'Failed to resend verification email' }, { status: response.status });
-  }
-
+  // Anti-enumeration: always return 200 regardless of backend result
   return NextResponse.json({ success: true });
 }
