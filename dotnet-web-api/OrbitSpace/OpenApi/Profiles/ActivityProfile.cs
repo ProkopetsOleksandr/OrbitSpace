@@ -10,7 +10,7 @@ namespace OrbitSpace.WebApi.OpenApi.Profiles
                 .WithSchemaName("Activity")
                 .WithDescription("Represents an Activity")
                 .WithExample(new ActivityDto(
-                    Id: Guid.CreateVersion7(new DateTimeOffset(2026, 2, 13, 14, 52, 0, TimeSpan.Zero)),
+                    Id: new Guid("019c577c-c280-7103-ad24-9045db19c9fe"),
                     Name: "Programming",
                     Code: "PRG",
                     CreatedAtUtc: new DateTime(2025, 11, 30, 17, 55, 0, DateTimeKind.Utc),
@@ -27,7 +27,7 @@ namespace OrbitSpace.WebApi.OpenApi.Profiles
                 .WithSchemaName("UpdateActivityPayload")
                 .WithDescription("Model used to update an activity")
                 .WithExample(new UpdateActivityRequest(
-                    Guid.CreateVersion7(new DateTimeOffset(2026, 2, 13, 14, 52, 0, TimeSpan.Zero)),
+                    new Guid("019c577c-c280-7103-ad24-9045db19c9fe"),
                     Name: "Programming",
                     Code: "PRG"));
         }
