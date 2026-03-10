@@ -147,6 +147,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/authentication/resend-verification-email": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Resend verification email
+         * @description Sends a new email verification link to the specified email address.
+         */
+        post: operations["resendVerificationEmail"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/goals/{id}": {
         parameters: {
             query?: never;
@@ -260,7 +280,7 @@ export interface components {
         /**
          * @description Represents an Activity
          * @example {
-         *       "Id": "019c577c-c280-7695-8c0a-9dbb466b3bcf",
+         *       "Id": "019c577c-c280-7103-ad24-9045db19c9fe",
          *       "Name": "Programming",
          *       "Code": "PRG",
          *       "CreatedAtUtc": "2025-11-30T17:55:00Z",
@@ -332,7 +352,7 @@ export interface components {
         /**
          * @description Represents a Goal
          * @example {
-         *       "Id": "019c577c-c280-7d1c-81d4-626cf4a87cf0",
+         *       "Id": "019c577c-c280-7103-ad24-9045db19c9fe",
          *       "Title": "Learn Aspire",
          *       "LifeArea": 1,
          *       "Status": 1,
@@ -403,7 +423,7 @@ export interface components {
         /**
          * @description Represents a Todo item
          * @example {
-         *       "Id": "019c577c-c280-7e4a-a25c-557035e9c242",
+         *       "Id": "019c577c-c280-7103-ad24-9045db19c9fe",
          *       "Title": "Example Title",
          *       "CreatedAtUtc": "2025-11-30T17:55:00Z",
          *       "UpdatedAtUtc": "2025-11-30T17:55:00Z",
@@ -431,7 +451,7 @@ export interface components {
         /**
          * @description Model used to update an activity
          * @example {
-         *       "Id": "019c577c-c280-7599-84c2-06ce15bc86ed",
+         *       "Id": "019c577c-c280-7103-ad24-9045db19c9fe",
          *       "Name": "Programming",
          *       "Code": "PRG"
          *     }
@@ -445,7 +465,7 @@ export interface components {
         /**
          * @description Model used to update a goal
          * @example {
-         *       "Id": "019c577c-c280-7612-88bb-04daffc955d0",
+         *       "Id": "019c577c-c280-7103-ad24-9045db19c9fe",
          *       "Title": "Build and publish a full-stack side project",
          *       "LifeArea": 1,
          *       "Status": 2,
@@ -473,7 +493,7 @@ export interface components {
         };
         /**
          * @example {
-         *       "Id": "019c577c-c280-7fd6-aa0a-80dbd4d81c46",
+         *       "Id": "019c577c-c280-7103-ad24-9045db19c9fe",
          *       "Title": "New title",
          *       "Status": 2
          *     }
@@ -834,6 +854,40 @@ export interface operations {
         };
     };
     verifyEmail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": string;
+                "application/*+json": string;
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    resendVerificationEmail: {
         parameters: {
             query?: never;
             header?: never;
