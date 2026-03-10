@@ -24,7 +24,7 @@ namespace OrbitSpace.WebApi.Controllers
         [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Register([FromBody] RegisterRequestDto request, IValidator<RegisterRequestDto> validator)
         {
-            var validationResult = await validator.ValidateAsync(request);
+            var validationResult = validator.Validate(request);
             if (!validationResult.IsValid)
             {
                 return ValidationProblem(validationResult);
@@ -107,11 +107,35 @@ namespace OrbitSpace.WebApi.Controllers
         [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> VerifyEmail([FromBody] string token)
         {
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                return BadRequestProblem("Please provide a valid token");
+            }
+
             var result = await authenticationService.VerifyEmailAsync(token);
             if (!result.IsSuccess)
             {
                 return GetErrorResponse(result.Error);
             }
+
+            return Ok();
+        }
+
+        [HttpPost("resend-verification-email")]
+        [AllowAnonymous]
+        [EndpointSummary("Resend verification email")]
+        [EndpointDescription("Sends a new email verification link to the specified email address.")]
+        [EndpointName("resendVerificationEmail")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> ResendVerificationEmail([FromBody] string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                return BadRequestProblem("Please provide a valid email");
+            }
+
+            await authenticationService.ResendVerificationEmailAsync(email);
 
             return Ok();
         }

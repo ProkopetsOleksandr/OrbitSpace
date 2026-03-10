@@ -183,6 +183,28 @@ public class AuthenticationService(
 
         return OperationResult.Success();
     }
+
+    public async Task ResendVerificationEmailAsync(string email)
+    {
+        var user = await userRepository.FindByEmailAsync(email);
+        if (user == null || user.EmailVerified)
+        {
+            return;
+        }
+
+        var (emailVerificationToken, hashedEmailVerificationToken) = SecureTokenGenerator.Generate();
+        emailVerificationTokenRepository.Add(new EmailVerificationToken
+        {
+            Id = Guid.CreateVersion7(),
+            UserId = user.Id,
+            TokenHash = hashedEmailVerificationToken,
+            ExpiresAtUtc = DateTime.UtcNow.Add(EmailVerificationTokenLifetime)
+        });
+
+        await unitOfWork.SaveChangesAsync();
+
+        await SendEmailVerificationMessageAsync(user.FirstName, user.Email, emailVerificationToken);
+    }
     
     private async Task RevokeFamilyAsync(Guid familyId, TokenRevokedReason revokedReason)
     {
