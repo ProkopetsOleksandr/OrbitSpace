@@ -5,23 +5,20 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
-interface Props {
-  token: string | undefined;
-}
+import { useApiClient } from '@/shared/api';
 
-export function EmailVerifier({ token }: Props) {
+export function EmailVerifier({ token }: { token: string | undefined }) {
   const router = useRouter();
+  const apiClient = useApiClient();
 
   const mutation = useMutation({
-    mutationFn: async (t: string) => {
-      const res = await fetch('/api/auth/verify-email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: t })
+    mutationFn: async (token: string) => {
+      const { error } = await apiClient.POST('/api/authentication/verify-email', {
+        body: JSON.stringify({ token })
       });
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body.error ?? 'Verification failed');
+
+      if (error) {
+        throw new Error(error.detail ?? 'Verification failed');
       }
     },
     onSuccess: () => {

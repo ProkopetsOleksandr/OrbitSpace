@@ -13,7 +13,7 @@ const statusStyles: Record<GoalStatus, string> = {
   [GoalStatus.Active]: 'bg-blue-50 text-blue-700 border-blue-200',
   [GoalStatus.OnHold]: 'bg-orange-50 text-orange-700 border-orange-200',
   [GoalStatus.Completed]: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-  [GoalStatus.Cancelled]: 'bg-red-50 text-red-700 border-red-200'
+  [GoalStatus.Canceled]: 'bg-red-50 text-red-700 border-red-200'
 };
 
 const formatStatusLabel = (status: string) => {

@@ -1,10 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { getApiClient } from '@/shared/api';
+import { useApiClient } from '@/shared/api';
 import { activityQueryKeys } from './activity-query-keys';
 
 export function useActivities() {
-  const apiClient = getApiClient();
+  const apiClient = useApiClient();
 
   return useQuery({
     queryKey: activityQueryKeys.list(''),

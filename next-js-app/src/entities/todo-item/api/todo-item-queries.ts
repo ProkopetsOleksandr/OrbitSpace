@@ -1,10 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { getApiClient } from '@/shared/api';
+import { useApiClient } from '@/shared/api';
 import { todoItemQueryKeys } from './todo-item-query-keys';
 
 export function useTodoItems() {
-  const apiClient = getApiClient();
+  const apiClient = useApiClient();
 
   return useQuery({
     queryKey: todoItemQueryKeys.list(),

@@ -1,11 +1,12 @@
 'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+
 import { registerSchema, type RegisterInput } from '@/entities/auth';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
 import { useRegister } from '../model/register-mutation';
 
 export function RegisterForm() {
@@ -47,7 +48,13 @@ export function RegisterForm() {
 
       <div className="space-y-2">
         <Label htmlFor="password">Password</Label>
-        <Input {...register('password')} id="password" type="password" placeholder="Create a password" disabled={mutation.isPending} />
+        <Input
+          {...register('password')}
+          id="password"
+          type="password"
+          placeholder="Create a password"
+          disabled={mutation.isPending}
+        />
         {errors.password && <p className="text-sm text-red-500">{errors.password.message}</p>}
       </div>
 

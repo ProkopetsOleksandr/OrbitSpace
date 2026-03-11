@@ -1,10 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { getApiClient } from '@/shared/api';
+import { useApiClient } from '@/shared/api';
 import { goalQueryKeys } from './goal-query-keys';
 
 export function useGoals(filters?: string) {
-  const apiClient = getApiClient();
+  const apiClient = useApiClient();
 
   return useQuery({
     queryKey: goalQueryKeys.list(filters ?? ''),

@@ -1,2 +1,2 @@
-export { getApiClient } from './api-client';
+export { useApiClient } from './api-client';
 export * from './models';
