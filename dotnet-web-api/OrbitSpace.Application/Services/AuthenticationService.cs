@@ -1,4 +1,5 @@
-﻿using OrbitSpace.Application.Common.Interfaces;
+﻿using OrbitSpace.Application.Common;
+using OrbitSpace.Application.Common.Interfaces;
 using OrbitSpace.Application.Common.Models;
 using OrbitSpace.Application.Common.Utilities;
 using OrbitSpace.Application.Dtos.Authentication;
@@ -30,7 +31,7 @@ public class AuthenticationService(
     {
         if (await userRepository.FindByEmailAsync(request.Email) != null)
         {
-            return OperationResultError.Validation("Email already exists");
+            return OperationResultError.Validation("Email already exists", ErrorCode.Auth.EmailAlreadyExists);
         }
 
         var now = DateTime.UtcNow;
@@ -68,20 +69,24 @@ public class AuthenticationService(
     public async Task<OperationResult<LoginResponseDto>> LoginAsync(LoginRequestDto request)
     {
         var user = await userRepository.FindByEmailAsync(request.Email);
-        if (user == null || !passwordHasherService.VerifyPassword(request.Password, user.PasswordHash))
+        if (user == null)
         {
-            return OperationResultError.Validation("Invalid username or password");
+            return OperationResultError.Validation("Invalid username or password", ErrorCode.Auth.InvalidCredentials);
         }
 
         if (!user.EmailVerified)
         {
-            return OperationResultError.Validation("Email not verified");
+            return OperationResultError.Validation("Email not verified", ErrorCode.Auth.EmailNotVerified);
+        }
+
+        if (!passwordHasherService.VerifyPassword(request.Password, user.PasswordHash))
+        {
+            return OperationResultError.Validation("Invalid username or password", ErrorCode.Auth.InvalidCredentials);
         }
 
         if (!user.IsActive)
         {
-            // Todo: Need to send CODE of the problem to identify on UI for "Send email again"
-            return OperationResultError.Validation("Account disabled");
+            return OperationResultError.Validation("Account disabled", ErrorCode.Auth.AccountDisabled);
         }
         
         var accessToken = jwtTokenService.GenerateAccessToken(user.Id);
@@ -120,7 +125,7 @@ public class AuthenticationService(
                 await RevokeFamilyAsync(refreshToken.FamilyId, TokenRevokedReason.TokenReuse);
             }
             
-            return OperationResultError.Unauthorized("Invalid or expired refresh token");
+            return OperationResultError.Unauthorized("Invalid or expired refresh token", ErrorCode.Auth.InvalidRefreshToken);
         }
 
         var newAccessToken = jwtTokenService.GenerateAccessToken(refreshToken.UserId);
@@ -166,12 +171,12 @@ public class AuthenticationService(
         var emailVerificationToken = await emailVerificationTokenRepository.FindEmailByTokenHashAsync(hashedToken);
 
         if (emailVerificationToken == null || emailVerificationToken.IsExpired) {
-            return OperationResultError.Validation("Verification link has expired. Please request a new one.");
+            return OperationResultError.Validation("Verification link has expired. Please request a new one.", ErrorCode.Auth.VerificationLinkExpired);
         }
 
         if (emailVerificationToken.IsUsed)
         {
-            return OperationResultError.Validation("Email already verified");
+            return OperationResultError.Validation("Email already verified", ErrorCode.Auth.EmailAlreadyVerified);
         }
 
         emailVerificationToken.IsUsed = true;

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using OrbitSpace.Application.Common;
 using OrbitSpace.Application.Dtos.TodoItem;
 using OrbitSpace.Application.Services.Interfaces;
 using OrbitSpace.WebApi.Models.Responses;
@@ -63,7 +64,7 @@ public class TodoItemsController(ITodoItemService todoItemService) : ApiControll
     {
         if (request.Id != id)
         {
-            return BadRequestProblem("Invalid id");
+            return BadRequestProblem("Invalid id", ErrorCode.Common.ValidationError);
         }
 
         var result = await todoItemService.UpdateAsync(request, CurrentUser.Id);

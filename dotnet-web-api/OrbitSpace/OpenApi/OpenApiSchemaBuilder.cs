@@ -1,35 +1,28 @@
 ﻿namespace OrbitSpace.WebApi.OpenApi
 {
-    public class OpenApiSchemaBuilder<T>
+    public class OpenApiSchemaBuilder<T>(OpenApiSchemaMetadata mapping)
     {
-        private readonly OpenApiSchemaMetadata _mapping;
-
-        public OpenApiSchemaBuilder(OpenApiSchemaMetadata mapping)
-        {
-            _mapping = mapping;
-        }
-
         public OpenApiSchemaBuilder<T> WithSchemaName(string schemaName)
         {
-            _mapping.SchemaName = schemaName;
+            mapping.SchemaName = schemaName;
             return this;
         }
 
         public OpenApiSchemaBuilder<T> WithTitle(string title)
         {
-            _mapping.Title = title;
+            mapping.Title = title;
             return this;
         }
 
         public OpenApiSchemaBuilder<T> WithDescription(string description)
         {
-            _mapping.Description = description;
+            mapping.Description = description;
             return this;
         }
 
         public OpenApiSchemaBuilder<T> WithExample(T example)
         {
-            _mapping.Example = example;
+            mapping.Example = example;
             return this;
         }
     }

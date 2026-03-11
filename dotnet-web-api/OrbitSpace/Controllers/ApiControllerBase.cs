@@ -1,6 +1,6 @@
-﻿using System.Net;
-using FluentValidation.Results;
+﻿using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc;
+using OrbitSpace.Application.Common;
 using OrbitSpace.Application.Common.Models;
 using OrbitSpace.WebApi.Identity;
 
@@ -11,55 +11,80 @@ namespace OrbitSpace.WebApi.Controllers;
 [Produces("application/json")]
 public class ApiControllerBase : ControllerBase
 {
-    private ApplicationUser? _currentUser;
     protected ApplicationUser CurrentUser
     {
         get
         {
-            if (_currentUser is null)
+            if (field is null)
             {
                 var applicationUserProvider = HttpContext.RequestServices.GetRequiredService<IApplicationUserProvider>();
-                _currentUser = new ApplicationUser(applicationUserProvider);
+                field = new ApplicationUser(applicationUserProvider);
             }
 
-            return _currentUser;
+            return field;
         }
     }
 
-    protected IActionResult GetErrorResponse(OperationResultError error)
-    {
-        return error.ErrorType switch
+    protected IActionResult GetErrorResponse(OperationResultError error) =>
+        error.ErrorType switch
         {
             OperationResultErrorType.NotFound => NotFoundProblem(error.ErrorMessage),
-            _ => BadRequestProblem(error.ErrorMessage)
+            OperationResultErrorType.Unauthorized => UnauthorizedProblem(error.ErrorMessage),
+            _ => BadRequestProblem(error.ErrorMessage, error.ErrorCode)
         };
-    }
 
     protected IActionResult NotFoundProblem(string? errorMessage)
     {
-        return Problem(
+        return ProblemResult(
+            statusCode: StatusCodes.Status404NotFound,
             title: "Not found",
             detail: errorMessage,
-            statusCode: StatusCodes.Status404NotFound,
-            type: "https://tools.ietf.org/html/rfc9110#section-15.5.5");
+            type: "https://tools.ietf.org/html/rfc9110#section-15.5.5",
+            errorCode: ErrorCode.Common.NotFound);
     }
-    
-    protected IActionResult BadRequestProblem(string? errorMessage)
+
+    // TODO: ErrorCode should go first
+    protected IActionResult BadRequestProblem(string? errorMessage, string errorCode)
     {
-        return Problem(
+        return ProblemResult(
+            statusCode: StatusCodes.Status400BadRequest,
             title: "Bad request",
             detail: errorMessage,
-            statusCode: StatusCodes.Status400BadRequest,
-            type: "https://tools.ietf.org/html/rfc9110#section-15.5.1");
+            type: "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+            errorCode: errorCode);
     }
-    
+
+    protected IActionResult UnauthorizedProblem(string? errorMessage)
+    {
+        return ProblemResult(
+            statusCode: StatusCodes.Status401Unauthorized,
+            title: "Unauthorized",
+            detail: errorMessage,
+            type: "https://tools.ietf.org/html/rfc9110#section-15.5.2",
+            errorCode: ErrorCode.Common.Unauthorized);
+    }
+
     protected IActionResult ValidationProblem(ValidationResult validationResult)
     {
         foreach (var error in validationResult.Errors)
         {
             ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
         }
-        
+
         return ValidationProblem(ModelState);
+    }
+    
+    private IActionResult ProblemResult(int statusCode, string title, string? detail, string type, string errorCode)
+    {
+        var pd = new ProblemDetails
+        {
+            Title = title,
+            Detail = detail,
+            Status = statusCode,
+            Type = type
+        };
+        pd.Extensions["errorCode"] = errorCode;
+        
+        return new ObjectResult(pd) { StatusCode = statusCode };
     }
 }

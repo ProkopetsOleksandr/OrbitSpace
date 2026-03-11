@@ -1,10 +1,10 @@
-﻿using FluentValidation;
+using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using OrbitSpace.Application.Common;
 using OrbitSpace.Application.Dtos.Authentication;
 using OrbitSpace.Application.Services.Interfaces;
-using OrbitSpace.Domain.Enums;
 using OrbitSpace.WebApi.Constants;
 
 namespace OrbitSpace.WebApi.Controllers
@@ -33,7 +33,7 @@ namespace OrbitSpace.WebApi.Controllers
             var result = await authenticationService.RegisterAsync(request);
             if (!result.IsSuccess)
             {
-                return Problem(statusCode: StatusCodes.Status400BadRequest, detail: result.Error.ErrorMessage);
+                return GetErrorResponse(result.Error);
             }
 
             return Ok();
@@ -52,12 +52,7 @@ namespace OrbitSpace.WebApi.Controllers
 
             if (!result.IsSuccess)
             {
-                return Unauthorized(new ProblemDetails
-                {
-                    Status = StatusCodes.Status401Unauthorized,
-                    Title = "Authentication failed",
-                    Detail = result.Error.ErrorMessage
-                });
+                return GetErrorResponse(result.Error);
             }
 
             return Ok(result.Data);
@@ -75,12 +70,7 @@ namespace OrbitSpace.WebApi.Controllers
 
             if (!result.IsSuccess)
             {
-                return Unauthorized(new ProblemDetails
-                {
-                    Status = StatusCodes.Status401Unauthorized,
-                    Title = "Token refresh failed",
-                    Detail = result.Error.ErrorMessage
-                });
+                return GetErrorResponse(result.Error);
             }
 
             return Ok(result.Data);
@@ -109,7 +99,7 @@ namespace OrbitSpace.WebApi.Controllers
         {
             if (string.IsNullOrWhiteSpace(token))
             {
-                return BadRequestProblem("Please provide a valid token");
+                return BadRequestProblem("Please provide a valid token", ErrorCode.Common.ValidationError);
             }
 
             var result = await authenticationService.VerifyEmailAsync(token);
@@ -132,7 +122,7 @@ namespace OrbitSpace.WebApi.Controllers
         {
             if (string.IsNullOrWhiteSpace(email))
             {
-                return BadRequestProblem("Please provide a valid email");
+                return BadRequestProblem("Please provide a valid email", ErrorCode.Common.ValidationError);
             }
 
             await authenticationService.ResendVerificationEmailAsync(email);

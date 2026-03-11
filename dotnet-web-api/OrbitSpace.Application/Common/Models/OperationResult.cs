@@ -45,19 +45,20 @@ namespace OrbitSpace.Application.Common.Models
         public static implicit operator OperationResult<T>(OperationResultError value) => Failure(value);
     }
 
-    public class OperationResultError(OperationResultErrorType errorType, string? errorMessage)
+    public class OperationResultError(OperationResultErrorType errorType, string? errorMessage, string errorCode)
     {
         public OperationResultErrorType ErrorType { get; private set; } = errorType;
         public string? ErrorMessage { get; private set; } = errorMessage;
+        public string ErrorCode { get; private set; } = errorCode;
 
-        public static OperationResultError NotFound(string? errorMessage = null) =>
-            new(OperationResultErrorType.NotFound, errorMessage);
+        public static OperationResultError NotFound(string? errorMessage = null, string errorCode = Common.ErrorCode.Common.NotFound) =>
+            new(OperationResultErrorType.NotFound, errorMessage, errorCode);
 
-        public static OperationResultError Validation(string? errorMessage = null) =>
-            new(OperationResultErrorType.Validation, errorMessage);
+        public static OperationResultError Validation(string? errorMessage = null, string errorCode = Common.ErrorCode.Common.ValidationError) =>
+            new(OperationResultErrorType.Validation, errorMessage, errorCode);
 
-        public static OperationResultError Unauthorized(string? errorMessage = null) =>
-            new(OperationResultErrorType.Unauthorized, errorMessage);
+        public static OperationResultError Unauthorized(string? errorMessage = null, string errorCode = Common.ErrorCode.Common.Unauthorized) =>
+            new(OperationResultErrorType.Unauthorized, errorMessage, errorCode);
     }
 
     public enum OperationResultErrorType
