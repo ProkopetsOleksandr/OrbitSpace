@@ -25,7 +25,12 @@ export async function POST(request: NextRequest) {
   });
 
   if (error) {
-    return NextResponse.json({ error: error.detail ?? 'Authentication failed' }, { status: response.status });
+    // TODO: Fix errorCode (add to OpenApi schema)
+    const raw = error as typeof error & { errorCode?: string };
+    return NextResponse.json(
+      { error: raw.detail ?? 'Authentication failed', errorCode: raw.errorCode ?? 'UNKNOWN' },
+      { status: response.status }
+    );
   }
 
   await setAuthCookies(data.accessToken, data.refreshToken, rememberMe);
